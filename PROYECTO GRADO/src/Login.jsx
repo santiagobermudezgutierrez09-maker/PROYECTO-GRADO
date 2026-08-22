@@ -19,7 +19,7 @@ function Login() {
   };
 
   return (
-    <div style={{ maxWidth: "320px", margin: "40px auto" }}>
+    <div className="card" style={{ maxWidth: "320px", margin: "40px auto" }}>
       <h2>Iniciar sesión</h2>
       <form onSubmit={handleLogin}>
         <div style={{ marginBottom: "10px" }}>

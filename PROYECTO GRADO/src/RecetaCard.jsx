@@ -109,15 +109,7 @@ function RecetaCard({ receta }) {
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "12px",
-        marginBottom: "12px",
-        textAlign: "left",
-      }}
-    >
+    <div className="card" style={{ marginBottom: "16px", textAlign: "left" }}>
       <h4>{receta.nombre}</h4>
       <p>
         Tiempo: {receta.tiempo} min — Porciones: {receta.porciones}

@@ -16,7 +16,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["arroz", "pollo", "cebolla", "ajo", "zanahoria"],
-    pasos: ["Sofreír el pollo en un poco de aceite.", "Agregar la cebolla y el ajo picados.", "Agregar el arroz y el agua, dejar cocinar 20 minutos."],
+    pasos: ["Corta el pollo en presas y sazónalo con sal, pimienta y un poco de comino.", "En una olla grande, sofríe la cebolla y el ajo picados en aceite caliente hasta que estén transparentes.", "Agrega el pollo y dóralo por todos los lados durante unos 5 minutos.", "Incorpora la zanahoria en cubos y sofríe 2 minutos más.", "Agrega el arroz, revuelve para que se impregne con el sofrito, y vierte el agua caliente (el doble de la cantidad de arroz).", "Tapa la olla y cocina a fuego medio-bajo por 20 minutos, sin destapar.", "Deja reposar 5 minutos antes de servir y revuelve suavemente con un tenedor."],
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ const recetas = [
     calorias: 480,
     dieta: "vegetariana",
     ingredientes: ["papa", "zanahoria", "cebolla", "apio", "caldo de verduras"],
-    pasos: ["Picar todas las verduras.", "Sofreír la cebolla y el apio.", "Agregar el resto de verduras y el caldo, cocinar 20 minutos."],
+    pasos: ["Lava y pica todas las verduras en trozos medianos.", "En una olla, sofríe la cebolla y el apio en un poco de aceite hasta que suelten aroma.", "Agrega la papa y la zanahoria, y revuelve un par de minutos.", "Vierte el caldo de verduras y deja que hierva.", "Baja el fuego y cocina tapado durante 20 minutos, o hasta que las verduras estén blandas.", "Prueba y ajusta la sal; sirve caliente."],
   },
   {
     id: 3,
@@ -40,7 +40,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["frijol rojo", "garra de cerdo", "plátano", "cebolla", "ajo"],
-    pasos: ["Remojar los frijoles la noche anterior.", "Cocinar los frijoles con la garra hasta ablandar.", "Agregar el plátano y sofrito de cebolla y ajo."],
+    pasos: ["Remoja los frijoles en agua desde la noche anterior para que se cocinen más rápido.", "Escurre los frijoles y ponlos a cocinar en una olla con agua limpia junto con la garra de cerdo.", "Cocina a fuego medio durante 1 hora, espumando de vez en cuando.", "Aparte, sofríe la cebolla y el ajo picados hasta dorar ligeramente.", "Agrega el sofrito a la olla de frijoles y continúa cocinando 20 minutos más, hasta que estén blandos y espesos.", "Corta el plátano en trozos y fríelo o cocínalo al vapor como acompañamiento.", "Sirve los frijoles bien calientes junto con el plátano."],
   },
   {
     id: 4,
@@ -52,7 +52,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["gallina", "papa", "yuca", "plátano", "mazorca", "cilantro"],
-    pasos: ["Cocinar la gallina en agua con sal.", "Agregar la papa, la yuca y el plátano.", "Agregar la mazorca y cocinar 20 minutos más, servir con cilantro."],
+    pasos: ["Corta la gallina en presas y ponla a cocinar en una olla grande con agua y sal.", "Deja hervir a fuego medio durante 40 minutos, retirando la espuma que suba a la superficie.", "Pela y corta la papa y la yuca en trozos grandes, y agrégalas a la olla.", "Añade el plátano en trozos y la mazorca partida en rodajas.", "Cocina todo junto 25 minutos más, hasta que las verduras estén tiernas.", "Rectifica la sal y agrega cilantro picado antes de servir.", "Sirve bien caliente, acompañado de arroz blanco."],
   },
   {
     id: 5,
@@ -64,7 +64,7 @@ const recetas = [
     calorias: 480,
     dieta: "vegetariana",
     ingredientes: ["lentejas", "tomate", "cebolla", "zanahoria", "comino"],
-    pasos: ["Sofreír la cebolla y el tomate picados.", "Agregar las lentejas y cubrir con agua.", "Cocinar a fuego medio 30 minutos, agregar la zanahoria a mitad de cocción."],
+    pasos: ["Lava las lentejas y revísalas para retirar cualquier impureza.", "En una olla, sofríe la cebolla y el tomate picados con un poco de comino.", "Agrega las lentejas y cubre con agua hasta que las cubra por completo.", "Lleva a hervor y luego baja el fuego, dejando cocinar tapado 25 minutos.", "A mitad de cocción, agrega la zanahoria picada en cubos pequeños.", "Cocina hasta que las lentejas y la zanahoria estén blandas, ajustando sal al gusto.", "Sirve acompañadas de arroz blanco."],
   },
   {
     id: 6,
@@ -76,7 +76,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["frijoles", "arroz", "carne molida", "chicharrón", "huevo", "plátano maduro"],
-    pasos: ["Preparar los frijoles y el arroz por separado.", "Freír la carne, el chicharrón y el plátano maduro.", "Servir todo junto con un huevo frito encima."],
+    pasos: ["Cocina los frijoles previamente remojados hasta que estén blandos y bien sazonados.", "Prepara el arroz blanco por separado, siguiendo la técnica habitual.", "Sazona la carne molida con sal, comino y cebolla picada, y cocínala en una sartén hasta dorar.", "Fríe el chicharrón hasta que quede dorado y crocante.", "Corta el plátano maduro en tajadas y fríelo hasta que esté dorado por ambos lados.", "Fríe un huevo por persona, dejando la yema líquida si se prefiere.", "Sirve todo en un mismo plato: arroz, frijoles, carne, chicharrón, plátano y huevo, acompañado de aguacate."],
   },
   {
     id: 7,
@@ -88,7 +88,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["pollo", "papa criolla", "papa pastusa", "mazorca", "guascas"],
-    pasos: ["Cocinar el pollo con las papas hasta que se deshagan un poco.", "Agregar la mazorca y las guascas.", "Servir con crema de leche y alcaparras."],
+    pasos: ["Cocina el pollo en agua con sal hasta que esté tierno; luego desmenúzalo y reserva el caldo.", "En el mismo caldo, agrega la papa pastusa pelada y en trozos, dejando que se deshaga un poco para espesar la sopa.", "Agrega la papa criolla entera o en mitades.", "Añade la mazorca cortada en trozos y cocina 15 minutos más.", "Incorpora las guascas y cocina 10 minutos adicionales para que suelten su sabor.", "Agrega el pollo desmenuzado de nuevo a la olla y ajusta la sal.", "Sirve caliente acompañado de crema de leche, alcaparras y aguacate."],
   },
   {
     id: 8,
@@ -100,7 +100,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["masa de maíz", "cerdo", "pollo", "zanahoria", "arveja", "hoja de plátano"],
-    pasos: ["Preparar la masa con el caldo de las carnes.", "Armar los tamales sobre la hoja de plátano con masa, carne y verduras.", "Envolver y cocinar al vapor por 1 hora y media."],
+    pasos: ["Cocina el cerdo y el pollo por separado en agua con sal hasta ablandar, reservando el caldo.", "Prepara la masa de maíz mezclándola con parte del caldo de las carnes hasta lograr una consistencia suave.", "Lava y pasa las hojas de plátano por el fuego para ablandarlas.", "Sobre cada hoja, coloca una porción de masa, un trozo de carne, zanahoria y arveja.", "Envuelve bien cada tamal formando un paquete cerrado y amárralo con cabuya o hilo.", "Cocina los tamales al vapor en una olla grande durante 1 hora y media.", "Retira, deja reposar unos minutos y sirve caliente, retirando la hoja antes de comer."],
   },
   {
     id: 9,
@@ -112,7 +112,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["mondongo", "papa", "zanahoria", "cebolla", "cilantro"],
-    pasos: ["Cocinar el mondongo hasta que esté blando.", "Agregar la papa y la zanahoria en cubos.", "Sazonar y cocinar 20 minutos más, servir con cilantro."],
+    pasos: ["Lava muy bien el mondongo y ponlo a cocinar en agua con sal durante 1 hora, hasta que empiece a ablandar.", "Cambia el agua si es necesario y continúa la cocción otros 30 minutos.", "Corta el mondongo ya blando en trozos pequeños.", "En una olla aparte, sofríe la cebolla picada y agrega el mondongo troceado.", "Incorpora la papa y la zanahoria en cubos, y cubre con un poco del caldo de cocción.", "Cocina 20 minutos más, hasta que las verduras estén tiernas.", "Sirve caliente con cilantro fresco picado por encima."],
   },
   {
     id: 10,
@@ -124,7 +124,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["camarón", "calamar", "pescado", "leche de coco", "cilantro"],
-    pasos: ["Sofreír un guiso de cebolla y tomate.", "Agregar los mariscos y cocinar unos minutos.", "Agregar la leche de coco y cocinar a fuego bajo 15 minutos."],
+    pasos: ["Limpia bien los mariscos y el pescado, cortándolos en trozos medianos.", "En una olla, prepara un sofrito de cebolla y tomate hasta que estén bien cocidos.", "Agrega el pescado primero y cocina 3 minutos.", "Incorpora el camarón y el calamar, cocinando otros 3 minutos.", "Vierte la leche de coco y deja que hierva suavemente, sin dejar de revolver.", "Cocina a fuego bajo 10 minutos más para que los sabores se integren.", "Sirve caliente con cilantro fresco picado."],
   },
   {
     id: 11,
@@ -136,7 +136,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["masa de maíz", "carne molida", "papa", "cebolla", "comino"],
-    pasos: ["Preparar el relleno de carne con papa y cebolla.", "Rellenar los discos de masa y cerrar bien.", "Freír en aceite caliente hasta dorar."],
+    pasos: ["Cocina la papa en cubos pequeños hasta que esté blanda.", "En una sartén, sofríe la cebolla picada y agrega la carne molida con sal y comino.", "Cocina la carne hasta que esté bien dorada y mezcla con la papa cocida.", "Toma porciones de masa de maíz y forma discos delgados con las manos o un rodillo.", "Coloca una cucharada de relleno en el centro de cada disco y dobla formando una media luna, cerrando bien los bordes.", "Calienta abundante aceite y fríe las empanadas hasta que estén doradas y crocantes.", "Retira sobre papel absorbente y sirve calientes."],
   },
   {
     id: 12,
@@ -148,7 +148,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["maíz pozolero", "cerdo", "chile", "cebolla", "orégano"],
-    pasos: ["Cocinar el cerdo con el maíz pozolero hasta ablandar.", "Agregar el chile y sazonar.", "Servir con cebolla y orégano al gusto."],
+    pasos: ["Cocina el maíz pozolero en agua hasta que los granos se abran, aproximadamente 1 hora.", "En otra olla, cocina el cerdo en trozos con sal hasta que esté tierno.", "Une el maíz cocido con el cerdo y su caldo en una sola olla.", "Agrega el chile picado o en salsa, según el picante deseado, y cocina 15 minutos más.", "Ajusta la sal y deja que hierva suavemente para integrar los sabores.", "Sirve caliente con cebolla picada y orégano espolvoreado encima."],
   },
   {
     id: 13,
@@ -160,7 +160,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["costilla de res", "papa", "cilantro", "cebolla larga"],
-    pasos: ["Cocinar la costilla en agua con sal hasta ablandar.", "Agregar la papa en trozos.", "Servir caliente con cilantro y cebolla picada."],
+    pasos: ["Lava la costilla y ponla a cocinar en agua con sal a fuego medio.", "Espuma el caldo de vez en cuando para que quede limpio.", "Cocina durante 40 minutos, hasta que la carne empiece a soltarse del hueso.", "Agrega la papa en trozos y cocina 15 minutos más.", "Añade la cebolla larga picada en los últimos minutos de cocción.", "Sirve caliente con cilantro fresco picado por encima."],
   },
   {
     id: 14,
@@ -172,7 +172,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["chuleta de cerdo", "huevo", "pan rallado", "limón"],
-    pasos: ["Aplanar la chuleta y sazonar con limón.", "Pasar por huevo batido y pan rallado.", "Freír hasta dorar por ambos lados."],
+    pasos: ["Coloca la chuleta entre dos plásticos y aplánala con un mazo de cocina hasta dejarla delgada.", "Sazona ambos lados con sal, pimienta y un poco de jugo de limón.", "Bate el huevo en un plato hondo.", "Pasa la chuleta primero por el huevo batido y luego por el pan rallado, cubriéndola bien.", "Calienta aceite en una sartén y fríe la chuleta hasta dorar por ambos lados.", "Retira sobre papel absorbente y sirve caliente con limón al gusto."],
   },
   {
     id: 15,
@@ -184,7 +184,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["pescado", "yuca", "plátano", "leche de coco", "camarón"],
-    pasos: ["Cocinar la yuca y el plátano en la leche de coco.", "Agregar el pescado y el camarón.", "Cocinar a fuego bajo 20 minutos más."],
+    pasos: ["Pela y corta la yuca y el plátano en trozos grandes.", "En una olla, cocina la yuca y el plátano en la leche de coco a fuego medio durante 20 minutos.", "Agrega el pescado en trozos grandes y cocina 10 minutos.", "Incorpora el camarón y cocina 5 minutos más, cuidando que no se pase de cocción.", "Ajusta la sal y deja reposar unos minutos antes de servir.", "Sirve caliente, bañado con la salsa de coco."],
   },
   {
     id: 16,
@@ -196,7 +196,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["papa", "carne molida", "huevo", "queso", "cebolla"],
-    pasos: ["Cocinar y triturar la papa hasta hacer puré.", "Preparar el relleno de carne con cebolla.", "Armar capas de puré y carne, hornear con queso encima."],
+    pasos: ["Cocina la papa en agua con sal hasta que esté blanda.", "Escurre y hazla puré, agregando un poco de mantequilla si lo deseas.", "En una sartén, sofríe la cebolla y agrega la carne molida, cocinando hasta dorar.", "En un molde para horno, coloca una capa de puré de papa en la base.", "Agrega encima la carne cocida y cubre con otra capa de puré.", "Espolvorea queso rallado por encima y hornea 15 minutos a 180°C hasta gratinar.", "Deja reposar unos minutos antes de servir."],
   },
   {
     id: 17,
@@ -208,7 +208,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["cerdo", "maíz", "sal"],
-    pasos: ["Freír el cerdo en trozos hasta dorar y quedar crocante.", "Preparar la masa de maíz para las arepas.", "Asar las arepas y servir junto al chicharrón."],
+    pasos: ["Corta el cerdo en trozos medianos con algo de grasa.", "Sazona con sal y ponlos en una sartén a fuego medio sin aceite adicional.", "Cocina lentamente, dejando que la grasa se derrita, hasta que los trozos queden dorados y crocantes.", "Mientras tanto, prepara la masa de maíz con agua y sal hasta lograr una textura moldeable.", "Forma las arepas con las manos y ásalas en un comal o sartén hasta que doren por ambos lados.", "Sirve las arepas calientes acompañadas del chicharrón crocante."],
   },
   {
     id: 18,
@@ -220,7 +220,7 @@ const recetas = [
     calorias: 550,
     dieta: "estándar",
     ingredientes: ["trigo", "espinazo de cerdo", "papa", "arveja", "cilantro"],
-    pasos: ["Cocinar el espinazo hasta ablandar.", "Agregar el trigo, la papa y la arveja.", "Cocinar 30 minutos más y servir con cilantro."],
+    pasos: ["Pon a remojar el trigo en agua durante un par de horas si es posible.", "Cocina el espinazo de cerdo en agua con sal hasta que esté tierno, aproximadamente 40 minutos.", "Agrega el trigo escurrido a la olla y cocina 20 minutos más.", "Incorpora la papa en trozos y la arveja, cocinando hasta que estén blandas.", "Ajusta la sal y deja que espese ligeramente.", "Sirve caliente con cilantro fresco picado por encima."],
   },
   {
     id: 19,
@@ -232,7 +232,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["plátano maduro", "queso", "carne molida"],
-    pasos: ["Cocinar el plátano y hacer un puré.", "Preparar el relleno de carne y queso.", "Formar la tortilla, rellenar y hornear 15 minutos."],
+    pasos: ["Cocina el plátano maduro en agua o al vapor hasta que esté blando.", "Haz un puré con el plátano cocido, sin agregar azúcar adicional ya que es dulce por naturaleza.", "Sofríe la carne molida con un poco de cebolla hasta que esté bien cocida.", "En un molde engrasado, coloca una capa del puré de plátano.", "Agrega el relleno de carne y queso rallado encima.", "Cubre con otra capa de puré de plátano y hornea 15 minutos a 180°C.", "Deja reposar antes de desmoldar y servir."],
   },
   {
     id: 20,
@@ -244,7 +244,7 @@ const recetas = [
     calorias: 480,
     dieta: "estándar",
     ingredientes: ["maíz", "carne de res", "cebolla", "tomate"],
-    pasos: ["Cocinar y desmechar la carne con cebolla y tomate.", "Preparar las arepas con la masa de maíz.", "Abrir las arepas y rellenar con la carne."],
+    pasos: ["Cocina la carne de res en agua con sal hasta que esté muy tierna.", "Desmenuza la carne con las manos o dos tenedores.", "En una sartén, sofríe cebolla y tomate picados, y agrega la carne desmechada, cocinando 10 minutos.", "Prepara la masa de maíz con agua y sal hasta lograr una textura suave.", "Forma las arepas y ásalas en un comal hasta que doren por ambos lados.", "Abre cada arepa por la mitad sin partirla del todo y rellena con la carne desmechada.", "Sirve caliente."],
   },
   {
     id: 101,
@@ -256,7 +256,7 @@ const recetas = [
     calorias: 280,
     dieta: "alta en proteína",
     ingredientes: ["atún", "lechuga", "tomate", "pepino", "limón"],
-    pasos: ["Picar la lechuga, el tomate y el pepino.", "Mezclar con el atún escurrido.", "Aliñar con limón y un poco de sal."],
+    pasos: ["Lava bien la lechuga, el tomate y el pepino.", "Pica la lechuga en tiras finas y el tomate y el pepino en cubos pequeños.", "Escurre el atún y desmenúzalo con un tenedor.", "Mezcla todos los ingredientes en un bowl grande.", "Aliña con jugo de limón, un poco de sal y aceite de oliva al gusto.", "Sirve fría, recién preparada."],
   },
   {
     id: 102,
@@ -268,7 +268,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["pechuga de pollo", "brócoli", "zanahoria", "aceite de oliva"],
-    pasos: ["Sazonar la pechuga y cocinarla a la plancha.", "Cocinar el brócoli y la zanahoria al vapor.", "Servir juntos con un chorrito de aceite de oliva."],
+    pasos: ["Sazona la pechuga de pollo con sal, pimienta y un chorrito de aceite de oliva.", "Calienta una sartén o plancha a fuego medio-alto.", "Cocina la pechuga 6 minutos por cada lado, hasta que esté bien dorada y cocida por dentro.", "Mientras tanto, corta el brócoli en floretes y la zanahoria en rodajas.", "Cocina los vegetales al vapor durante 8 minutos, hasta que estén tiernos pero firmes.", "Sirve la pechuga junto a los vegetales, con un chorrito de aceite de oliva por encima."],
   },
   {
     id: 103,
@@ -280,7 +280,7 @@ const recetas = [
     calorias: 350,
     dieta: "vegetariana",
     ingredientes: ["quinua", "aguacate", "tomate cherry", "espinaca", "limón"],
-    pasos: ["Cocinar la quinua en agua hasta que esté suave.", "Mezclar con la espinaca, el tomate cherry y el aguacate en cubos.", "Aliñar con limón y sal al gusto."],
+    pasos: ["Lava bien la quinua bajo agua fría para retirar su sabor amargo natural.", "Cocina la quinua en agua con una pizca de sal durante 12-15 minutos, hasta que esté suave.", "Escurre y deja enfriar un poco.", "En un bowl, mezcla la quinua con la espinaca fresca y los tomates cherry cortados a la mitad.", "Agrega el aguacate en cubos justo antes de servir.", "Aliña con jugo de limón, sal y un poco de aceite de oliva."],
   },
   {
     id: 104,
@@ -292,7 +292,7 @@ const recetas = [
     calorias: 280,
     dieta: "vegetariana",
     ingredientes: ["claras de huevo", "espinaca", "champiñones", "sal"],
-    pasos: ["Batir las claras con sal.", "Sofreír la espinaca y los champiñones.", "Agregar las claras y cocinar a fuego bajo hasta cuajar."],
+    pasos: ["Bate las claras de huevo con una pizca de sal hasta que estén ligeramente espumosas.", "Calienta una sartén antiadherente a fuego medio.", "Sofríe los champiñones en láminas hasta que suelten su agua y se doren un poco.", "Agrega la espinaca y cocina hasta que se marchite.", "Vierte las claras batidas sobre las verduras y cocina a fuego bajo hasta que cuajen.", "Dobla el omelette por la mitad y sirve caliente."],
   },
   {
     id: 105,
@@ -304,7 +304,7 @@ const recetas = [
     calorias: 420,
     dieta: "alta en proteína",
     ingredientes: ["salmón", "espárragos", "limón", "aceite de oliva"],
-    pasos: ["Sazonar el salmón con limón, sal y aceite de oliva.", "Colocar junto a los espárragos en una bandeja.", "Hornear 20 minutos a 200°C."],
+    pasos: ["Precalienta el horno a 200°C.", "Coloca el salmón en una bandeja para horno y sazónalo con sal, pimienta y jugo de limón.", "Rocía con un poco de aceite de oliva por encima.", "Coloca los espárragos alrededor del salmón, también sazonados con sal y aceite.", "Hornea durante 18-20 minutos, hasta que el salmón esté cocido y se desmenuce fácilmente.", "Sirve caliente con un poco más de limón al gusto."],
   },
   {
     id: 106,
@@ -316,7 +316,7 @@ const recetas = [
     calorias: 280,
     dieta: "vegetariana",
     ingredientes: ["espinaca", "banano", "leche de almendras", "proteína en polvo"],
-    pasos: ["Colocar todos los ingredientes en la licuadora.", "Licuar hasta que quede homogéneo.", "Servir frío."],
+    pasos: ["Lava bien las hojas de espinaca.", "Coloca la espinaca, el banano troceado, la leche de almendras y la proteína en polvo en la licuadora.", "Licua a velocidad alta durante 1 minuto, hasta que quede completamente homogéneo.", "Si queda muy espeso, agrega un poco más de leche de almendras.", "Sirve inmediatamente en un vaso frío."],
   },
   {
     id: 107,
@@ -328,7 +328,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["tortilla integral", "pechuga de pollo", "lechuga", "tomate", "yogur griego"],
-    pasos: ["Cocinar la pechuga a la plancha y cortarla en tiras.", "Untar la tortilla con yogur griego.", "Armar el wrap con lechuga, tomate y pollo, y enrollar."],
+    pasos: ["Sazona la pechuga de pollo y cocínala a la plancha hasta que esté bien dorada.", "Deja reposar un par de minutos y córtala en tiras delgadas.", "Calienta ligeramente la tortilla integral para que sea más flexible.", "Unta una capa de yogur griego sobre la tortilla.", "Agrega la lechuga picada, el tomate en rodajas y el pollo en tiras.", "Enrolla la tortilla firmemente, cerrando bien los extremos, y sirve."],
   },
   {
     id: 108,
@@ -340,7 +340,7 @@ const recetas = [
     calorias: 280,
     dieta: "alta en proteína",
     ingredientes: ["avena", "banano", "fresas", "leche descremada", "miel"],
-    pasos: ["Cocinar la avena con la leche unos minutos.", "Cortar las frutas en trozos.", "Servir la avena con las frutas y un poco de miel."],
+    pasos: ["Calienta la leche descremada en una olla pequeña sin dejar que hierva.", "Agrega la avena y cocina a fuego bajo, revolviendo, durante 5 minutos hasta que espese.", "Retira del fuego y deja templar un par de minutos.", "Corta el banano y las fresas en rodajas.", "Sirve la avena en un bowl y decora con las frutas encima.", "Agrega un poco de miel al gusto antes de servir."],
   },
   {
     id: 109,
@@ -352,7 +352,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["hojas de lechuga", "pechuga de pollo", "aguacate", "tomate"],
-    pasos: ["Cocinar el pollo a la plancha y desmecharlo.", "Usar las hojas de lechuga como base del taco.", "Rellenar con pollo, aguacate y tomate."],
+    pasos: ["Sazona la pechuga de pollo con sal y especias al gusto.", "Cocínala a la plancha hasta que esté bien dorada y cocida por dentro.", "Deja reposar y desmecha el pollo con la ayuda de dos tenedores.", "Lava bien las hojas de lechuga grandes, que servirán como base del taco.", "Corta el aguacate y el tomate en cubos pequeños.", "Rellena cada hoja de lechuga con pollo, aguacate y tomate.", "Sirve de inmediato para que la lechuga no pierda firmeza."],
   },
   {
     id: 110,
@@ -364,7 +364,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["filete de pescado", "limón", "cilantro", "zanahoria"],
-    pasos: ["Colocar el pescado sazonado en la vaporera.", "Agregar rodajas de limón y zanahoria.", "Cocinar al vapor 15 minutos."],
+    pasos: ["Sazona el filete de pescado con sal, pimienta y jugo de limón.", "Corta la zanahoria en rodajas finas.", "Coloca el pescado y la zanahoria en una vaporera sobre agua hirviendo.", "Cocina al vapor durante 12-15 minutos, hasta que el pescado esté opaco y se desmenuce con facilidad.", "Retira con cuidado y sirve con más rodajas de limón y cilantro fresco picado."],
   },
   {
     id: 111,
@@ -376,7 +376,7 @@ const recetas = [
     calorias: 280,
     dieta: "vegetariana",
     ingredientes: ["garbanzos cocidos", "tomate", "cebolla morada", "pepino", "limón"],
-    pasos: ["Mezclar los garbanzos con las verduras picadas.", "Aliñar con limón, sal y un poco de aceite de oliva.", "Dejar reposar 10 minutos antes de servir."],
+    pasos: ["Escurre y enjuaga bien los garbanzos cocidos.", "Pica el tomate, la cebolla morada y el pepino en cubos pequeños.", "Mezcla todos los ingredientes en un bowl grande.", "Aliña con jugo de limón, sal y un chorrito de aceite de oliva.", "Deja reposar la ensalada 10 minutos en la nevera antes de servir, para que se integren los sabores."],
   },
   {
     id: 112,
@@ -388,7 +388,7 @@ const recetas = [
     calorias: 420,
     dieta: "alta en proteína",
     ingredientes: ["pechuga de pollo", "curry en polvo", "leche de coco light", "cebolla"],
-    pasos: ["Sofreír la cebolla y el curry.", "Agregar el pollo en cubos y dorar.", "Agregar la leche de coco y cocinar 15 minutos."],
+    pasos: ["Corta la pechuga de pollo en cubos medianos.", "En una sartén, sofríe la cebolla picada hasta que esté transparente.", "Agrega el curry en polvo y cocina 1 minuto para que libere su aroma.", "Incorpora el pollo y dóralo por todos los lados.", "Vierte la leche de coco light y deja cocinar a fuego medio-bajo 15 minutos, hasta que el pollo esté bien cocido y la salsa espese un poco.", "Sirve caliente, idealmente con arroz integral."],
   },
   {
     id: 113,
@@ -400,7 +400,7 @@ const recetas = [
     calorias: 280,
     dieta: "vegetariana",
     ingredientes: ["claras de huevo", "pimentón", "cebolla", "espinaca"],
-    pasos: ["Picar el pimentón, la cebolla y la espinaca.", "Sofreír las verduras unos minutos.", "Agregar las claras batidas y cocinar hasta cuajar."],
+    pasos: ["Pica finamente el pimentón, la cebolla y la espinaca.", "Calienta una sartén antiadherente con un poco de aceite.", "Sofríe el pimentón y la cebolla hasta que estén suaves.", "Agrega la espinaca y cocina hasta que se reduzca.", "Bate las claras con una pizca de sal y viértelas sobre las verduras.", "Cocina a fuego bajo hasta que cuaje por completo, doblando la tortilla antes de servir."],
   },
   {
     id: 114,
@@ -412,7 +412,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["camarón", "limón", "cebolla morada", "cilantro", "tomate"],
-    pasos: ["Cocinar ligeramente el camarón en agua caliente.", "Mezclar con limón, cebolla, tomate y cilantro.", "Dejar marinar 10 minutos en la nevera antes de servir."],
+    pasos: ["Cocina el camarón brevemente en agua hirviendo con sal, solo hasta que cambie de color (2-3 minutos).", "Escurre y deja enfriar el camarón.", "Pica la cebolla morada, el tomate y el cilantro finamente.", "Mezcla el camarón con las verduras picadas en un bowl.", "Agrega abundante jugo de limón, cubriendo bien la mezcla.", "Deja marinar en la nevera 10 minutos antes de servir bien frío."],
   },
   {
     id: 115,
@@ -424,7 +424,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["pechuga de pavo", "arroz integral", "brócoli", "zanahoria"],
-    pasos: ["Cocinar el arroz integral.", "Cocinar la pechuga de pavo a la plancha en tiras.", "Armar el bowl con arroz, pavo y vegetales al vapor."],
+    pasos: ["Cocina el arroz integral según las instrucciones del paquete, aproximadamente 20 minutos.", "Sazona la pechuga de pavo con sal y pimienta.", "Cocínala a la plancha hasta dorar por ambos lados, luego córtala en tiras.", "Cocina el brócoli y la zanahoria al vapor durante 8 minutos.", "Arma el bowl colocando primero el arroz, luego el pavo y los vegetales encima.", "Sirve tibio, agregando un poco de sal o limón al gusto."],
   },
   {
     id: 116,
@@ -436,7 +436,7 @@ const recetas = [
     calorias: 280,
     dieta: "vegetariana",
     ingredientes: ["avena", "banano", "huevo", "canela"],
-    pasos: ["Licuar la avena, el banano, el huevo y la canela.", "Verter pequeñas porciones en una sartén caliente.", "Cocinar hasta dorar por ambos lados."],
+    pasos: ["Coloca la avena, el banano maduro, el huevo y la canela en la licuadora.", "Licua hasta obtener una mezcla homogénea y sin grumos.", "Calienta una sartén antiadherente a fuego medio-bajo con un poco de aceite.", "Vierte pequeñas porciones de la mezcla en la sartén, formando panqueques pequeños.", "Cocina 2 minutos por lado, hasta que se doren y las burbujas indiquen que están listos para voltear.", "Sirve calientes, solos o con un poco de fruta encima."],
   },
   {
     id: 117,
@@ -448,7 +448,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["espinaca", "pechuga de pollo", "fresas", "almendras"],
-    pasos: ["Cocinar la pechuga a la plancha y cortar en tiras.", "Mezclar la espinaca con las fresas en trozos.", "Agregar el pollo y las almendras encima."],
+    pasos: ["Sazona la pechuga de pollo y cocínala a la plancha hasta dorar por ambos lados.", "Deja reposar unos minutos y córtala en tiras.", "Lava bien la espinaca y colócala como base en un bowl.", "Corta las fresas en láminas y agrégalas sobre la espinaca.", "Añade el pollo en tiras y espolvorea las almendras por encima.", "Aliña con un poco de aceite de oliva, sal y limón al gusto."],
   },
   {
     id: 118,
@@ -460,7 +460,7 @@ const recetas = [
     calorias: 420,
     dieta: "vegetariana",
     ingredientes: ["lentejas", "apio", "zanahoria", "cebolla", "caldo bajo en sodio"],
-    pasos: ["Sofreír el apio, la zanahoria y la cebolla.", "Agregar las lentejas y el caldo.", "Cocinar a fuego medio 25 minutos."],
+    pasos: ["Lava bien las lentejas y revisa que no tengan impurezas.", "En una olla, sofríe el apio, la zanahoria y la cebolla picados en un poco de aceite.", "Agrega las lentejas y el caldo bajo en sodio.", "Lleva a hervor y luego baja el fuego, cocinando tapado 25 minutos.", "Revisa que las lentejas estén blandas; si es necesario, cocina unos minutos más.", "Ajusta la sal y sirve caliente."],
   },
   {
     id: 119,
@@ -472,7 +472,7 @@ const recetas = [
     calorias: 350,
     dieta: "alta en proteína",
     ingredientes: ["pechuga de pollo", "pimentón", "cebolla", "calabacín"],
-    pasos: ["Cortar el pollo y los vegetales en cubos.", "Armar las brochetas alternando pollo y vegetales.", "Cocinar a la plancha o parrilla 15 minutos."],
+    pasos: ["Corta el pollo, el pimentón, la cebolla y el calabacín en cubos de tamaño similar.", "Sazona todos los ingredientes con sal, pimienta y un poco de aceite de oliva.", "Si usas palillos de madera, remójalos en agua 10 minutos antes para que no se quemen.", "Arma las brochetas alternando pollo y vegetales.", "Cocina a la plancha o parrilla, girando cada pocos minutos, durante 15 minutos en total.", "Sirve calientes, recién salidas del fuego."],
   },
   {
     id: 120,
@@ -484,7 +484,7 @@ const recetas = [
     calorias: 280,
     dieta: "alta en proteína",
     ingredientes: ["yogur griego", "fresas", "arándanos", "chía"],
-    pasos: ["Colocar el yogur griego en un bowl.", "Agregar las fresas y los arándanos.", "Espolvorear semillas de chía por encima."],
+    pasos: ["Coloca el yogur griego en un bowl o vaso.", "Lava bien las fresas y los arándanos.", "Corta las fresas en trozos pequeños.", "Agrega las fresas y los arándanos sobre el yogur.", "Espolvorea las semillas de chía por encima y sirve de inmediato."],
   },
   {
     id: 201,
@@ -496,7 +496,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["harina", "huevos", "azúcar", "mantequilla", "frutos secos"],
-    pasos: ["Mezclar la mantequilla con el azúcar.", "Agregar los huevos y la harina poco a poco.", "Agregar los frutos secos y hornear 45 minutos."],
+    pasos: ["Precalienta el horno a 180°C y engrasa un molde para ponqué.", "En un bowl, bate la mantequilla con el azúcar hasta que la mezcla esté cremosa y clara.", "Agrega los huevos uno a uno, batiendo bien después de cada adición.", "Incorpora la harina poco a poco, mezclando con movimientos envolventes para no perder aire.", "Añade los frutos secos picados y mezcla suavemente.", "Vierte la mezcla en el molde y hornea 45 minutos, o hasta que un palillo salga limpio al insertarlo.", "Deja enfriar antes de desmoldar."],
   },
   {
     id: 202,
@@ -508,7 +508,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["leche", "maizena", "panela", "canela", "coco rallado"],
-    pasos: ["Disolver la maizena en un poco de leche fría.", "Calentar el resto de la leche con la panela y la canela.", "Agregar la maizena disuelta y revolver hasta espesar."],
+    pasos: ["Disuelve la maizena en un poco de leche fría, revolviendo hasta que no queden grumos.", "En una olla, calienta el resto de la leche junto con la panela y la canela en astilla.", "Cuando la panela esté disuelta, agrega la mezcla de maizena poco a poco, revolviendo constantemente.", "Cocina a fuego medio sin dejar de revolver, hasta que espese notablemente.", "Retira la canela en astilla y vierte la natilla en un molde o platos individuales.", "Espolvorea coco rallado por encima y deja enfriar antes de refrigerar."],
   },
   {
     id: 203,
@@ -520,7 +520,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["queso costeño", "almidón de yuca", "huevo", "azúcar"],
-    pasos: ["Mezclar el queso rallado con el almidón, el huevo y el azúcar.", "Formar bolitas con la masa.", "Freír en aceite caliente hasta dorar."],
+    pasos: ["Ralla el queso costeño finamente.", "En un bowl, mezcla el queso rallado con el almidón de yuca, el huevo y el azúcar.", "Amasa con las manos hasta obtener una masa uniforme y algo pegajosa.", "Forma bolitas del tamaño de una pelota de golf con las manos húmedas.", "Calienta abundante aceite a fuego medio (no muy fuerte, para que se cocinen por dentro).", "Fríe los buñuelos, moviéndolos constantemente, hasta que estén dorados por todos lados y hayan crecido.", "Retira sobre papel absorbente y sirve tibios."],
   },
   {
     id: 204,
@@ -532,7 +532,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["pasta", "albahaca", "piñones", "parmesano", "aceite de oliva"],
-    pasos: ["Cocinar la pasta en agua con sal.", "Licuar la albahaca con piñones, parmesano y aceite de oliva.", "Mezclar la pasta con la salsa de pesto."],
+    pasos: ["Pon a hervir agua con sal para cocinar la pasta.", "Cocina la pasta según las instrucciones del paquete, hasta que esté al dente.", "Mientras tanto, licua la albahaca, los piñones, el parmesano y el aceite de oliva hasta obtener una salsa homogénea.", "Escurre la pasta, reservando un poco del agua de cocción.", "Mezcla la pasta caliente con la salsa de pesto, agregando un poco del agua reservada si queda muy espesa.", "Sirve de inmediato con parmesano extra por encima."],
   },
   {
     id: 205,
@@ -544,7 +544,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["harina", "cacao en polvo", "huevos", "azúcar", "chocolate para cubrir"],
-    pasos: ["Mezclar los ingredientes secos y los húmedos por separado, luego unir.", "Hornear la mezcla 35 minutos a 180°C.", "Dejar enfriar y cubrir con chocolate derretido."],
+    pasos: ["Precalienta el horno a 180°C y engrasa un molde redondo.", "Mezcla los ingredientes secos (harina, cacao en polvo) en un bowl.", "En otro bowl, bate los huevos con el azúcar hasta que la mezcla esté espumosa.", "Une los ingredientes secos con los húmedos, mezclando con movimientos envolventes.", "Vierte la mezcla en el molde y hornea 35 minutos, verificando con un palillo.", "Deja enfriar completamente antes de desmoldar.", "Derrite el chocolate para cubrir y viértelo sobre la torta fría, dejando que escurra por los lados."],
   },
   {
     id: 206,
@@ -556,7 +556,7 @@ const recetas = [
     calorias: 500,
     dieta: "estándar",
     ingredientes: ["pavo", "pan", "ciruelas pasas", "tocineta", "hierbas"],
-    pasos: ["Preparar el relleno con pan, ciruelas, tocineta y hierbas.", "Rellenar el pavo y sazonar por fuera.", "Hornear a temperatura baja durante 2 horas aproximadamente."],
+    pasos: ["Precalienta el horno a 180°C.", "Prepara el relleno mezclando pan en trozos, ciruelas pasas picadas, tocineta cocida y hierbas frescas.", "Sazona el pavo por dentro y por fuera con sal, pimienta y hierbas.", "Rellena la cavidad del pavo con la mezcla preparada, sin apretar demasiado.", "Cierra la abertura con palillos o hilo de cocina.", "Coloca el pavo en una bandeja para horno y cúbrelo con papel aluminio.", "Hornea aproximadamente 2 horas, retirando el papel aluminio los últimos 30 minutos para dorar la piel.", "Deja reposar 15 minutos antes de trinchar y servir."],
   },
   {
     id: 207,
@@ -568,7 +568,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["harina", "levadura", "mantequilla", "azúcar", "fruta confitada"],
-    pasos: ["Preparar la masa con harina, levadura, mantequilla y azúcar.", "Dejar reposar hasta que doble su tamaño.", "Formar el roscón, decorar con fruta confitada y hornear 25 minutos."],
+    pasos: ["Disuelve la levadura en un poco de leche tibia con una cucharada de azúcar, y deja reposar 10 minutos.", "Mezcla la harina, el azúcar, la mantequilla derretida y la levadura activada en un bowl grande.", "Amasa durante 10 minutos hasta obtener una masa suave y elástica.", "Deja reposar la masa en un lugar cálido hasta que doble su tamaño, aproximadamente 1 hora.", "Forma el roscón dándole forma de anillo sobre una bandeja para horno.", "Decora con la fruta confitada presionándola suavemente sobre la masa.", "Hornea a 180°C durante 25 minutos, hasta que esté dorado."],
   },
   {
     id: 208,
@@ -580,7 +580,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["papa", "mantequilla", "leche", "arándanos", "azúcar"],
-    pasos: ["Cocinar la papa y hacer un puré con mantequilla y leche.", "Cocinar los arándanos con azúcar hasta hacer una salsa espesa.", "Servir el puré junto con la salsa de arándanos."],
+    pasos: ["Pela y corta la papa en trozos, y cocínala en agua con sal hasta que esté muy blanda.", "Escurre bien la papa y hazla puré con un prensapapas o tenedor.", "Agrega mantequilla y leche caliente al puré, mezclando hasta que esté cremoso.", "En una olla aparte, cocina los arándanos con azúcar y un poco de agua a fuego medio.", "Deja que los arándanos se deshagan y la mezcla espese, formando una salsa.", "Sirve el puré caliente acompañado de la salsa de arándanos por encima o al lado."],
   },
   {
     id: 209,
@@ -592,7 +592,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["harina", "huevos", "azúcar", "mantequilla", "fondant"],
-    pasos: ["Preparar el bizcocho base y hornear en varios moldes.", "Rellenar y apilar los pisos del bizcocho.", "Cubrir con fondant y decorar al gusto."],
+    pasos: ["Precalienta el horno a 180°C y prepara varios moldes de distintos tamaños.", "Bate la mantequilla con el azúcar hasta que quede cremosa.", "Agrega los huevos uno a uno, batiendo bien.", "Incorpora la harina con movimientos envolventes hasta integrar por completo.", "Reparte la mezcla en los moldes y hornea cada uno según su tamaño, entre 25 y 40 minutos.", "Deja enfriar completamente los bizcochos antes de apilarlos.", "Cubre y decora la torta con fondant, dándole la forma deseada."],
   },
   {
     id: 210,
@@ -604,7 +604,7 @@ const recetas = [
     calorias: 500,
     dieta: "estándar",
     ingredientes: ["camarón", "salsa de tomate", "limón", "cilantro", "aguacate"],
-    pasos: ["Cocinar los camarones en agua con sal.", "Mezclar la salsa de tomate con limón y cilantro.", "Servir los camarones bañados en la salsa con aguacate."],
+    pasos: ["Cocina los camarones en agua con sal durante 2-3 minutos, hasta que cambien de color.", "Escurre y deja enfriar los camarones en la nevera.", "Mezcla la salsa de tomate con jugo de limón y cilantro picado.", "Corta el aguacate en cubos pequeños.", "Combina los camarones fríos con la salsa preparada.", "Sirve en copas individuales, decorando con aguacate encima."],
   },
   {
     id: 211,
@@ -616,7 +616,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["harina", "frutos secos", "frutas confitadas", "huevo", "levadura"],
-    pasos: ["Preparar la masa con harina, levadura y huevo.", "Agregar los frutos secos y las frutas confitadas.", "Dejar leudar y hornear 40 minutos."],
+    pasos: ["Disuelve la levadura en un poco de leche tibia y deja reposar 10 minutos.", "Mezcla la harina con el huevo y la levadura activada, formando una masa.", "Amasa durante 10 minutos hasta que quede suave y elástica.", "Incorpora los frutos secos y las frutas confitadas, amasando para distribuirlos bien.", "Deja reposar la masa hasta que doble su tamaño, aproximadamente 1 hora.", "Dale forma y colócala en un molde para pan.", "Hornea a 180°C durante 40 minutos, hasta que esté dorado y suene hueco al golpearlo."],
   },
   {
     id: 212,
@@ -628,7 +628,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["harina", "huevos", "azúcar", "mantequilla", "crema chantilly"],
-    pasos: ["Preparar y hornear el bizcocho en capas.", "Rellenar las capas con crema chantilly.", "Decorar por fuera al gusto para la celebración."],
+    pasos: ["Precalienta el horno a 180°C y prepara los moldes para las capas del bizcocho.", "Bate la mantequilla con el azúcar hasta obtener una mezcla clara y esponjosa.", "Agrega los huevos uno a uno, batiendo bien entre cada adición.", "Incorpora la harina con movimientos suaves para no perder el aire de la mezcla.", "Hornea cada capa entre 25 y 30 minutos, verificando con un palillo.", "Deja enfriar completamente antes de rellenar cada capa con crema chantilly.", "Apila las capas y decora la parte exterior a tu gusto."],
   },
   {
     id: 213,
@@ -640,7 +640,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["arroz arborio", "vino blanco", "parmesano", "caldo de verduras", "mantequilla"],
-    pasos: ["Sofreír el arroz y agregar el vino blanco.", "Agregar el caldo poco a poco sin dejar de revolver.", "Al final agregar mantequilla y parmesano para dar cremosidad."],
+    pasos: ["Calienta el caldo de verduras en una olla y mantenlo tibio a fuego bajo.", "En otra olla, derrite un poco de mantequilla y sofríe el arroz arborio 2 minutos, hasta que esté translúcido.", "Agrega el vino blanco y cocina hasta que se evapore casi por completo.", "Comienza a agregar el caldo caliente de a poco, un cucharón a la vez, revolviendo constantemente.", "Espera a que cada porción de caldo se absorba antes de agregar la siguiente, durante unos 18-20 minutos.", "Al final, retira del fuego y agrega mantequilla y parmesano, mezclando hasta que quede cremoso.", "Sirve inmediatamente."],
   },
   {
     id: 214,
@@ -652,7 +652,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["harina", "mantequilla", "azúcar", "huevo", "glaseado"],
-    pasos: ["Preparar la masa y dejar enfriar 30 minutos.", "Cortar las galletas con moldes navideños y hornear 12 minutos.", "Decorar con glaseado una vez frías."],
+    pasos: ["Bate la mantequilla con el azúcar hasta que esté cremosa.", "Agrega el huevo y mezcla bien.", "Incorpora la harina poco a poco hasta formar una masa que no se pegue a las manos.", "Envuelve la masa y refrigérala 30 minutos.", "Extiende la masa con un rodillo y corta las galletas con moldes navideños.", "Hornea a 180°C durante 10-12 minutos, hasta que los bordes empiecen a dorar.", "Deja enfriar por completo antes de decorar con el glaseado."],
   },
   {
     id: 215,
@@ -664,7 +664,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["puré de calabaza", "harina", "huevos", "azúcar", "canela"],
-    pasos: ["Mezclar el puré de calabaza con los huevos y el azúcar.", "Agregar la harina y la canela poco a poco.", "Hornear 40 minutos a 180°C."],
+    pasos: ["Precalienta el horno a 180°C y engrasa un molde para torta.", "Mezcla el puré de calabaza con los huevos y el azúcar hasta integrar bien.", "Agrega la harina y la canela poco a poco, mezclando con movimientos envolventes.", "Vierte la mezcla en el molde preparado.", "Hornea durante 40 minutos, o hasta que un palillo insertado en el centro salga limpio.", "Deja enfriar antes de desmoldar y decorar a tu gusto."],
   },
   {
     id: 216,
@@ -676,7 +676,7 @@ const recetas = [
     calorias: 500,
     dieta: "estándar",
     ingredientes: ["lomo de cerdo", "miel", "mostaza", "romero", "papas"],
-    pasos: ["Untar el lomo con una mezcla de miel, mostaza y romero.", "Colocar junto a las papas en una bandeja.", "Hornear a 180°C durante 1 hora y media."],
+    pasos: ["Precalienta el horno a 180°C.", "Mezcla la miel, la mostaza y el romero picado en un bowl.", "Unta el lomo de cerdo con esta mezcla, cubriéndolo bien por todos lados.", "Coloca el lomo en una bandeja para horno junto con las papas cortadas en trozos.", "Rocía las papas con un poco de aceite y sal.", "Hornea durante 1 hora y media, bañando el lomo con su propio jugo cada 30 minutos.", "Deja reposar 10 minutos antes de cortar en rebanadas y servir."],
   },
   {
     id: 217,
@@ -688,7 +688,7 @@ const recetas = [
     calorias: 450,
     dieta: "estándar",
     ingredientes: ["harina", "huevos", "azúcar", "mantequilla", "chispas de colores"],
-    pasos: ["Preparar la mezcla de bizcocho como para una torta normal.", "Repartir en moldes individuales de cupcake.", "Hornear 20 minutos y decorar con chispas de colores."],
+    pasos: ["Precalienta el horno a 180°C y coloca capacillos en un molde para cupcakes.", "Bate la mantequilla con el azúcar hasta obtener una mezcla cremosa.", "Agrega los huevos uno a uno, batiendo bien después de cada uno.", "Incorpora la harina con movimientos suaves hasta integrar por completo.", "Reparte la mezcla en los capacillos, llenando dos tercios de cada uno.", "Hornea 18-20 minutos, hasta que al insertar un palillo salga limpio.", "Deja enfriar y decora con chispas de colores encima."],
   },
   {
     id: 218,
@@ -700,7 +700,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["frutas variadas", "jugo de naranja", "canela", "clavos de olor"],
-    pasos: ["Picar las frutas en trozos pequeños.", "Calentar el jugo de naranja con canela y clavos.", "Agregar las frutas y servir caliente."],
+    pasos: ["Pela y corta todas las frutas en trozos pequeños.", "En una olla grande, calienta el jugo de naranja junto con la canela en astilla y los clavos de olor.", "Deja que hierva suavemente durante 5 minutos para que se impregnen los sabores.", "Agrega las frutas troceadas a la olla.", "Cocina a fuego bajo 10 minutos más, sin dejar hervir con fuerza.", "Retira la canela y los clavos, y sirve caliente en tazas."],
   },
   {
     id: 219,
@@ -712,7 +712,7 @@ const recetas = [
     calorias: 500,
     dieta: "vegetariana",
     ingredientes: ["uvas verdes", "jugo de uva o espumante sin alcohol", "hielo"],
-    pasos: ["Preparar una copa con 12 uvas por persona para la tradición de medianoche.", "Servir el jugo de uva o espumante bien frío.", "Brindar en familia al iniciar el nuevo año."],
+    pasos: ["Lava bien las uvas verdes y sepáralas en racimos pequeños.", "Prepara una copa con 12 uvas por persona, siguiendo la tradición de comerlas al sonar las campanadas.", "Enfría el jugo de uva o espumante sin alcohol en la nevera con anticipación.", "Sirve el jugo en copas justo antes de la medianoche.", "Agrega hielo si se desea servir más frío.", "Brinda en familia al iniciar el nuevo año."],
   },
   {
     id: 220,
@@ -724,7 +724,7 @@ const recetas = [
     calorias: 450,
     dieta: "vegetariana",
     ingredientes: ["harina", "huevos", "azúcar", "mantequilla", "fondant o merengue"],
-    pasos: ["Hornear el bizcocho base en capas.", "Rellenar y armar la torta.", "Decorar con fondant o merengue y un mensaje de felicitación."],
+    pasos: ["Precalienta el horno a 180°C y prepara los moldes para las capas del bizcocho.", "Bate la mantequilla con el azúcar hasta que esté clara y esponjosa.", "Agrega los huevos uno a uno, batiendo bien entre cada adición.", "Incorpora la harina con movimientos envolventes.", "Hornea cada capa entre 25 y 30 minutos, verificando con un palillo.", "Deja enfriar completamente y apila las capas rellenándolas a tu gusto.", "Decora con fondant o merengue y agrega un mensaje de felicitación."],
   },
 ];
 

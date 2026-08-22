@@ -61,26 +61,49 @@ function Recetas() {
       />
 
       <div style={{ marginBottom: "16px" }}>
-        <button onClick={() => setCategoriaActiva("todas")}>Todas</button>
-        <button onClick={() => setCategoriaActiva("tradicional")}>Tradicionales</button>
-        <button onClick={() => setCategoriaActiva("fitness")}>Fitness</button>
-        <button onClick={() => setCategoriaActiva("especial")}>Fechas especiales</button>
+        <button
+          className={categoriaActiva === "todas" ? "filtro-activo" : ""}
+          onClick={() => setCategoriaActiva("todas")}
+        >
+          Todas
+        </button>
+        <button
+          className={categoriaActiva === "tradicional" ? "filtro-activo" : ""}
+          onClick={() => setCategoriaActiva("tradicional")}
+        >
+          Tradicionales
+        </button>
+        <button
+          className={categoriaActiva === "fitness" ? "filtro-activo" : ""}
+          onClick={() => setCategoriaActiva("fitness")}
+        >
+          Fitness
+        </button>
+        <button
+          className={categoriaActiva === "especial" ? "filtro-activo" : ""}
+          onClick={() => setCategoriaActiva("especial")}
+        >
+          Fechas especiales
+        </button>
       </div>
 
       <div
+        className="card"
         style={{
           display: "flex",
           flexWrap: "wrap",
-          gap: "10px",
+          gap: "16px",
           justifyContent: "center",
-          marginBottom: "20px",
-          border: "1px solid #444",
-          borderRadius: "8px",
-          padding: "12px",
+          marginBottom: "24px",
+          maxWidth: "600px",
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
         <div>
-          <label>Tiempo máximo: </label>
+          <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "4px", fontWeight: 600 }}>
+            Tiempo máximo
+          </label>
           <select value={tiempoMax} onChange={(e) => setTiempoMax(e.target.value)}>
             <option value="todos">Todos</option>
             <option value="20">Hasta 20 min</option>
@@ -91,7 +114,9 @@ function Recetas() {
         </div>
 
         <div>
-          <label>Dificultad: </label>
+          <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "4px", fontWeight: 600 }}>
+            Dificultad
+          </label>
           <select value={dificultad} onChange={(e) => setDificultad(e.target.value)}>
             <option value="todas">Todas</option>
             <option value="fácil">Fácil</option>
@@ -101,7 +126,9 @@ function Recetas() {
         </div>
 
         <div>
-          <label>Tipo de dieta: </label>
+          <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "4px", fontWeight: 600 }}>
+            Tipo de dieta
+          </label>
           <select value={dieta} onChange={(e) => setDieta(e.target.value)}>
             <option value="todas">Todas</option>
             <option value="vegetariana">Vegetariana</option>
@@ -111,7 +138,9 @@ function Recetas() {
         </div>
 
         <div>
-          <label>Calorías máximas: </label>
+          <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "4px", fontWeight: 600 }}>
+            Calorías máximas
+          </label>
           <select value={caloriasMax} onChange={(e) => setCaloriasMax(e.target.value)}>
             <option value="todas">Todas</option>
             <option value="300">Hasta 300 kcal</option>
@@ -120,7 +149,7 @@ function Recetas() {
           </select>
         </div>
 
-        <div>
+        <div style={{ display: "flex", alignItems: "flex-end" }}>
           <button onClick={limpiarFiltros}>Limpiar filtros</button>
         </div>
       </div>

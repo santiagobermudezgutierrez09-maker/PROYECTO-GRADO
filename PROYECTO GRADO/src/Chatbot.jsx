@@ -29,41 +29,41 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "420px",
-        margin: "20px auto",
-        border: "1px solid #444",
-        borderRadius: "10px",
-        padding: "12px",
-        textAlign: "left",
-      }}
-    >
-      <h3 style={{ textAlign: "center" }}>💬 Chatbot asistente</h3>
+    <div className="card" style={{ maxWidth: "440px", margin: "20px auto", textAlign: "left" }}>
+      <h3 style={{ textAlign: "center" }}>💬 chatbot asistente</h3>
 
       <div
         style={{
           maxHeight: "280px",
           overflowY: "auto",
           marginBottom: "10px",
-          padding: "8px",
-          backgroundColor: "#1a1a1a",
-          borderRadius: "8px",
+          padding: "10px",
+          backgroundColor: "var(--bg-page)",
+          border: "2px solid #111111",
+          borderRadius: "10px",
         }}
       >
         {mensajes.map((m, i) => (
-          <p
+          <div
             key={i}
             style={{
-              textAlign: m.autor === "usuario" ? "right" : "left",
-              color: m.autor === "usuario" ? "#7fd1ff" : "#ffffff",
+              display: "inline-block",
+              maxWidth: "85%",
+              float: m.autor === "usuario" ? "right" : "left",
+              clear: "both",
+              margin: "4px 0",
+              padding: "8px 12px",
+              borderRadius: "10px",
+              border: "2px solid #111111",
+              backgroundColor: m.autor === "usuario" ? "var(--color-teal)" : "#ffffff",
               whiteSpace: "pre-line",
+              fontSize: "0.9rem",
             }}
           >
-            <strong>{m.autor === "usuario" ? "Tú: " : "Bot: "}</strong>
             {m.texto}
-          </p>
+          </div>
         ))}
+        <div style={{ clear: "both" }} />
       </div>
 
       <form onSubmit={enviarMensaje} style={{ display: "flex", gap: "6px" }}>

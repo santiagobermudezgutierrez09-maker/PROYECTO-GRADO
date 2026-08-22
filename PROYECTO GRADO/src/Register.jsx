@@ -29,7 +29,7 @@ function Register() {
   };
 
   return (
-    <div style={{ maxWidth: "320px", margin: "40px auto" }}>
+    <div className="card" style={{ maxWidth: "320px", margin: "40px auto" }}>
       <h2>Crear cuenta</h2>
       <form onSubmit={handleRegister}>
         <div style={{ marginBottom: "10px" }}>

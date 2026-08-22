@@ -1,55 +1,116 @@
-/* Ajustes de la app: menú, encabezado y responsive para celular */
+/* ============================================================
+   Estilos de la estructura general: contenedor centrado,
+   barra de navegación, encabezado y ajustes para celular
+   ============================================================ */
 
-.app-header {
-  background: linear-gradient(120deg, #e8622c, #f2a154);
-  padding: 20px 12px 16px;
-  border-radius: 0 0 20px 20px;
-  color: #ffffff;
-  margin-bottom: 12px;
+/* Envuelve toda la app: la mantiene centrada y con un ancho máximo,
+   así no se ve "torcida" ni pegada a la izquierda en pantallas grandes */
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  text-align: center;
 }
 
-.app-header h1 {
-  color: #ffffff;
-  margin: 0;
-  font-size: 32px;
+.app-titulo {
+  text-align: center;
+  padding-top: 24px;
+  margin-bottom: 0;
 }
 
-.app-header p {
-  color: #fff3e6;
-}
-
-.app-header button {
-  background-color: #ffffff;
-  color: var(--color-principal-oscuro);
-}
-
-.app-header button:hover {
-  background-color: #ffe8d6;
-}
-
-nav {
+.barra-sesion {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 10px;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.barra-sesion button {
+  font-size: 13px;
+  padding: 6px 12px;
+  background-color: var(--color-pink);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 6px;
-  margin: 12px 0;
+  padding: 12px 16px;
+  background-color: var(--bg-surface);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin: 16px auto;
+  max-width: 900px;
+  position: sticky;
+  top: 12px;
+  z-index: 100;
 }
 
-/* Que los campos de texto no hagan zoom en celular y se vean bien */
-input, select, button {
-  font-size: 16px;
+.nav button {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  box-shadow: none;
+  margin: 0;
 }
 
-@media (max-width: 480px) {
-  .app-header h1 {
-    font-size: 26px;
+.nav button:hover {
+  border-color: var(--border-color);
+  background-color: var(--bg-page);
+  transform: none;
+}
+
+.nav .nav-activo {
+  background-color: var(--color-yellow);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Botón de categoría seleccionado (en el catálogo de recetas) */
+.filtro-activo {
+  background-color: var(--color-yellow) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Cualquier tarjeta o formulario centrado con texto alineado a la izquierda por dentro */
+.card {
+  text-align: left;
+}
+
+/* ============================================================
+   Responsive: celulares y pantallas angostas
+   ============================================================ */
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 0 10px 30px;
   }
-  h2 {
-    font-size: 20px;
+
+  .nav {
+    position: static; /* evita que la barra flote y tape contenido en pantallas chicas */
+    padding: 10px;
+    gap: 4px;
   }
-  h3, h4 {
-    font-size: 17px;
+
+  .nav button {
+    font-size: 13px;
+    padding: 8px 10px;
   }
+
+  .barra-sesion {
+    flex-direction: column;
+    font-size: 13px;
+  }
+
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -58,5 +119,15 @@ input, select, button {
   select {
     width: 100% !important;
     margin-bottom: 8px;
+  }
+
+  button {
+    width: 100%;
+    margin: 4px 0;
+  }
+
+  .nav button,
+  .barra-sesion button {
+    width: auto; /* los botones del menú y la barra de sesión no deben ocupar todo el ancho */
   }
 }
