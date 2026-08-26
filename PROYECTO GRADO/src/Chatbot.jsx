@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { generarRespuesta } from "./chatbotEngine";
 
-
-
+// recetaActiva: la receta seleccionada en Modo Cocina (puede venir vacía).
+// pasoActualIndex: en qué paso va el usuario (opcional, solo lo usa Modo Cocina).
 function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
   const [mensajes, setMensajes] = useState([
     {
@@ -55,7 +55,8 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
               padding: "8px 12px",
               borderRadius: "10px",
               border: "2px solid #111111",
-              backgroundColor: m.autor === "usuario" ? "var(--color-teal)" : "#ffffff",
+              backgroundColor: m.autor === "usuario" ? "var(--color-teal)" : "rgba(255,255,255,0.08)",
+              color: m.autor === "usuario" ? "#111111" : "#ffffff",
               whiteSpace: "pre-line",
               fontSize: "0.9rem",
             }}
@@ -66,7 +67,7 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
         <div style={{ clear: "both" }} />
       </div>
 
-      <form onSubmit={enviarMensaje} style={{ display: "flex", gap: "6px" }}>
+      <form onSubmit={enviarMensaje} className="chat-form" style={{ display: "flex", gap: "6px" }}>
         <input
           type="text"
           placeholder="Escribe tu pregunta..."
@@ -74,7 +75,7 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
           onChange={(e) => setEntrada(e.target.value)}
           style={{ flex: 1, padding: "8px" }}
         />
-        <button type="submit">Enviar</button>
+        <button type="submit" className="btn-enviar">Enviar</button>
       </form>
     </div>
   );

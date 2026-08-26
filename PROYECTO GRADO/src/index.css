@@ -1,20 +1,22 @@
-
+/* ============================================================
+   ESTILOS BASE - Modo oscuro con fondo animado de luces
+   ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap');
 
 :root {
-  --bg-page:    #FAFADF;
-  --bg-surface: #FFFFFF;
-  --bg-dark:    #111111;
+  --bg-page:    #0a0a12;              /* casi negro, detrás del shader */
+  --bg-surface: rgba(24, 24, 36, 0.72); /* tarjetas oscuras semitransparentes */
+  --bg-dark:    #000000;
 
-  --color-primary:   #E8635A;
-  --color-secondary: #7B6CF6;
-  --color-teal:      #4ECDC4;
-  --color-yellow:    #FFE566;
-  --color-pink:      #F9A8B8;
-  --color-lavender:  #C4B5FD;
+  --color-primary:   #E8635A; /* coral - botones principales */
+  --color-secondary: #7B6CF6; /* morado - acentos */
+  --color-teal:      #4ECDC4; /* menta - acentos */
+  --color-yellow:    #FFE566; /* amarillo - etiquetas */
+  --color-pink:      #F9A8B8; /* rosa - acentos suaves */
+  --color-lavender:  #C4B5FD; /* lavanda - bloques CTA */
 
-  --border-color: #111111;
+  --border-color: #FFFFFF; /* en modo oscuro los bordes/sombras van en blanco */
   --border-width: 2px;
   --border: var(--border-width) solid var(--border-color);
 
@@ -30,8 +32,8 @@
 
   --font: 'DM Sans', sans-serif;
 
-  --text-primary:   #111111;
-  --text-secondary: #555555;
+  --text-primary:   #FFFFFF;
+  --text-secondary: #CFCFCF;
 }
 
 * {
@@ -51,6 +53,7 @@ body {
 
 #root {
   min-height: 100vh;
+  position: relative;
 }
 
 h1, h2, h3, h4 {
@@ -70,10 +73,10 @@ p {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-teal);
 }
 
-
+/* Botones: estilo "press-down", ahora con sombra blanca (se ve sobre fondo oscuro) */
 button {
   font-family: var(--font);
   font-weight: 700;
@@ -101,18 +104,18 @@ button:active {
 }
 
 button:disabled {
-  background-color: #cccccc;
-  color: #888888;
+  background-color: #444444;
+  color: #999999;
   cursor: not-allowed;
   transform: none;
   box-shadow: var(--shadow-md);
 }
 
-
+/* Campos de texto, selects y fechas */
 input, select {
   font-family: var(--font);
   font-size: 16px;
-  background-color: var(--bg-surface);
+  background-color: rgba(255, 255, 255, 0.08);
   border: var(--border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
@@ -122,15 +125,25 @@ input, select {
   transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
+input::placeholder {
+  color: #999999;
+}
+
 input:focus, select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 4px 4px 0px 0px var(--color-primary);
+  border-color: var(--color-teal);
+  box-shadow: 4px 4px 0px 0px var(--color-teal);
   transform: translate(-1px, -1px);
 }
 
+select option {
+  background-color: #18181f;
+  color: #ffffff;
+}
 
+/* Tarjeta genérica reutilizable */
 .card {
   background-color: var(--bg-surface);
+  backdrop-filter: blur(6px);
   border: var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -148,4 +161,14 @@ input:focus, select:focus {
   font-weight: 600;
   box-shadow: var(--shadow-sm);
   margin: 2px;
+}
+
+/* Fondo animado: fijo, detrás de todo el contenido */
+.shader-fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
 }

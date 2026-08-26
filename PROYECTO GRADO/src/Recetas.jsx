@@ -16,6 +16,7 @@ function Recetas() {
   const [dificultad, setDificultad] = useState("todas");
   const [dieta, setDieta] = useState("todas");
   const [caloriasMax, setCaloriasMax] = useState("todas");
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   let resultado = recetas.filter((r) =>
     r.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -57,7 +58,7 @@ function Recetas() {
         placeholder="Buscar receta..."
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
-        style={{ padding: "8px", width: "80%", marginBottom: "16px" }}
+        style={{ padding: "8px", width: "80%", marginBottom: "12px" }}
       />
 
       <div style={{ marginBottom: "16px" }}>
@@ -87,6 +88,14 @@ function Recetas() {
         </button>
       </div>
 
+      <button
+        onClick={() => setMostrarFiltros((v) => !v)}
+        style={{ marginBottom: "16px" }}
+      >
+        {mostrarFiltros ? "Ocultar filtros avanzados ▲" : "Filtros avanzados ▾"}
+      </button>
+
+      {mostrarFiltros && (
       <div
         className="card"
         style={{
@@ -153,6 +162,7 @@ function Recetas() {
           <button onClick={limpiarFiltros}>Limpiar filtros</button>
         </div>
       </div>
+      )}
 
       {resultado.length === 0 && <p>No se encontraron recetas con esos filtros.</p>}
 

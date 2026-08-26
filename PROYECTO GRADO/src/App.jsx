@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { useCierreSesionInactividad } from "./useCierreSesionInactividad";
+import { ShaderAnimation } from "./ShaderAnimation";
 
 import Home from "./Home";
 import Register from "./Register";
@@ -21,10 +22,10 @@ function App() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
-
+  // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
   useCierreSesionInactividad();
 
-
+  // Escucha en tiempo real si hay un usuario logueado o no
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (usuarioActual) => {
       setUsuario(usuarioActual);
@@ -33,13 +34,13 @@ function App() {
       if (usuarioActual) {
         setVista("home");
 
-
+        // Busca el nombre guardado en Firestore (colección "usuarios")
         try {
           const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
           if (snap.exists() && snap.data().nombre) {
             setNombreUsuario(snap.data().nombre);
           } else {
-            setNombreUsuario("");
+            setNombreUsuario(""); // si no encuentra nombre, usamos el correo como respaldo
           }
         } catch (error) {
           setNombreUsuario("");
@@ -60,10 +61,10 @@ function App() {
     return <p style={{ textAlign: "center", marginTop: "40px" }}>Cargando...</p>;
   }
 
-
+  // Lo que se muestra como identificación: el nombre si existe, si no, el correo
   const nombreParaMostrar = nombreUsuario || usuario?.email;
 
-
+  // Botones de la barra de navegación (solo cuando hay sesión iniciada)
   const botonesNav = [
     { vista: "home", texto: "🏠 Inicio" },
     { vista: "recetas", texto: "Ver recetas" },
@@ -75,10 +76,12 @@ function App() {
   ];
 
   return (
-    <div className="app-shell">
+    <>
+      <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
+      <div className="app-shell">
       <h1 className="app-titulo">🍳 CHARIN COOK</h1>
 
-      {}
+      {/* Barra de estado de sesión */}
       <div className="barra-sesion">
         {usuario ? (
           <>
@@ -90,7 +93,8 @@ function App() {
         )}
       </div>
 
-      {}
+      {/* Menú: si NO hay sesión, solo se ofrece login/registro.
+          Si SÍ hay sesión, se muestra el resto de la app. */}
       <nav className="nav">
         {!usuario && (
           <>
@@ -119,7 +123,8 @@ function App() {
       {usuario && vista === "chatbot" && <Chatbot />}
       {usuario && vista === "compras" && <ListaCompras />}
       {usuario && vista === "fechas" && <RecetasPorFecha />}
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -1,14 +1,23 @@
+/* ============================================================
+   Estructura general: contenedor centrado, barra de navegación,
+   encabezado, ajustes de celular
+   ============================================================ */
+
 .app-shell {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px 40px;
   text-align: center;
+  position: relative;
+  z-index: 1; /* por encima del fondo animado */
 }
 
 .app-titulo {
   text-align: center;
   padding-top: 24px;
   margin-bottom: 0;
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
 }
 
 .barra-sesion {
@@ -27,7 +36,7 @@
   font-size: 13px;
   padding: 6px 12px;
   background-color: var(--color-pink);
-  color: var(--text-primary);
+  color: #111111;
   margin: 0;
 }
 
@@ -39,6 +48,7 @@
   gap: 6px;
   padding: 12px 16px;
   background-color: var(--bg-surface);
+  backdrop-filter: blur(6px);
   border: var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -59,28 +69,30 @@
 
 .nav button:hover {
   border-color: var(--border-color);
-  background-color: var(--bg-page);
+  background-color: rgba(255, 255, 255, 0.08);
   transform: none;
 }
 
 .nav .nav-activo {
   background-color: var(--color-yellow);
+  color: #111111;
   border-color: var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
-
+/* Botón de categoría seleccionado (en el catálogo de recetas) */
 .filtro-activo {
   background-color: var(--color-yellow) !important;
-  color: var(--text-primary) !important;
+  color: #111111 !important;
 }
-
 
 .card {
   text-align: left;
 }
 
-
+/* ============================================================
+   Responsive: celulares y pantallas angostas
+   ============================================================ */
 @media (max-width: 600px) {
   .app-shell {
     padding: 0 10px 30px;
@@ -110,6 +122,14 @@
   select {
     width: 100% !important;
     margin-bottom: 8px;
+  }
+
+  /* Excepción: el campo del chat va en fila junto al botón Enviar,
+     no debe ocupar el 100% ni tener margen abajo */
+  .chat-form input[type="text"] {
+    width: auto !important;
+    flex: 1;
+    margin-bottom: 0;
   }
 
   button {
