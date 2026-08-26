@@ -1,9 +1,9 @@
-// Aquí van todas las recetas, organizadas por categoría.
-// Para agregar una receta nueva, copia un bloque { ... } dentro del arreglo
-// y cambia los datos. El "id" debe ser único en todo el archivo.
-// dificultad: "fácil" | "media" | "difícil"
-// dieta: "estándar" | "vegetariana" | "alta en proteína"
-// calorias: valor aproximado por porción
+
+
+
+
+
+
 
 const recetas = [
   {

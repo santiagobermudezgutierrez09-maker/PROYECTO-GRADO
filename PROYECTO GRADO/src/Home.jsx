@@ -1,5 +1,5 @@
-// Página de inicio: lo primero que ve el usuario al entrar.
-// Muestra tarjetas grandes que llevan a cada sección de la app.
+
+
 
 function Home({ irA, correoUsuario }) {
   const secciones = [
@@ -49,7 +49,7 @@ function Home({ irA, correoUsuario }) {
 
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 12px 40px" }}>
-      {/* Hero / bienvenida */}
+      {}
       <div
         className="card"
         style={{
@@ -66,7 +66,7 @@ function Home({ irA, correoUsuario }) {
         </p>
       </div>
 
-      {/* Grid de tarjetas de navegación */}
+      {}
       <div
         style={{
           display: "grid",

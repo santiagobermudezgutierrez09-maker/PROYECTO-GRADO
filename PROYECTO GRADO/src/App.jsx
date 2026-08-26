@@ -21,10 +21,10 @@ function App() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
-  // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
+
   useCierreSesionInactividad();
 
-  // Escucha en tiempo real si hay un usuario logueado o no
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (usuarioActual) => {
       setUsuario(usuarioActual);
@@ -33,13 +33,13 @@ function App() {
       if (usuarioActual) {
         setVista("home");
 
-        // Busca el nombre guardado en Firestore (colección "usuarios")
+
         try {
           const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
           if (snap.exists() && snap.data().nombre) {
             setNombreUsuario(snap.data().nombre);
           } else {
-            setNombreUsuario(""); // si no encuentra nombre, usamos el correo como respaldo
+            setNombreUsuario("");
           }
         } catch (error) {
           setNombreUsuario("");
@@ -60,10 +60,10 @@ function App() {
     return <p style={{ textAlign: "center", marginTop: "40px" }}>Cargando...</p>;
   }
 
-  // Lo que se muestra como identificación: el nombre si existe, si no, el correo
+
   const nombreParaMostrar = nombreUsuario || usuario?.email;
 
-  // Botones de la barra de navegación (solo cuando hay sesión iniciada)
+
   const botonesNav = [
     { vista: "home", texto: "🏠 Inicio" },
     { vista: "recetas", texto: "Ver recetas" },
@@ -78,7 +78,7 @@ function App() {
     <div className="app-shell">
       <h1 className="app-titulo">🍳 CHARIN COOK</h1>
 
-      {/* Barra de estado de sesión */}
+      {}
       <div className="barra-sesion">
         {usuario ? (
           <>
@@ -90,8 +90,7 @@ function App() {
         )}
       </div>
 
-      {/* Menú: si NO hay sesión, solo se ofrece login/registro.
-          Si SÍ hay sesión, se muestra el resto de la app. */}
+      {}
       <nav className="nav">
         {!usuario && (
           <>

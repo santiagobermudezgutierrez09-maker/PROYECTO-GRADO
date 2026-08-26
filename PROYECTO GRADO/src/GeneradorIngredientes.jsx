@@ -10,14 +10,14 @@ function GeneradorIngredientes() {
   const buscarRecetas = (e) => {
     e.preventDefault();
 
-    // Convierte el texto escrito en una lista limpia de ingredientes
+
     const misIngredientes = textoIngredientes
       .toLowerCase()
       .split(",")
       .map((i) => i.trim())
       .filter((i) => i.length > 0);
 
-    // Para cada receta, cuenta cuántos ingredientes coinciden
+
     const resultado = recetas
       .map((receta) => {
         const ingredientesReceta = receta.ingredientes.map((i) => i.toLowerCase());
@@ -33,7 +33,7 @@ function GeneradorIngredientes() {
     setBuscado(true);
   };
 
-  // Busca si existe una sustitución sugerida para un ingrediente
+
   const buscarSustituto = (ingrediente) => {
     const encontrado = equivalencias.find(
       (eq) => eq.original.toLowerCase() === ingrediente.toLowerCase()

@@ -1,7 +1,4 @@
-/* ============================================================
-   ESTILOS BASE - Estilo Neobrutalism (bordes negros, sombras
-   marcadas, colores pastel, esquinas redondeadas)
-   ============================================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap');
 
@@ -10,12 +7,12 @@
   --bg-surface: #FFFFFF;
   --bg-dark:    #111111;
 
-  --color-primary:   #E8635A; /* coral - botones principales */
-  --color-secondary: #7B6CF6; /* morado - acentos */
-  --color-teal:      #4ECDC4; /* menta - acentos */
-  --color-yellow:    #FFE566; /* amarillo - etiquetas */
-  --color-pink:      #F9A8B8; /* rosa - acentos suaves */
-  --color-lavender:  #C4B5FD; /* lavanda - bloques CTA */
+  --color-primary:   #E8635A;
+  --color-secondary: #7B6CF6;
+  --color-teal:      #4ECDC4;
+  --color-yellow:    #FFE566;
+  --color-pink:      #F9A8B8;
+  --color-lavender:  #C4B5FD;
 
   --border-color: #111111;
   --border-width: 2px;
@@ -76,7 +73,7 @@ a {
   color: var(--color-primary);
 }
 
-/* Botones: estilo "press-down" neobrutalista */
+
 button {
   font-family: var(--font);
   font-weight: 700;
@@ -111,7 +108,7 @@ button:disabled {
   box-shadow: var(--shadow-md);
 }
 
-/* Campos de texto, selects y fechas */
+
 input, select {
   font-family: var(--font);
   font-size: 16px;
@@ -131,7 +128,7 @@ input:focus, select:focus {
   transform: translate(-1px, -1px);
 }
 
-/* Tarjeta genérica reutilizable */
+
 .card {
   background-color: var(--bg-surface);
   border: var(--border);

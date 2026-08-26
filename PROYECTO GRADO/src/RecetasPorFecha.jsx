@@ -19,7 +19,7 @@ function RecetasPorFecha() {
     ? recetas.filter((r) => r.categoria === fechaEspecial.categoriaSugerida).slice(0, 6)
     : [];
 
-  // ---- Planificación de eventos futuros ----
+
   const [eventos, setEventos] = useState([]);
   const [recetaElegida, setRecetaElegida] = useState("");
   const [fechaEvento, setFechaEvento] = useState("");
@@ -74,7 +74,7 @@ function RecetasPorFecha() {
     <div style={{ maxWidth: "600px", margin: "20px auto", textAlign: "center" }}>
       <h2>Recetas por fecha y eventos</h2>
 
-      {/* Sugerencia según la fecha actual */}
+      {}
       {fechaEspecial ? (
         <div style={{ marginBottom: "24px" }}>
           <p>
@@ -94,7 +94,7 @@ function RecetasPorFecha() {
         </p>
       )}
 
-      {/* Planificación de eventos futuros */}
+      {}
       <h3>Planifica una receta para un evento futuro</h3>
       <form onSubmit={guardarEvento} style={{ marginBottom: "20px" }}>
         <div style={{ marginBottom: "8px" }}>

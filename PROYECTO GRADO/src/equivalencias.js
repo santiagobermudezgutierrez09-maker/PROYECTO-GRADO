@@ -1,6 +1,6 @@
-// Lista de sustituciones de ingredientes.
-// Si al usuario le falta el ingrediente "original", se le sugiere el "sustituto".
-// Para agregar más, copia una línea y cambia los valores.
+
+
+
 
 const equivalencias = [
   { original: "mantequilla", sustituto: "aceite vegetal" },

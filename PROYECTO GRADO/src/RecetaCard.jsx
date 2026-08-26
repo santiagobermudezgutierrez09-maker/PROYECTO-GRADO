@@ -22,7 +22,7 @@ function RecetaCard({ receta }) {
 
   const usuario = auth.currentUser;
 
-  // Revisa si ya está marcada como favorita al cargar
+
   useEffect(() => {
     const revisarFavorito = async () => {
       if (!usuario) return;
@@ -33,7 +33,7 @@ function RecetaCard({ receta }) {
     revisarFavorito();
   }, [usuario, receta.id]);
 
-  // Escucha los comentarios de esta receta en tiempo real
+
   useEffect(() => {
     const q = query(collection(db, "comentarios"), where("recetaId", "==", receta.id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -100,7 +100,7 @@ function RecetaCard({ receta }) {
       try {
         await navigator.share({ title: receta.nombre, text: textoCompartir });
       } catch (error) {
-        // el usuario canceló, no pasa nada
+
       }
     } else {
       await navigator.clipboard.writeText(textoCompartir);
@@ -130,7 +130,7 @@ function RecetaCard({ receta }) {
         ))}
       </ol>
 
-      {/* Botones de favorito y compartir */}
+      {}
       <div style={{ marginBottom: "8px" }}>
         <button onClick={toggleFavorito}>
           {esFavorita ? "❤️ Quitar de favoritos" : "🤍 Guardar en favoritos"}
@@ -140,7 +140,7 @@ function RecetaCard({ receta }) {
         </button>
       </div>
 
-      {/* Calificación con estrellas */}
+      {}
       <div style={{ marginBottom: "8px" }}>
         <strong>Calificar: </strong>
         {[1, 2, 3, 4, 5].map((n) => (
@@ -156,7 +156,7 @@ function RecetaCard({ receta }) {
 
       {mensaje && <p style={{ color: "orange" }}>{mensaje}</p>}
 
-      {/* Comentarios */}
+      {}
       <div>
         <strong>Comentarios:</strong>
         <ul>

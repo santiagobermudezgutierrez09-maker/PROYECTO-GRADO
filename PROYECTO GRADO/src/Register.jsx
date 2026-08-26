@@ -16,7 +16,7 @@ function Register() {
       const resultado = await createUserWithEmailAndPassword(auth, correo, clave);
       const usuario = resultado.user;
 
-      // Guardamos datos extra del usuario en Firestore
+
       await setDoc(doc(db, "usuarios", usuario.uid), {
         nombre: nombre,
         correo: correo,

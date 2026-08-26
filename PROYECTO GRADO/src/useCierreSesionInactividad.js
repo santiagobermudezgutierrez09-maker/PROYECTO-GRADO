@@ -1,12 +1,12 @@
-// Hook que cierra la sesión automáticamente si el usuario no
-// interactúa con la app durante un tiempo (RNF03: sesiones seguras).
-// Detecta movimientos de mouse, clics y teclas para saber si sigue activo.
+
+
+
 
 import { useEffect, useRef } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
-const MINUTOS_INACTIVIDAD = 10; // Cambia este número si quieres más o menos tiempo
+const MINUTOS_INACTIVIDAD = 10;
 
 export function useCierreSesionInactividad() {
   const temporizadorRef = useRef(null);
@@ -26,7 +26,7 @@ export function useCierreSesionInactividad() {
     const eventos = ["mousemove", "keydown", "click", "scroll", "touchstart"];
     eventos.forEach((evento) => window.addEventListener(evento, reiniciarTemporizador));
 
-    reiniciarTemporizador(); // arranca el contador apenas carga la app
+    reiniciarTemporizador();
 
     return () => {
       eventos.forEach((evento) => window.removeEventListener(evento, reiniciarTemporizador));

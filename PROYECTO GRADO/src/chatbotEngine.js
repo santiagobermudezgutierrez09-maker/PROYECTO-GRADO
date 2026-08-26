@@ -1,16 +1,16 @@
-// ============================================================
-// MOTOR DEL CHATBOT (basado en reglas y palabras clave, SIN IA)
-// ============================================================
-// Como usa recetasData directamente, cualquier receta nueva que
-// agregues ahí, el chatbot la conoce automáticamente.
-//
-// Mejoras de esta versión:
-// - Reconoce coincidencias PARCIALES: si escribes "arroz", encuentra
-//   cualquier receta cuyo nombre contenga "arroz", no solo el nombre completo.
-// - También busca por INGREDIENTE: si escribes "banano", te dice en
-//   qué recetas se usa, aunque no sea el nombre de ninguna receta.
-// - Si hay varias coincidencias, te pregunta cuál te interesa.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import recetas from "./recetasData";
 import equivalencias from "./equivalencias";
@@ -23,29 +23,29 @@ function normalizar(texto) {
     .trim();
 }
 
-// Palabras muy cortas o genéricas que no sirven para buscar
-// (para que "de", "que", "el" no disparen búsquedas falsas)
+
+
 const PALABRAS_IGNORADAS = [
   "de", "que", "el", "la", "los", "las", "un", "una", "y", "a", "con",
   "en", "por", "para", "es", "me", "mi", "lo", "se", "su", "al", "del",
 ];
 
-// Saca del mensaje las palabras "útiles" (más de 2 letras, no genéricas)
+
 function palabrasUtiles(mensajeNormalizado) {
   return mensajeNormalizado
     .split(/\s+/)
     .filter((palabra) => palabra.length > 2 && !PALABRAS_IGNORADAS.includes(palabra));
 }
 
-// Busca recetas cuyo NOMBRE coincida (completo o parcialmente) con el mensaje
+
 function buscarRecetasPorNombre(mensajeNormalizado) {
-  // Coincidencia completa: el nombre de la receta aparece dentro del mensaje
+
   const coincidenciaCompleta = recetas.filter((r) =>
     mensajeNormalizado.includes(normalizar(r.nombre))
   );
   if (coincidenciaCompleta.length > 0) return coincidenciaCompleta;
 
-  // Coincidencia parcial: alguna palabra del mensaje aparece dentro del nombre
+
   const palabras = palabrasUtiles(mensajeNormalizado);
   if (palabras.length === 0) return [];
 
@@ -55,7 +55,7 @@ function buscarRecetasPorNombre(mensajeNormalizado) {
   });
 }
 
-// Busca recetas que usan un ingrediente mencionado en el mensaje
+
 function buscarRecetasPorIngrediente(mensajeNormalizado) {
   const palabras = palabrasUtiles(mensajeNormalizado);
   if (palabras.length === 0) return [];
@@ -137,25 +137,25 @@ function recetaAleatoria() {
   return recetas[Math.floor(Math.random() * recetas.length)];
 }
 
-// Presenta un resumen corto de una receta (se usa cuando el usuario
-// solo menciona un nombre, sin decir qué quiere saber de ella)
+
+
 function resumenReceta(receta) {
   return `"${receta.nombre}" (${receta.categoria}) — ${receta.tiempo} min, dificultad ${receta.dificultad}, ${receta.calorias} kcal. Puedes preguntarme por sus ingredientes, pasos, o sustitutos.`;
 }
 
-// ============================================================
-// FUNCIÓN PRINCIPAL
-// ============================================================
+
+
+
 export function generarRespuesta(mensajeOriginal, recetaActiva = null, pasoActualIndex = null) {
   const mensaje = normalizar(mensajeOriginal);
   const intencion = detectarIntencion(mensaje);
 
-  // Busca si el mensaje menciona alguna receta (completa o parcialmente)
+
   const recetasPorNombre = buscarRecetasPorNombre(mensaje);
   const recetaMencionada = recetasPorNombre.length === 1 ? recetasPorNombre[0] : null;
   const receta = recetaMencionada || recetaActiva;
 
-  // -------- Si detectó una intención clara, respondemos con eso --------
+
   if (intencion) {
     switch (intencion) {
       case "saludo":
@@ -232,27 +232,27 @@ export function generarRespuesta(mensajeOriginal, recetaActiva = null, pasoActua
     }
   }
 
-  // -------- No hubo intención clara: intenta identificar qué mencionó --------
 
-  // Si el mensaje coincide con el nombre de UNA sola receta, da un resumen
+
+
   if (recetasPorNombre.length === 1) {
     return resumenReceta(recetasPorNombre[0]);
   }
 
-  // Si coincide con VARIAS recetas por nombre, las lista y pide precisar
+
   if (recetasPorNombre.length > 1) {
     const nombres = recetasPorNombre.slice(0, 6).map((r) => r.nombre).join(", ");
     return `Encontré varias recetas con eso: ${nombres}. ¿Cuál te interesa? Escribe el nombre completo.`;
   }
 
-  // Si no encontró receta por nombre, busca por ingrediente
+
   const recetasPorIngrediente = buscarRecetasPorIngrediente(mensaje);
   if (recetasPorIngrediente.length > 0) {
     const nombres = recetasPorIngrediente.slice(0, 6).map((r) => r.nombre).join(", ");
     return `Ese ingrediente se usa en estas recetas: ${nombres}. ¿Sobre cuál quieres saber más?`;
   }
 
-  // Última opción: no encontró nada
+
   return receta
     ? `No entendí bien esa pregunta sobre "${receta.nombre}". Puedes preguntarme por tiempo, ingredientes, pasos, sustitutos, dificultad, calorías o dieta.`
     : "No encontré ninguna receta ni ingrediente relacionado con eso. Intenta con otro nombre, o escribe 'ayuda' para ver qué puedo hacer.";

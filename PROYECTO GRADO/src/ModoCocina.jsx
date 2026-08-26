@@ -12,7 +12,7 @@ function ModoCocina() {
 
   const receta = recetas.find((r) => r.id === Number(recetaId));
 
-  // Maneja la cuenta regresiva del temporizador
+
   useEffect(() => {
     if (corriendo && segundos > 0) {
       intervaloRef.current = setInterval(() => {
@@ -41,7 +41,7 @@ function ModoCocina() {
     return `${min}:${seg.toString().padStart(2, "0")}`;
   };
 
-  // Selección de receta
+
   if (!receta) {
     return (
       <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "center" }}>
@@ -68,7 +68,7 @@ function ModoCocina() {
 
   const esUltimoPaso = pasoActual === receta.pasos.length - 1;
 
-  // Vista de modo cocina: letras grandes, sin distracciones
+
   return (
     <div
       style={{
@@ -93,7 +93,7 @@ function ModoCocina() {
         Paso {pasoActual + 1} de {receta.pasos.length}
       </p>
 
-      {/* Paso actual en letra grande */}
+      {}
       <div
         style={{
           fontSize: "32px",
@@ -105,7 +105,7 @@ function ModoCocina() {
         {receta.pasos[pasoActual]}
       </div>
 
-      {/* Navegación de pasos */}
+      {}
       <div style={{ marginBottom: "30px" }}>
         <button
           onClick={() => setPasoActual((p) => Math.max(0, p - 1))}
@@ -125,7 +125,7 @@ function ModoCocina() {
 
       {esUltimoPaso && <p style={{ fontSize: "22px" }}>🎉 ¡Listo! Buen provecho.</p>}
 
-      {/* Temporizador */}
+      {}
       <div
         style={{
           borderTop: "1px solid #444",
@@ -157,7 +157,7 @@ function ModoCocina() {
         )}
       </div>
 
-      {/* Chatbot contextual: sabe en qué receta está el usuario */}
+      {}
       <Chatbot recetaActiva={receta} pasoActualIndex={pasoActual} />
     </div>
   );

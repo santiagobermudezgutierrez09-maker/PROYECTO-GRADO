@@ -5,12 +5,12 @@ import { db, auth } from "./firebase";
 
 function ListaCompras() {
   const [recetasSeleccionadas, setRecetasSeleccionadas] = useState([]);
-  const [lista, setLista] = useState([]); // [{nombre, comprado}]
+  const [lista, setLista] = useState([]);
   const [mensaje, setMensaje] = useState("");
 
   const usuario = auth.currentUser;
 
-  // Carga la lista guardada del usuario (si ya tenía una)
+
   useEffect(() => {
     const cargarLista = async () => {
       if (!usuario) return;
@@ -39,15 +39,15 @@ function ListaCompras() {
       return;
     }
 
-    // Junta todos los ingredientes de las recetas elegidas, sin repetir
+
     const ingredientesUnicos = new Set();
     recetasSeleccionadas.forEach((id) => {
       const receta = recetas.find((r) => r.id === id);
       receta.ingredientes.forEach((ing) => ingredientesUnicos.add(ing));
     });
 
-    // Si un ingrediente ya estaba en la lista guardada (y marcado comprado),
-    // respetamos ese estado; si es nuevo, entra como "no comprado".
+
+
     const nuevaLista = Array.from(ingredientesUnicos).map((ing) => {
       const existente = lista.find((item) => item.nombre === ing);
       return { nombre: ing, comprado: existente ? existente.comprado : false };

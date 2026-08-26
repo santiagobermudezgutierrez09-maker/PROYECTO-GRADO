@@ -1,7 +1,7 @@
-// Base de preguntas y respuestas del chatbot.
-// palabrasClave: palabras que, si aparecen en el mensaje del usuario, activan esta respuesta.
-// respuesta: lo que el chatbot contesta.
-// Para agregar una pregunta nueva, copia un bloque { ... }.
+
+
+
+
 
 const preguntasFrecuentes = [
   {
@@ -10,7 +10,7 @@ const preguntasFrecuentes = [
   },
   {
     palabrasClave: ["tiempo", "cuanto", "demora", "dura"],
-    respuesta: "TIEMPO_RECETA", // Se reemplaza dinámicamente si hay una receta activa
+    respuesta: "TIEMPO_RECETA",
   },
   {
     palabrasClave: ["porciones", "personas", "rinde"],
