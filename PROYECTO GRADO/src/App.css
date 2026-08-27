@@ -138,7 +138,88 @@
   }
 
   .nav button,
-  .barra-sesion button {
+  .barra-sesion button,
+  .btn-enviar {
     width: auto;
   }
+}
+
+
+/* ============================================================
+   TEMA "COCINA" — se aplica solo dentro de la app (después de
+   iniciar sesión o entrar como invitado). El login/registro
+   conserva el tema oscuro con el fondo animado.
+   ============================================================ */
+
+.tema-cocina {
+  --bg-page:    #FFF3E0;
+  --bg-surface: rgba(255, 253, 248, 0.92);
+
+  --color-primary:   #D84315; /* paprika / tomate tostado */
+  --color-secondary: #6B8E23; /* verde oliva */
+  --color-teal:      #4E8B67; /* verde hierba */
+  --color-yellow:    #E1AD01; /* mostaza / azafrán */
+  --color-pink:      #E8A0A0; /* tomate suave */
+  --color-lavender:  #F3D9B1; /* trigo / masa horneada */
+
+  --border-color: #6B4226; /* marrón madera, como el borde de una tabla de picar */
+  --shadow-sm: 3px 3px 0px 0px var(--border-color);
+  --shadow-md: 4px 4px 0px 0px var(--border-color);
+  --shadow-lg: 6px 6px 0px 0px var(--border-color);
+  --shadow-md-hover: 2px 2px 0px 0px var(--border-color);
+
+  --text-primary:   #3E2723; /* marrón cacao oscuro */
+  --text-secondary: #6D4C41;
+}
+
+.tema-cocina .app-titulo {
+  color: var(--text-primary);
+  text-shadow: none;
+}
+
+.tema-cocina .barra-sesion {
+  color: var(--text-secondary);
+}
+
+.tema-cocina .barra-sesion button {
+  color: #ffffff;
+}
+
+.tema-cocina .nav .nav-activo,
+.tema-cocina .filtro-activo {
+  color: #3E2723 !important;
+}
+
+.tema-cocina button:disabled {
+  background-color: #d8c3a5;
+  color: #8d7a68;
+}
+
+.tema-cocina input,
+.tema-cocina select {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.tema-cocina input::placeholder {
+  color: #a1887f;
+}
+
+.tema-cocina select option {
+  background-color: #FFF8F0;
+  color: #3E2723;
+}
+
+/* Fondo fijo cálido, con un degradado suave tipo mesón de cocina
+   más un patrón sutil de baldosas, en vez del fondo animado oscuro */
+.fondo-cocina {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(216, 67, 21, 0.10), transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(107, 142, 35, 0.12), transparent 45%),
+    linear-gradient(160deg, #FFF8F0 0%, #FFE8D1 55%, #FCE0BD 100%);
 }

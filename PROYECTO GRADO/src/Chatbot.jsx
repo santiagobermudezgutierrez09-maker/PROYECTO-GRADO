@@ -38,8 +38,8 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
           overflowY: "auto",
           marginBottom: "10px",
           padding: "10px",
-          backgroundColor: "var(--bg-page)",
-          border: "2px solid #111111",
+          backgroundColor: "rgba(0,0,0,0.04)",
+          border: "2px solid var(--border-color)",
           borderRadius: "10px",
         }}
       >
@@ -54,9 +54,9 @@ function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
               margin: "4px 0",
               padding: "8px 12px",
               borderRadius: "10px",
-              border: "2px solid #111111",
-              backgroundColor: m.autor === "usuario" ? "var(--color-teal)" : "rgba(255,255,255,0.08)",
-              color: m.autor === "usuario" ? "#111111" : "#ffffff",
+              border: "2px solid var(--border-color)",
+              backgroundColor: m.autor === "usuario" ? "var(--color-teal)" : "var(--bg-surface)",
+              color: m.autor === "usuario" ? "#ffffff" : "var(--text-primary)",
               whiteSpace: "pre-line",
               fontSize: "0.9rem",
             }}

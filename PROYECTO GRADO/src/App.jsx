@@ -21,6 +21,7 @@ function App() {
   const [usuario, setUsuario] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
+  const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
 
   // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
   useCierreSesionInactividad();
@@ -32,6 +33,7 @@ function App() {
       setCargandoSesion(false);
 
       if (usuarioActual) {
+        setInvitado(false); // si inicia sesión de verdad, ya no es invitado
         setVista("home");
 
         // Busca el nombre guardado en Firestore (colección "usuarios")
@@ -54,17 +56,26 @@ function App() {
 
   const cerrarSesion = async () => {
     await signOut(auth);
+    setInvitado(false);
     setVista("login");
+  };
+
+  const entrarComoInvitado = () => {
+    setInvitado(true);
+    setVista("home");
   };
 
   if (cargandoSesion) {
     return <p style={{ textAlign: "center", marginTop: "40px" }}>Cargando...</p>;
   }
 
-  // Lo que se muestra como identificación: el nombre si existe, si no, el correo
-  const nombreParaMostrar = nombreUsuario || usuario?.email;
+  // true si el usuario puede ver las pantallas de la app (logueado o invitado)
+  const tieneAcceso = !!usuario || invitado;
 
-  // Botones de la barra de navegación (solo cuando hay sesión iniciada)
+  // Lo que se muestra como identificación: el nombre si existe, si no, el correo, si no, "Invitado"
+  const nombreParaMostrar = usuario ? nombreUsuario || usuario.email : "Invitado";
+
+  // Botones de la barra de navegación (cuando hay sesión o modo invitado)
   const botonesNav = [
     { vista: "home", texto: "🏠 Inicio" },
     { vista: "recetas", texto: "Ver recetas" },
@@ -77,8 +88,13 @@ function App() {
 
   return (
     <>
-      <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
-      <div className="app-shell">
+      {/* Fondo animado oscuro SOLO en login/registro; dentro de la app, fondo cálido de cocina */}
+      {tieneAcceso ? (
+        <div className="fondo-cocina" />
+      ) : (
+        <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
+      )}
+      <div className={`app-shell ${tieneAcceso ? "tema-cocina" : ""}`}>
       <h1 className="app-titulo">🍳 CHARIN COOK</h1>
 
       {/* Barra de estado de sesión */}
@@ -88,21 +104,29 @@ function App() {
             Sesión iniciada como: {nombreParaMostrar}{" "}
             <button onClick={cerrarSesion}>Cerrar sesión</button>
           </>
+        ) : invitado ? (
+          <>
+            Estás navegando como invitado (no puedes comentar, calificar ni guardar favoritos){" "}
+            <button onClick={() => { setInvitado(false); setVista("login"); }}>
+              Iniciar sesión
+            </button>
+          </>
         ) : (
           "No has iniciado sesión."
         )}
       </div>
 
-      {/* Menú: si NO hay sesión, solo se ofrece login/registro.
-          Si SÍ hay sesión, se muestra el resto de la app. */}
+      {/* Menú: si NO hay acceso, solo se ofrece login/registro/invitado.
+          Si SÍ hay acceso (logueado o invitado), se muestra el resto de la app. */}
       <nav className="nav">
-        {!usuario && (
+        {!tieneAcceso && (
           <>
             <button onClick={() => setVista("login")}>Iniciar sesión</button>
             <button onClick={() => setVista("register")}>Registrarme</button>
+            <button onClick={entrarComoInvitado}>Entrar como invitado</button>
           </>
         )}
-        {usuario &&
+        {tieneAcceso &&
           botonesNav.map((b) => (
             <button
               key={b.vista}
@@ -114,15 +138,15 @@ function App() {
           ))}
       </nav>
 
-      {vista === "login" && !usuario && <Login />}
-      {vista === "register" && !usuario && <Register />}
-      {usuario && vista === "home" && <Home irA={setVista} correoUsuario={nombreParaMostrar} />}
-      {usuario && vista === "recetas" && <Recetas />}
-      {usuario && vista === "generador" && <GeneradorIngredientes />}
-      {usuario && vista === "cocina" && <ModoCocina />}
-      {usuario && vista === "chatbot" && <Chatbot />}
-      {usuario && vista === "compras" && <ListaCompras />}
-      {usuario && vista === "fechas" && <RecetasPorFecha />}
+      {vista === "login" && !tieneAcceso && <Login />}
+      {vista === "register" && !tieneAcceso && <Register />}
+      {tieneAcceso && vista === "home" && <Home irA={setVista} correoUsuario={nombreParaMostrar} />}
+      {tieneAcceso && vista === "recetas" && <Recetas />}
+      {tieneAcceso && vista === "generador" && <GeneradorIngredientes />}
+      {tieneAcceso && vista === "cocina" && <ModoCocina />}
+      {tieneAcceso && vista === "chatbot" && <Chatbot />}
+      {tieneAcceso && vista === "compras" && <ListaCompras />}
+      {tieneAcceso && vista === "fechas" && <RecetasPorFecha />}
       </div>
     </>
   );
