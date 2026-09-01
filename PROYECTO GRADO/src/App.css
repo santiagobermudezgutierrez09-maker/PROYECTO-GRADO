@@ -152,61 +152,177 @@
    ============================================================ */
 
 .tema-cocina {
-  --bg-page:    #FFF3E0;
-  --bg-surface: rgba(255, 253, 248, 0.92);
+  --bg-page: #fffaf4;
+  --bg-surface: rgba(255, 250, 244, 0.9);
+  --bg-surface-strong: #fffdf9;
+  --bg-soft: #f7ebda;
 
-  --color-primary:   #D84315; /* paprika / tomate tostado */
-  --color-secondary: #6B8E23; /* verde oliva */
-  --color-teal:      #4E8B67; /* verde hierba */
-  --color-yellow:    #E1AD01; /* mostaza / azafrán */
-  --color-pink:      #E8A0A0; /* tomate suave */
-  --color-lavender:  #F3D9B1; /* trigo / masa horneada */
+  --color-primary: #c76138;
+  --color-secondary: #6d8a42;
+  --color-teal: #4e7a5d;
+  --color-yellow: #e5b65a;
+  --color-pink: #e9b39b;
+  --color-lavender: #f1d8a8;
 
-  --border-color: #6B4226; /* marrón madera, como el borde de una tabla de picar */
-  --shadow-sm: 3px 3px 0px 0px var(--border-color);
-  --shadow-md: 4px 4px 0px 0px var(--border-color);
-  --shadow-lg: 6px 6px 0px 0px var(--border-color);
-  --shadow-md-hover: 2px 2px 0px 0px var(--border-color);
+  --border-color: rgba(88, 58, 42, 0.55);
+  --shadow-sm: 0 10px 20px rgba(101, 72, 52, 0.08);
+  --shadow-md: 0 18px 36px rgba(121, 92, 70, 0.12);
+  --shadow-lg: 0 28px 52px rgba(108, 80, 62, 0.18);
+  --shadow-md-hover: 0 12px 24px rgba(96, 72, 56, 0.12);
 
-  --text-primary:   #3E2723; /* marrón cacao oscuro */
-  --text-secondary: #6D4C41;
+  --text-primary: #34251d;
+  --text-secondary: #6e5348;
+}
+
+.tema-cocina .app-shell {
+  max-width: 1180px;
+  padding: 0 18px 54px;
 }
 
 .tema-cocina .app-titulo {
-  color: var(--text-primary);
+  color: #3a2a24;
   text-shadow: none;
+  letter-spacing: 0.08em;
+  font-family: Georgia, "Times New Roman", serif;
+  margin-top: 20px;
 }
 
 .tema-cocina .barra-sesion {
   color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(110, 83, 72, 0.15);
+  backdrop-filter: blur(5px);
+  border-radius: 999px;
+  padding: 10px 16px;
+  margin: 18px auto 0;
+  max-width: 920px;
+  box-shadow: var(--shadow-sm);
 }
 
 .tema-cocina .barra-sesion button {
-  color: #ffffff;
+  color: #fffaf5;
+  background: linear-gradient(135deg, var(--color-primary), #dd8556);
+  border: none;
+  box-shadow: 0 8px 18px rgba(199, 97, 56, 0.22);
+}
+
+.tema-cocina .nav {
+  background: rgba(255, 252, 247, 0.78);
+  border: 1px solid rgba(112, 81, 60, 0.14);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
+  padding: 12px 16px;
+  backdrop-filter: blur(8px);
+}
+
+.tema-cocina .nav button {
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: transparent;
+  box-shadow: none;
+  transition: all 0.2s ease;
+}
+
+.tema-cocina .nav button:hover {
+  background: rgba(199, 97, 56, 0.08);
+  border-color: rgba(199, 97, 56, 0.2);
+  transform: translateY(-1px);
 }
 
 .tema-cocina .nav .nav-activo,
 .tema-cocina .filtro-activo {
-  color: #3E2723 !important;
+  background: linear-gradient(135deg, #f7d88b, #e5b65a) !important;
+  color: #3e2c26 !important;
+  border-color: rgba(109, 83, 72, 0.2) !important;
+  box-shadow: 0 10px 20px rgba(229, 182, 90, 0.22) !important;
+}
+
+.tema-cocina button {
+  background: linear-gradient(135deg, var(--color-primary), #d67d4e);
+  color: #fffaf5;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 18px rgba(199, 97, 56, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tema-cocina button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 22px rgba(199, 97, 56, 0.2);
+}
+
+.tema-cocina button:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 14px rgba(199, 97, 56, 0.16);
 }
 
 .tema-cocina button:disabled {
-  background-color: #d8c3a5;
-  color: #8d7a68;
+  background: linear-gradient(135deg, #d8c3a5, #cbb397);
+  color: #7c665d;
+  box-shadow: none;
 }
 
 .tema-cocina input,
 .tema-cocina select {
-  background-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(107, 84, 70, 0.22);
+  border-radius: 14px;
+  box-shadow: inset 0 2px 6px rgba(120, 92, 69, 0.04);
+  color: var(--text-primary);
 }
 
 .tema-cocina input::placeholder {
-  color: #a1887f;
+  color: #9a7a6d;
+}
+
+.tema-cocina input:focus,
+.tema-cocina select:focus {
+  border-color: rgba(93, 132, 92, 0.8);
+  box-shadow: 0 0 0 4px rgba(93, 132, 92, 0.14);
+  transform: none;
 }
 
 .tema-cocina select option {
-  background-color: #FFF8F0;
-  color: #3E2723;
+  background-color: #fffaf5;
+  color: #34251d;
+}
+
+.tema-cocina .card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 248, 240, 0.9));
+  border: 1px solid rgba(116, 91, 72, 0.12);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  padding: 22px 20px;
+}
+
+.tema-cocina .tag {
+  background: rgba(255, 247, 236, 0.96);
+  border: 1px solid rgba(112, 81, 60, 0.12);
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(110, 79, 55, 0.06);
+  color: var(--text-primary);
+}
+
+.tema-cocina h1,
+.tema-cocina h2,
+.tema-cocina h3,
+.tema-cocina h4 {
+  color: var(--text-primary);
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
+}
+
+.tema-cocina p,
+.tema-cocina li,
+.tema-cocina label,
+.tema-cocina span {
+  color: var(--text-secondary);
+}
+
+.tema-cocina a {
+  color: var(--color-teal);
 }
 
 /* Fondo fijo cálido, con un degradado suave tipo mesón de cocina
@@ -219,7 +335,18 @@
   height: 100vh;
   z-index: -1;
   background:
-    radial-gradient(circle at 15% 20%, rgba(216, 67, 21, 0.10), transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(107, 142, 35, 0.12), transparent 45%),
-    linear-gradient(160deg, #FFF8F0 0%, #FFE8D1 55%, #FCE0BD 100%);
+    radial-gradient(circle at 15% 20%, rgba(199, 97, 56, 0.12), transparent 34%),
+    radial-gradient(circle at 80% 78%, rgba(109, 138, 66, 0.16), transparent 42%),
+    linear-gradient(160deg, #fffaf3 0%, #f5ead9 48%, #f3dfc2 100%);
+}
+
+.fondo-cocina::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(132, 95, 68, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(132, 95, 68, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
 }
