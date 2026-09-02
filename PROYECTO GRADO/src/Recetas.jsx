@@ -3,9 +3,9 @@ import recetas from "./recetasData";
 import RecetaCard from "./RecetaCard";
 
 const nombresCategorias = {
-  tradicional: "Recetas Tradicionales",
-  fitness: "Recetas Fitness",
-  especial: "Recetas para Fechas Especiales",
+  tradicional: "Postres Tradicionales",
+  fitness: "Postres Fitness",
+  especial: "Postres para Fechas Especiales",
 };
 
 function Recetas() {
@@ -51,11 +51,11 @@ function Recetas() {
 
   return (
     <div style={{ maxWidth: "700px", margin: "20px auto", textAlign: "center" }}>
-      <h2>Catálogo de recetas</h2>
+      <h2>Catálogo de postres</h2>
 
       <input
         type="text"
-        placeholder="Buscar receta..."
+        placeholder="Buscar postre..."
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
         style={{ padding: "8px", width: "80%", marginBottom: "12px" }}

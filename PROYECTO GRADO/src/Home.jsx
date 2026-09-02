@@ -10,7 +10,7 @@ function Home({ irA, correoUsuario }) {
     emoji: "🥕",
     color: "var(--color-teal)",
     titulo: "¿Qué puedo cocinar?",
-    texto: "Escribe los ingredientes que tienes y te decimos qué puedes preparar ahora mismo.",
+    texto: "Escribe los ingredientes que tienes y te decimos qué postre puedes preparar ahora mismo.",
   };
 
   // Accesos rápidos: las funciones que más se usan día a día.
@@ -20,7 +20,7 @@ function Home({ irA, correoUsuario }) {
       emoji: "🍲",
       color: "var(--color-pink)",
       titulo: "Ver recetas",
-      texto: "Explora el catálogo completo: tradicionales, fitness y de fechas especiales.",
+      texto: "Explora el catálogo de postres: tradicionales, fitness y para fechas especiales.",
     },
     {
       vista: "cocina",
@@ -40,6 +40,13 @@ function Home({ irA, correoUsuario }) {
 
   // Más opciones: funciones de apoyo, igual de completas pero de uso puntual.
   const masOpciones = [
+    {
+      vista: "api",
+      emoji: "🌐",
+      color: "var(--color-secondary)",
+      titulo: "Más postres (API)",
+      texto: "Descubre postres de todo el mundo, traídos en vivo desde una API de recetas.",
+    },
     {
       vista: "chatbot",
       emoji: "💬",
@@ -108,7 +115,7 @@ function Home({ irA, correoUsuario }) {
           {correoUsuario ? `Hola, ${correoUsuario} 👋` : "Bienvenido a Charin Cook 🍳"}
         </h1>
         <p style={{ color: "var(--text-primary)", fontSize: "1.05rem" }}>
-          ¿Qué quieres cocinar hoy?
+          ¿Qué postre quieres preparar hoy?
         </p>
       </div>
 

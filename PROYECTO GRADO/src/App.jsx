@@ -15,6 +15,7 @@ import ModoCocina from "./ModoCocina";
 import Chatbot from "./Chatbot";
 import ListaCompras from "./ListaCompras";
 import RecetasPorFecha from "./RecetasPorFecha";
+import RecetasAPI from "./RecetasAPI";
 
 function App() {
   const [vista, setVista] = useState("login");
@@ -54,6 +55,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // Activa la textura de grano (solo dentro de la app, no en login/registro)
+  useEffect(() => {
+    document.body.classList.toggle("modo-lujo", !!usuario || invitado);
+  }, [usuario, invitado]);
+
   const cerrarSesion = async () => {
     await signOut(auth);
     setInvitado(false);
@@ -84,6 +90,7 @@ function App() {
     { vista: "chatbot", texto: "Chatbot" },
     { vista: "compras", texto: "Lista de compras" },
     { vista: "fechas", texto: "Fechas y eventos" },
+    { vista: "api", texto: "🌐 Más postres (API)" },
   ];
 
   return (
@@ -147,6 +154,7 @@ function App() {
       {tieneAcceso && vista === "chatbot" && <Chatbot />}
       {tieneAcceso && vista === "compras" && <ListaCompras />}
       {tieneAcceso && vista === "fechas" && <RecetasPorFecha />}
+      {tieneAcceso && vista === "api" && <RecetasAPI />}
       </div>
     </>
   );

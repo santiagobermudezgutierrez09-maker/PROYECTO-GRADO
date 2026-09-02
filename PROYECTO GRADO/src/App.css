@@ -144,189 +144,132 @@
   }
 }
 
-
 /* ============================================================
-   TEMA "COCINA" — se aplica solo dentro de la app (después de
-   iniciar sesión o entrar como invitado). El login/registro
-   conserva el tema oscuro con el fondo animado.
+   TEMA "DARK LUXURY DE COCINA" — se aplica solo dentro de la
+   app (login/registro conservan el fondo animado oscuro tal
+   cual estaba).
    ============================================================ */
 
 .tema-cocina {
-  --bg-page: #fffaf4;
-  --bg-surface: rgba(255, 250, 244, 0.9);
-  --bg-surface-strong: #fffdf9;
-  --bg-soft: #f7ebda;
+  --bg-page:     #0a0907;
+  --bg-surface:  #161412;
+  --bg-elevada:  #100f0d;
 
-  --color-primary: #c76138;
-  --color-secondary: #6d8a42;
-  --color-teal: #4e7a5d;
-  --color-yellow: #e5b65a;
-  --color-pink: #e9b39b;
-  --color-lavender: #f1d8a8;
+  --color-primary:   #d4a03c; /* ámbar/dorado - acento principal */
+  --color-secondary: #b4c0d4; /* plata - acento secundario */
+  --color-teal:      #42b872; /* esmeralda - ingredientes frescos */
+  --color-yellow:    #e8b84e; /* ámbar brillante - estados activos */
+  --color-pink:      #c8385a; /* carmesí - acento cálido */
+  --color-lavender:  #1c150c; /* panel oscuro elevado, para la tarjeta de bienvenida */
 
-  --border-color: rgba(88, 58, 42, 0.55);
-  --shadow-sm: 0 10px 20px rgba(101, 72, 52, 0.08);
-  --shadow-md: 0 18px 36px rgba(121, 92, 70, 0.12);
-  --shadow-lg: 0 28px 52px rgba(108, 80, 62, 0.18);
-  --shadow-md-hover: 0 12px 24px rgba(96, 72, 56, 0.12);
+  --border-color: rgba(255, 248, 230, 0.13);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-md: inset 0 1px 0 rgba(255, 248, 230, 0.08), 0 4px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --shadow-md-hover: inset 0 1px 0 rgba(255, 248, 230, 0.10), 0 12px 40px rgba(0, 0, 0, 0.55);
 
-  --text-primary: #34251d;
-  --text-secondary: #6e5348;
-}
-
-.tema-cocina .app-shell {
-  max-width: 1180px;
-  padding: 0 18px 54px;
+  --text-primary:   #f0ebe0;
+  --text-secondary: #8a8070;
 }
 
 .tema-cocina .app-titulo {
-  color: #3a2a24;
-  text-shadow: none;
-  letter-spacing: 0.08em;
-  font-family: Georgia, "Times New Roman", serif;
-  margin-top: 20px;
+  color: var(--text-primary);
+  text-shadow: 0 0 20px rgba(212, 160, 60, 0.28);
 }
 
 .tema-cocina .barra-sesion {
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(110, 83, 72, 0.15);
-  backdrop-filter: blur(5px);
-  border-radius: 999px;
-  padding: 10px 16px;
-  margin: 18px auto 0;
-  max-width: 920px;
-  box-shadow: var(--shadow-sm);
 }
 
 .tema-cocina .barra-sesion button {
-  color: #fffaf5;
-  background: linear-gradient(135deg, var(--color-primary), #dd8556);
-  border: none;
-  box-shadow: 0 8px 18px rgba(199, 97, 56, 0.22);
+  color: #ffffff;
 }
 
-.tema-cocina .nav {
-  background: rgba(255, 252, 247, 0.78);
-  border: 1px solid rgba(112, 81, 60, 0.14);
-  border-radius: 999px;
-  box-shadow: var(--shadow-md);
-  padding: 12px 16px;
-  backdrop-filter: blur(8px);
-}
-
-.tema-cocina .nav button {
-  color: var(--text-primary);
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 10px 16px;
-  background: transparent;
-  box-shadow: none;
-  transition: all 0.2s ease;
-}
-
-.tema-cocina .nav button:hover {
-  background: rgba(199, 97, 56, 0.08);
-  border-color: rgba(199, 97, 56, 0.2);
-  transform: translateY(-1px);
-}
-
-.tema-cocina .nav .nav-activo,
-.tema-cocina .filtro-activo {
-  background: linear-gradient(135deg, #f7d88b, #e5b65a) !important;
-  color: #3e2c26 !important;
-  border-color: rgba(109, 83, 72, 0.2) !important;
-  box-shadow: 0 10px 20px rgba(229, 182, 90, 0.22) !important;
-}
-
+/* Botones normales: fondo oscuro + borde tenue, sin la sombra dura */
 .tema-cocina button {
-  background: linear-gradient(135deg, var(--color-primary), #d67d4e);
-  color: #fffaf5;
-  border: none;
-  border-radius: 16px;
-  box-shadow: 0 10px 18px rgba(199, 97, 56, 0.18);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: none;
 }
 
 .tema-cocina button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 22px rgba(199, 97, 56, 0.2);
+  transform: translateY(-1px);
+  border-color: rgba(255, 248, 230, 0.28);
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .tema-cocina button:active {
   transform: translateY(0);
-  box-shadow: 0 8px 14px rgba(199, 97, 56, 0.16);
-}
-
-.tema-cocina button:disabled {
-  background: linear-gradient(135deg, #d8c3a5, #cbb397);
-  color: #7c665d;
   box-shadow: none;
 }
 
+.tema-cocina button:disabled {
+  background-color: #2a2620;
+  color: #5a544a;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Botón "activo" (menú actual, categoría elegida): brillo ámbar como CTA principal */
+.tema-cocina .nav .nav-activo,
+.tema-cocina .filtro-activo {
+  background-color: var(--bg-surface) !important;
+  color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  box-shadow:
+    0 0 8px rgba(212, 160, 60, 0.55),
+    0 0 20px rgba(212, 160, 60, 0.25),
+    0 0 40px rgba(212, 160, 60, 0.10) !important;
+}
+
+/* Tarjetas: sin borde, elevación con sombra suave (look premium) */
+.tema-cocina .card {
+  background-color: var(--bg-surface);
+  border: none;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: none;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.tema-cocina .card[onclick],
+.tema-cocina .card {
+  cursor: default;
+}
+
+.tema-cocina .card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md-hover);
+}
+
+/* Campos de texto: oscuros, con resplandor ámbar al enfocar */
 .tema-cocina input,
 .tema-cocina select {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(107, 84, 70, 0.22);
-  border-radius: 14px;
-  box-shadow: inset 0 2px 6px rgba(120, 92, 69, 0.04);
+  background-color: var(--bg-elevada);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
+  box-shadow: none;
 }
 
 .tema-cocina input::placeholder {
-  color: #9a7a6d;
+  color: #5a544a;
 }
 
 .tema-cocina input:focus,
 .tema-cocina select:focus {
-  border-color: rgba(93, 132, 92, 0.8);
-  box-shadow: 0 0 0 4px rgba(93, 132, 92, 0.14);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(212, 160, 60, 0.18);
   transform: none;
 }
 
 .tema-cocina select option {
-  background-color: #fffaf5;
-  color: #34251d;
-}
-
-.tema-cocina .card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 248, 240, 0.9));
-  border: 1px solid rgba(116, 91, 72, 0.12);
-  border-radius: 24px;
-  box-shadow: var(--shadow-md);
-  padding: 22px 20px;
-}
-
-.tema-cocina .tag {
-  background: rgba(255, 247, 236, 0.96);
-  border: 1px solid rgba(112, 81, 60, 0.12);
-  border-radius: 999px;
-  box-shadow: 0 8px 18px rgba(110, 79, 55, 0.06);
+  background-color: var(--bg-elevada);
   color: var(--text-primary);
 }
 
-.tema-cocina h1,
-.tema-cocina h2,
-.tema-cocina h3,
-.tema-cocina h4 {
-  color: var(--text-primary);
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -0.02em;
-}
-
-.tema-cocina p,
-.tema-cocina li,
-.tema-cocina label,
-.tema-cocina span {
-  color: var(--text-secondary);
-}
-
-.tema-cocina a {
-  color: var(--color-teal);
-}
-
-/* Fondo fijo cálido, con un degradado suave tipo mesón de cocina
-   más un patrón sutil de baldosas, en vez del fondo animado oscuro */
+/* Fondo fijo: casi negro con un único resplandor ámbar abajo al centro,
+   como en las páginas premium tipo SaaS de lujo */
 .fondo-cocina {
   position: fixed;
   top: 0;
@@ -334,19 +277,45 @@
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(199, 97, 56, 0.12), transparent 34%),
-    radial-gradient(circle at 80% 78%, rgba(109, 138, 66, 0.16), transparent 42%),
-    linear-gradient(160deg, #fffaf3 0%, #f5ead9 48%, #f3dfc2 100%);
+  background-color: #0a0907;
+  overflow: hidden;
 }
 
-.fondo-cocina::before {
+.fondo-cocina::after {
   content: "";
   position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  max-width: 140vw;
+  border-radius: 50%;
+  filter: blur(60px);
+  background: radial-gradient(
+    ellipse at center bottom,
+    rgba(212, 160, 60, 0.30) 0%,
+    rgba(150, 75, 10, 0.14) 35%,
+    transparent 70%
+  );
+  animation: orb-breathe 8s ease-in-out infinite alternate;
+}
+
+@keyframes orb-breathe {
+  from { opacity: 0.8; transform: translateX(-50%) scale(1); }
+  to   { opacity: 1;   transform: translateX(-50%) scale(1.08); }
+}
+
+/* Textura de grano sutil, solo dentro de la app (ver App.jsx: se activa
+   agregando la clase "modo-lujo" al body cuando hay sesión o invitado) */
+body.modo-lujo::before {
+  content: "";
+  position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(132, 95, 68, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(132, 95, 68, 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-size: 128px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
