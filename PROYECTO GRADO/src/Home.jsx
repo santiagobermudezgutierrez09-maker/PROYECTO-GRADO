@@ -1,10 +1,4 @@
-// Página de inicio: funciona como panel de control de Chain Cook.
-// Estructura: saludo -> acción principal -> accesos rápidos -> más opciones.
-// (Usa exactamente los mismos estilos/colores que ya existían, solo cambia el orden y la agrupación)
-
 function Home({ irA, correoUsuario }) {
-  // Acción principal: la entrada más "inteligente", pensada para
-  // alguien que no sabe qué cocinar y quiere que la app le resuelva.
   const accionPrincipal = {
     vista: "generador",
     emoji: "🥕",
@@ -13,7 +7,6 @@ function Home({ irA, correoUsuario }) {
     texto: "Escribe los ingredientes que tienes y te decimos qué postre puedes preparar ahora mismo.",
   };
 
-  // Accesos rápidos: las funciones que más se usan día a día.
   const accesosRapidos = [
     {
       vista: "recetas",
@@ -38,14 +31,13 @@ function Home({ irA, correoUsuario }) {
     },
   ];
 
-  // Más opciones: funciones de apoyo, igual de completas pero de uso puntual.
   const masOpciones = [
     {
       vista: "api",
       emoji: "🌐",
       color: "var(--color-secondary)",
-      titulo: "Más postres (API)",
-      texto: "Descubre postres de todo el mundo, traídos en vivo desde una API de recetas.",
+      titulo: "Más postres",
+      texto: "Descubre postres de todo el mundo, traídos en vivo desde TheMealDB.",
     },
     {
       vista: "chatbot",
@@ -63,7 +55,6 @@ function Home({ irA, correoUsuario }) {
     },
   ];
 
-  // Tarjeta reutilizable (misma estructura y estilos que ya existían)
   const Tarjeta = ({ item }) => (
     <div
       key={item.vista}
@@ -101,7 +92,6 @@ function Home({ irA, correoUsuario }) {
 
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 12px 40px" }}>
-      {/* 1. Saludo: quién es el usuario y qué puede hacer aquí */}
       <div
         className="card"
         style={{
@@ -119,12 +109,10 @@ function Home({ irA, correoUsuario }) {
         </p>
       </div>
 
-      {/* 2. Acción principal: la más rápida para alguien nuevo */}
       <div style={{ ...grid, gridTemplateColumns: "1fr", marginBottom: "28px" }}>
         <Tarjeta item={accionPrincipal} />
       </div>
 
-      {/* 3. Accesos rápidos: lo que más se usa */}
       <h2 style={{ textAlign: "left", marginBottom: "12px" }}>Accesos rápidos</h2>
       <div style={{ ...grid, marginBottom: "28px" }}>
         {accesosRapidos.map((item) => (
@@ -132,7 +120,6 @@ function Home({ irA, correoUsuario }) {
         ))}
       </div>
 
-      {/* 4. Más opciones: funciones de apoyo */}
       <h2 style={{ textAlign: "left", marginBottom: "12px" }}>Más opciones</h2>
       <div style={grid}>
         {masOpciones.map((item) => (

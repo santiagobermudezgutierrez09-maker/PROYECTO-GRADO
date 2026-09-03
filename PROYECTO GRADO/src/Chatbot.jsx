@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { generarRespuesta } from "./chatbotEngine";
 
-// recetaActiva: la receta seleccionada en Modo Cocina (puede venir vacía).
-// pasoActualIndex: en qué paso va el usuario (opcional, solo lo usa Modo Cocina).
 function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
   const [mensajes, setMensajes] = useState([
     {

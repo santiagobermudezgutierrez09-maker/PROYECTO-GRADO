@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
 
-// Pantalla que trae postres EN VIVO desde una API externa gratuita:
-// TheMealDB (https://www.themealdb.com/api.php), filtrando solo la
-// categoría "Dessert". No necesita clave ni registro para uso básico.
-
 function RecetasAPI() {
   const [lista, setLista] = useState([]);
   const [cargandoLista, setCargandoLista] = useState(true);
@@ -12,7 +8,6 @@ function RecetasAPI() {
   const [recetaSeleccionada, setRecetaSeleccionada] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
 
-  // Trae la lista de postres (solo nombre, id e imagen) al abrir la pantalla
   useEffect(() => {
     const cargarLista = async () => {
       try {
@@ -22,7 +17,7 @@ function RecetasAPI() {
         const datos = await respuesta.json();
         setLista(datos.meals || []);
       } catch (e) {
-        setError("No se pudo conectar con la API de postres. Revisa tu conexión a internet.");
+        setError("No se pudo conectar con los postres. Revisa tu conexión a internet.");
       } finally {
         setCargandoLista(false);
       }
@@ -30,7 +25,6 @@ function RecetasAPI() {
     cargarLista();
   }, []);
 
-  // Trae el detalle completo (ingredientes + instrucciones) de un postre
   const verDetalle = async (idMeal) => {
     setCargandoDetalle(true);
     try {
@@ -46,8 +40,6 @@ function RecetasAPI() {
     }
   };
 
-  // TheMealDB guarda los ingredientes en 20 campos sueltos (strIngredient1..20).
-  // Esta función los junta en una sola lista, ignorando los que están vacíos.
   const obtenerIngredientes = (receta) => {
     const ingredientes = [];
     for (let i = 1; i <= 20; i++) {
@@ -61,14 +53,13 @@ function RecetasAPI() {
   };
 
   if (cargandoLista) {
-    return <p style={{ textAlign: "center" }}>Cargando postres desde la API...</p>;
+    return <p style={{ textAlign: "center" }}>Cargando postres...</p>;
   }
 
   if (error) {
     return <p style={{ textAlign: "center", color: "var(--color-pink)" }}>{error}</p>;
   }
 
-  // Vista de detalle de un postre elegido
   if (recetaSeleccionada) {
     const ingredientes = obtenerIngredientes(recetaSeleccionada);
     return (
@@ -104,12 +95,11 @@ function RecetasAPI() {
     );
   }
 
-  // Vista de lista (grilla de postres con imagen y nombre)
   return (
     <div style={{ maxWidth: "800px", margin: "20px auto", textAlign: "center" }}>
       <h2>🌐 Explorar más postres</h2>
       <p style={{ marginBottom: "20px" }}>
-        Estos postres se traen en vivo desde TheMealDB, una API pública de recetas.
+        Estos postres se traen en vivo desde TheMealDB.
       </p>
 
       {cargandoDetalle && <p>Cargando postre...</p>}

@@ -1,12 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-// Fondo animado de luces (arcos concéntricos que brillan, tipo "wow").
-// speed: velocidad de la animación (1 = normal).
-// lineWidth: grosor de las líneas de luz.
-// dispersion: separación de color (efecto arcoíris azul/blanco/ámbar).
-// tint: si se pasa un color [r,g,b] entre 0 y 1, el efecto se pinta de ese color.
-// brightness: qué tan brillante se ve todo.
 export function ShaderAnimation({
   speed = 1,
   lineWidth = 0.002,

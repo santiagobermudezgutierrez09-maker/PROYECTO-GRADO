@@ -1,15 +1,10 @@
-/* ============================================================
-   Estructura general: contenedor centrado, barra de navegación,
-   encabezado, ajustes de celular
-   ============================================================ */
-
 .app-shell {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 16px 40px;
   text-align: center;
   position: relative;
-  z-index: 1; /* por encima del fondo animado */
+  z-index: 1;
 }
 
 .app-titulo {
@@ -80,7 +75,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Botón de categoría seleccionado (en el catálogo de recetas) */
 .filtro-activo {
   background-color: var(--color-yellow) !important;
   color: #111111 !important;
@@ -90,9 +84,6 @@
   text-align: left;
 }
 
-/* ============================================================
-   Responsive: celulares y pantallas angostas
-   ============================================================ */
 @media (max-width: 600px) {
   .app-shell {
     padding: 0 10px 30px;
@@ -124,8 +115,6 @@
     margin-bottom: 8px;
   }
 
-  /* Excepción: el campo del chat va en fila junto al botón Enviar,
-     no debe ocupar el 100% ni tener margen abajo */
   .chat-form input[type="text"] {
     width: auto !important;
     flex: 1;
@@ -144,23 +133,17 @@
   }
 }
 
-/* ============================================================
-   TEMA "DARK LUXURY DE COCINA" — se aplica solo dentro de la
-   app (login/registro conservan el fondo animado oscuro tal
-   cual estaba).
-   ============================================================ */
-
 .tema-cocina {
   --bg-page:     #0a0907;
   --bg-surface:  #161412;
   --bg-elevada:  #100f0d;
 
-  --color-primary:   #d4a03c; /* ámbar/dorado - acento principal */
-  --color-secondary: #b4c0d4; /* plata - acento secundario */
-  --color-teal:      #42b872; /* esmeralda - ingredientes frescos */
-  --color-yellow:    #e8b84e; /* ámbar brillante - estados activos */
-  --color-pink:      #c8385a; /* carmesí - acento cálido */
-  --color-lavender:  #1c150c; /* panel oscuro elevado, para la tarjeta de bienvenida */
+  --color-primary:   #d4a03c;
+  --color-secondary: #b4c0d4;
+  --color-teal:      #42b872;
+  --color-yellow:    #e8b84e;
+  --color-pink:      #c8385a;
+  --color-lavender:  #1c150c;
 
   --border-color: rgba(255, 248, 230, 0.13);
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
@@ -185,7 +168,6 @@
   color: #ffffff;
 }
 
-/* Botones normales: fondo oscuro + borde tenue, sin la sombra dura */
 .tema-cocina button {
   border: 1px solid var(--border-color);
   background-color: var(--bg-surface);
@@ -212,7 +194,6 @@
   box-shadow: none;
 }
 
-/* Botón "activo" (menú actual, categoría elegida): brillo ámbar como CTA principal */
 .tema-cocina .nav .nav-activo,
 .tema-cocina .filtro-activo {
   background-color: var(--bg-surface) !important;
@@ -224,7 +205,6 @@
     0 0 40px rgba(212, 160, 60, 0.10) !important;
 }
 
-/* Tarjetas: sin borde, elevación con sombra suave (look premium) */
 .tema-cocina .card {
   background-color: var(--bg-surface);
   border: none;
@@ -243,7 +223,6 @@
   box-shadow: var(--shadow-md-hover);
 }
 
-/* Campos de texto: oscuros, con resplandor ámbar al enfocar */
 .tema-cocina input,
 .tema-cocina select {
   background-color: var(--bg-elevada);
@@ -268,8 +247,6 @@
   color: var(--text-primary);
 }
 
-/* Fondo fijo: casi negro con un único resplandor ámbar abajo al centro,
-   como en las páginas premium tipo SaaS de lujo */
 .fondo-cocina {
   position: fixed;
   top: 0;
@@ -306,8 +283,6 @@
   to   { opacity: 1;   transform: translateX(-50%) scale(1.08); }
 }
 
-/* Textura de grano sutil, solo dentro de la app (ver App.jsx: se activa
-   agregando la clase "modo-lujo" al body cuando hay sesión o invitado) */
 body.modo-lujo::before {
   content: "";
   position: fixed;

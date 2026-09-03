@@ -22,28 +22,25 @@ function App() {
   const [usuario, setUsuario] = useState(null);
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
-  const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
+  const [invitado, setInvitado] = useState(false);
 
-  // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
   useCierreSesionInactividad();
 
-  // Escucha en tiempo real si hay un usuario logueado o no
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (usuarioActual) => {
       setUsuario(usuarioActual);
       setCargandoSesion(false);
 
       if (usuarioActual) {
-        setInvitado(false); // si inicia sesión de verdad, ya no es invitado
+        setInvitado(false);
         setVista("home");
 
-        // Busca el nombre guardado en Firestore (colección "usuarios")
         try {
           const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
           if (snap.exists() && snap.data().nombre) {
             setNombreUsuario(snap.data().nombre);
           } else {
-            setNombreUsuario(""); // si no encuentra nombre, usamos el correo como respaldo
+            setNombreUsuario("");
           }
         } catch (error) {
           setNombreUsuario("");
@@ -55,7 +52,6 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Activa la textura de grano (solo dentro de la app, no en login/registro)
   useEffect(() => {
     document.body.classList.toggle("modo-lujo", !!usuario || invitado);
   }, [usuario, invitado]);
@@ -75,13 +71,10 @@ function App() {
     return <p style={{ textAlign: "center", marginTop: "40px" }}>Cargando...</p>;
   }
 
-  // true si el usuario puede ver las pantallas de la app (logueado o invitado)
   const tieneAcceso = !!usuario || invitado;
 
-  // Lo que se muestra como identificación: el nombre si existe, si no, el correo, si no, "Invitado"
   const nombreParaMostrar = usuario ? nombreUsuario || usuario.email : "Invitado";
 
-  // Botones de la barra de navegación (cuando hay sesión o modo invitado)
   const botonesNav = [
     { vista: "home", texto: "🏠 Inicio" },
     { vista: "recetas", texto: "Ver recetas" },
@@ -90,12 +83,11 @@ function App() {
     { vista: "chatbot", texto: "Chatbot" },
     { vista: "compras", texto: "Lista de compras" },
     { vista: "fechas", texto: "Fechas y eventos" },
-    { vista: "api", texto: "🌐 Más postres (API)" },
+    { vista: "api", texto: "🌐 Más postres" },
   ];
 
   return (
     <>
-      {/* Fondo animado oscuro SOLO en login/registro; dentro de la app, fondo cálido de cocina */}
       {tieneAcceso ? (
         <div className="fondo-cocina" />
       ) : (
@@ -104,7 +96,6 @@ function App() {
       <div className={`app-shell ${tieneAcceso ? "tema-cocina" : ""}`}>
       <h1 className="app-titulo">🍳 CHARIN COOK</h1>
 
-      {/* Barra de estado de sesión */}
       <div className="barra-sesion">
         {usuario ? (
           <>
@@ -123,8 +114,6 @@ function App() {
         )}
       </div>
 
-      {/* Menú: si NO hay acceso, solo se ofrece login/registro/invitado.
-          Si SÍ hay acceso (logueado o invitado), se muestra el resto de la app. */}
       <nav className="nav">
         {!tieneAcceso && (
           <>

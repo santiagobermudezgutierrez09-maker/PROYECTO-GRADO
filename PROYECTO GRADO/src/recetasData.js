@@ -1,8 +1,3 @@
-// Recetas del proyecto Charin Cook — enfocado en POSTRES.
-// 3 categorías: tradicional (postres clásicos), fitness (postres saludables),
-// especial (postres para fechas especiales). Para agregar un postre nuevo,
-// copia un bloque { ... } con un id único.
-
 const recetas = [
   {
     id: 1,
