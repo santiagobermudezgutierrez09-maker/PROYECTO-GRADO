@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "./firebase";
 
 function Login() {
@@ -13,6 +13,21 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, correo, clave);
       setMensaje("¡Sesión iniciada!");
+    } catch (error) {
+      setMensaje("Error: " + error.message);
+    }
+  };
+
+  // RF04 - Recuperación de contraseña
+  const handleRecuperar = async () => {
+    setMensaje("");
+    if (!correo) {
+      setMensaje("Escribe tu correo arriba primero, y luego dale clic a este enlace.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, correo);
+      setMensaje("Te enviamos un correo a " + correo + " con un enlace para restablecer tu contraseña.");
     } catch (error) {
       setMensaje("Error: " + error.message);
     }
@@ -46,6 +61,25 @@ function Login() {
           Entrar
         </button>
       </form>
+
+      <p style={{ marginTop: "10px" }}>
+        <button
+          type="button"
+          onClick={handleRecuperar}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            textDecoration: "underline",
+            cursor: "pointer",
+            color: "var(--color-teal)",
+            fontSize: "0.85rem",
+          }}
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+      </p>
+
       {mensaje && <p>{mensaje}</p>}
     </div>
   );
