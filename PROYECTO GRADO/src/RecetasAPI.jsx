@@ -97,10 +97,7 @@ function RecetasAPI() {
 
   return (
     <div style={{ maxWidth: "800px", margin: "20px auto", textAlign: "center" }}>
-      <h2>🌐 Explorar más postres</h2>
-      <p style={{ marginBottom: "20px" }}>
-        Estos postres se traen en vivo desde TheMealDB.
-      </p>
+      <h2>Explorar más postres</h2>
 
       {cargandoDetalle && <p>Cargando postre...</p>}
 
