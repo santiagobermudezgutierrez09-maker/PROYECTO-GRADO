@@ -1,0 +1,395 @@
+/* ====== RecetaCard ====== */
+.rc {
+  --rc-fresa: #c2415d;
+  --rc-fresa-oscuro: #9f2f47;
+  --rc-rosa-suave: #fbe9ee;
+  --rc-tinta: #3a2430;
+  --rc-tinta-suave: #7a6470;
+  --rc-linea: #ecdde2;
+  --rc-fondo: #ffffff;
+
+  background: var(--rc-fondo);
+  color: var(--rc-tinta);
+  border: 1px solid var(--rc-linea);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(58, 36, 48, 0.05);
+}
+
+/* Encabezado */
+.rc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.rc-title {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  color: var(--rc-tinta);
+}
+
+.rc-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rc-tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--rc-fresa);
+  color: #fff;
+}
+
+.rc-tag--soft {
+  background: var(--rc-rosa-suave);
+  color: var(--rc-fresa-oscuro);
+}
+
+/* Datos rápidos */
+.rc-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 20px;
+  border: 1px solid var(--rc-linea);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rc-stats > div {
+  padding: 12px 14px;
+  background: var(--rc-rosa-suave);
+}
+
+.rc-stats > div + div {
+  border-left: 1px solid var(--rc-linea);
+}
+
+.rc-stats dt {
+  font-size: 0.78rem;
+  color: var(--rc-tinta-suave);
+  margin-bottom: 2px;
+}
+
+.rc-stats dd {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Ingredientes + pasos */
+.rc-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 28px;
+  margin-bottom: 20px;
+}
+
+.rc-subtitle {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: var(--rc-fresa-oscuro);
+}
+
+.rc-ingredientes,
+.rc-pasos {
+  margin: 0;
+  padding-left: 20px;
+  line-height: 1.55;
+}
+
+.rc-ingredientes li,
+.rc-pasos li {
+  margin-bottom: 6px;
+}
+
+.rc-ingredientes li::marker {
+  color: var(--rc-fresa);
+}
+
+.rc-pasos li::marker {
+  color: var(--rc-fresa);
+  font-weight: 700;
+}
+
+/* Acciones */
+.rc-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px solid var(--rc-linea);
+}
+
+.rc-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rc-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--rc-linea);
+  background: #fff;
+  color: var(--rc-tinta);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.rc-btn:hover {
+  background: var(--rc-rosa-suave);
+  border-color: var(--rc-fresa);
+}
+
+.rc-btn--active {
+  background: var(--rc-rosa-suave);
+  border-color: var(--rc-fresa);
+  color: var(--rc-fresa-oscuro);
+}
+
+.rc-btn--primary {
+  background: var(--rc-fresa);
+  border-color: var(--rc-fresa);
+  color: #fff;
+}
+
+.rc-btn--primary:hover {
+  background: var(--rc-fresa-oscuro);
+  border-color: var(--rc-fresa-oscuro);
+}
+
+.rc-btn:focus-visible,
+.rc-star:focus-visible,
+.rc-comentarios summary:focus-visible,
+.rc-form input:focus-visible {
+  outline: 2px solid var(--rc-fresa);
+  outline-offset: 2px;
+}
+
+/* Estrellas */
+.rc-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rc-stars-label {
+  font-size: 0.9rem;
+  color: var(--rc-tinta-suave);
+  margin-right: 6px;
+}
+
+.rc-star {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #cdb8c0;
+  cursor: pointer;
+}
+
+.rc-star:hover,
+.rc-star--on {
+  color: #e8a317;
+}
+
+/* Mensaje de aviso */
+.rc-mensaje {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff4dc;
+  color: #7a5200;
+  font-size: 0.9rem;
+}
+
+/* Comentarios */
+.rc-comentarios {
+  margin-top: 16px;
+  border-top: 1px solid var(--rc-linea);
+  padding-top: 14px;
+}
+
+.rc-comentarios summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--rc-fresa-oscuro);
+}
+
+.rc-lista {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rc-lista li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--rc-rosa-suave);
+  font-size: 0.92rem;
+}
+
+.rc-autor {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--rc-tinta-suave);
+}
+
+.rc-vacio {
+  color: var(--rc-tinta-suave);
+  background: transparent !important;
+  padding-left: 0 !important;
+}
+
+.rc-form {
+  display: flex;
+  gap: 8px;
+}
+
+.rc-form input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--rc-linea);
+  background: #fff;
+  color: var(--rc-tinta);
+}
+
+/* Móvil */
+@media (max-width: 700px) {
+  .rc {
+    padding: 18px;
+  }
+
+  .rc-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .rc-stats > div {
+    padding: 10px;
+  }
+}
+
+/* ============================================================
+   TARJETA OSCURA (tema de la app)
+   Para volver a la tarjeta blanca, borra este bloque
+   ============================================================ */
+
+.tema-cocina .rc {
+  --rc-fresa: #c8385a;
+  --rc-fresa-oscuro: #a82a49;
+  --rc-rosa-suave: rgba(200, 56, 90, 0.12);
+  --rc-tinta: #f0ebe0;
+  --rc-tinta-suave: #8a8070;
+  --rc-linea: rgba(255, 248, 230, 0.10);
+  --rc-fondo: #161412;
+
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.08), 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+.tema-cocina .rc-subtitle,
+.tema-cocina .rc-comentarios summary,
+.tema-cocina .rc-tag--soft,
+.tema-cocina .rc-btn--active {
+  color: #f08aa0;
+}
+
+.tema-cocina .rc-stats > div {
+  background: rgba(255, 248, 230, 0.04);
+}
+
+.tema-cocina .rc-btn--active {
+  background: var(--rc-rosa-suave);
+  border-color: var(--rc-fresa);
+}
+
+.tema-cocina .rc-btn--primary {
+  background: var(--rc-fresa);
+  border-color: var(--rc-fresa);
+  color: #fff;
+}
+
+.tema-cocina .rc-btn--primary:hover {
+  background: var(--rc-fresa-oscuro);
+  border-color: var(--rc-fresa-oscuro);
+}
+
+/* Las estrellas son botones: se les quita el aspecto de botón del tema */
+.tema-cocina .rc-star,
+.tema-cocina .rc-star:hover,
+.tema-cocina .rc-star:active {
+  background: none;
+  border: none;
+  box-shadow: none;
+  transform: none;
+  margin: 0;
+  padding: 0 2px;
+  width: auto;
+  color: #5a544a;
+}
+
+.tema-cocina .rc-star:hover,
+.tema-cocina .rc-star--on {
+  color: var(--color-yellow, #e8b84e);
+}
+
+.tema-cocina .rc-mensaje {
+  background: rgba(232, 184, 78, 0.12);
+  color: #e8b84e;
+}
+
+.tema-cocina .rc-form input {
+  margin-bottom: 0;
+}
+
+/* La tarjeta se adapta a su propio ancho */
+.rc {
+  container-type: inline-size;
+}
+
+.rc-stats dd {
+  white-space: nowrap;
+}
+
+@container (max-width: 520px) {
+  .rc-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tema-cocina .rc-star {
+    width: auto;
+    margin: 0;
+  }
+
+  .tema-cocina .rc-form .rc-btn {
+    width: auto;
+    margin: 0;
+  }
+}

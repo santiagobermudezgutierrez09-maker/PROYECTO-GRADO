@@ -1,0 +1,158 @@
+/* ============================================================
+   GENERADOR DE INGREDIENTES
+   ============================================================ */
+
+.gi {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.gi-intro {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+}
+
+/* Buscador */
+.gi-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.tema-cocina .gi-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  margin-bottom: 0;
+}
+
+.tema-cocina .gi-form button {
+  width: auto;
+  margin: 0;
+  padding: 12px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+  white-space: nowrap;
+}
+
+.tema-cocina .gi-form button:hover {
+  background: var(--color-yellow);
+  border-color: var(--color-yellow);
+}
+
+.gi-vacio {
+  padding: 18px;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+/* Tarjeta de receta */
+.gi-receta {
+  margin-bottom: 16px;
+  padding: 22px;
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.gi-receta-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gi-nombre {
+  margin: 0;
+  font-size: 20px;
+}
+
+.gi-coincide {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-yellow);
+}
+
+/* Barra de coincidencia */
+.gi-barra {
+  height: 5px;
+  margin: 12px 0 18px;
+  border-radius: 999px;
+  background: rgba(255, 248, 230, 0.08);
+  overflow: hidden;
+}
+
+.gi-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-yellow));
+  box-shadow: 0 0 10px rgba(212, 160, 60, 0.45);
+}
+
+.gi-subtitulo {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Lista de ingredientes */
+.gi-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+}
+
+.gi-lista li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 248, 230, 0.04);
+  border: 1px solid transparent;
+}
+
+.gi-lista li.gi-tengo {
+  border-color: rgba(66, 184, 114, 0.35);
+  background: rgba(66, 184, 114, 0.08);
+}
+
+.gi-lista li.gi-falta {
+  border-color: rgba(200, 56, 90, 0.30);
+  background: rgba(200, 56, 90, 0.07);
+}
+
+.gi-sustituto {
+  font-size: 13px;
+  color: var(--color-yellow);
+}
+
+@media (max-width: 600px) {
+  .gi-form {
+    flex-direction: column;
+  }
+
+  .tema-cocina .gi-form input,
+  .tema-cocina .gi-form button {
+    width: 100% !important;
+  }
+
+  .gi-receta {
+    padding: 16px;
+  }
+}

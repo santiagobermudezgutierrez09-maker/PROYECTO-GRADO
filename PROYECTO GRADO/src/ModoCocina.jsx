@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import recetas from "./recetasData";
 import Chatbot from "./Chatbot";
+import "./ModoCocina.css";
 
 function ModoCocina() {
   const [recetaId, setRecetaId] = useState("");
@@ -11,7 +12,6 @@ function ModoCocina() {
   const intervaloRef = useRef(null);
 
   const receta = recetas.find((r) => r.id === Number(recetaId));
-
 
   useEffect(() => {
     if (corriendo && segundos > 0) {
@@ -26,6 +26,7 @@ function ModoCocina() {
   }, [corriendo, segundos]);
 
   const iniciarTemporizador = () => {
+    if (!minutosInput || minutosInput < 1) return;
     setSegundos(minutosInput * 60);
     setCorriendo(true);
   };
@@ -41,11 +42,9 @@ function ModoCocina() {
     return `${min}:${seg.toString().padStart(2, "0")}`;
   };
 
-
   if (!receta) {
     return (
-      <div style={{ maxWidth: "500px", margin: "20px auto", textAlign: "center" }}>
-        <h2>Modo cocina</h2>
+      <div className="mc-selector">
         <p>Elige la receta que vas a preparar:</p>
         <select
           value={recetaId}
@@ -53,7 +52,6 @@ function ModoCocina() {
             setRecetaId(e.target.value);
             setPasoActual(0);
           }}
-          style={{ padding: "8px", width: "100%" }}
         >
           <option value="">-- Selecciona una receta --</option>
           {recetas.map((r) => (
@@ -66,98 +64,89 @@ function ModoCocina() {
     );
   }
 
-  const esUltimoPaso = pasoActual === receta.pasos.length - 1;
-
+  const totalPasos = receta.pasos.length;
+  const esUltimoPaso = pasoActual === totalPasos - 1;
+  const progreso = ((pasoActual + 1) / totalPasos) * 100;
 
   return (
-    <div
-      style={{
-        maxWidth: "600px",
-        margin: "20px auto",
-        textAlign: "center",
-        backgroundColor: "#111",
-        color: "#fff",
-        padding: "24px",
-        borderRadius: "12px",
-      }}
-    >
-      <button
-        onClick={() => setRecetaId("")}
-        style={{ marginBottom: "16px", fontSize: "14px" }}
-      >
-        ← Elegir otra receta
-      </button>
-
-      <h2 style={{ fontSize: "28px" }}>{receta.nombre}</h2>
-      <p style={{ fontSize: "18px", opacity: 0.8 }}>
-        Paso {pasoActual + 1} de {receta.pasos.length}
-      </p>
-
-      {}
-      <div
-        style={{
-          fontSize: "32px",
-          lineHeight: "1.4",
-          margin: "30px 0",
-          minHeight: "150px",
-        }}
-      >
-        {receta.pasos[pasoActual]}
+    <div className="mc">
+      <div className="mc-top">
+        <h3 className="mc-nombre">{receta.nombre}</h3>
+        <button className="mc-volver" onClick={() => setRecetaId("")}>
+          ← Elegir otra receta
+        </button>
       </div>
 
-      {}
-      <div style={{ marginBottom: "30px" }}>
+      <div
+        className="mc-progreso"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={totalPasos}
+        aria-valuenow={pasoActual + 1}
+      >
+        <span style={{ width: `${progreso}%` }} />
+      </div>
+      <p className="mc-contador">
+        Paso {pasoActual + 1} de {totalPasos}
+      </p>
+
+      <p className="mc-paso">{receta.pasos[pasoActual]}</p>
+
+      {esUltimoPaso && <p className="mc-fin">🎉 ¡Listo! Buen provecho.</p>}
+
+      <div className="mc-nav">
         <button
           onClick={() => setPasoActual((p) => Math.max(0, p - 1))}
           disabled={pasoActual === 0}
-          style={{ fontSize: "20px", padding: "12px 24px", marginRight: "10px" }}
         >
           ⬅ Atrás
         </button>
         <button
-          onClick={() => setPasoActual((p) => Math.min(receta.pasos.length - 1, p + 1))}
+          className="mc-siguiente"
+          onClick={() => setPasoActual((p) => Math.min(totalPasos - 1, p + 1))}
           disabled={esUltimoPaso}
-          style={{ fontSize: "20px", padding: "12px 24px" }}
         >
           Siguiente ➡
         </button>
       </div>
 
-      {esUltimoPaso && <p style={{ fontSize: "22px" }}>🎉 ¡Listo! Buen provecho.</p>}
-
-      {}
-      <div
-        style={{
-          borderTop: "1px solid #444",
-          paddingTop: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <h3 style={{ fontSize: "20px" }}>Temporizador</h3>
-        <p style={{ fontSize: "36px" }}>{formatoTiempo(segundos)}</p>
+      <section className="mc-timer">
+        <h4>Temporizador</h4>
+        <p className={`mc-reloj ${corriendo ? "mc-reloj--activo" : ""}`}>
+          {formatoTiempo(segundos)}
+        </p>
 
         {!corriendo ? (
-          <div>
-            <input
-              type="number"
-              min="1"
-              value={minutosInput}
-              onChange={(e) => setMinutosInput(Number(e.target.value))}
-              style={{ padding: "8px", width: "80px", fontSize: "18px" }}
-            />
-            <span style={{ margin: "0 8px" }}>minutos</span>
-            <button onClick={iniciarTemporizador} style={{ fontSize: "18px", padding: "8px 16px" }}>
-              Iniciar
-            </button>
-          </div>
+          <>
+            <div className="mc-presets">
+              {[5, 10, 15, 30].map((m) => (
+                <button
+                  key={m}
+                  className={minutosInput === m ? "filtro-activo" : ""}
+                  onClick={() => setMinutosInput(m)}
+                >
+                  {m} min
+                </button>
+              ))}
+            </div>
+            <div className="mc-controles">
+              <input
+                type="number"
+                min="1"
+                value={minutosInput}
+                onChange={(e) => setMinutosInput(Number(e.target.value))}
+              />
+              <span>minutos</span>
+              <button onClick={iniciarTemporizador}>Iniciar</button>
+            </div>
+          </>
         ) : (
-          <button onClick={detenerTemporizador} style={{ fontSize: "18px", padding: "8px 16px" }}>
-            Detener
-          </button>
+          <div className="mc-controles">
+            <button onClick={detenerTemporizador}>Detener</button>
+          </div>
         )}
-      </div>
+      </section>
 
-      {}
       <Chatbot recetaActiva={receta} pasoActualIndex={pasoActual} />
     </div>
   );

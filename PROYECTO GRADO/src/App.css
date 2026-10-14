@@ -1,6 +1,6 @@
 /* ============================================================
-   Estructura general: contenedor centrado, barra de navegación,
-   encabezado, ajustes de celular
+   1) PANTALLAS SIN SESIÓN (login / registro)
+   Contenedor centrado sobre el fondo animado
    ============================================================ */
 
 .app-shell {
@@ -41,14 +41,6 @@
   gap: 8px;
 }
 
-.barra-sesion button {
-  font-size: 13px;
-  padding: 6px 12px;
-  background-color: var(--color-pink);
-  color: #111111;
-  margin: 0;
-}
-
 .nav {
   display: flex;
   align-items: center;
@@ -63,9 +55,6 @@
   box-shadow: var(--shadow-md);
   margin: 16px auto;
   max-width: 900px;
-  position: sticky;
-  top: 12px;
-  z-index: 100;
 }
 
 .nav button {
@@ -82,13 +71,6 @@
   transform: none;
 }
 
-.nav .nav-activo {
-  background-color: var(--color-yellow);
-  color: #111111;
-  border-color: var(--border-color);
-  box-shadow: var(--shadow-sm);
-}
-
 /* Botón de categoría seleccionado (en el catálogo de recetas) */
 .filtro-activo {
   background-color: var(--color-yellow) !important;
@@ -100,72 +82,8 @@
 }
 
 /* ============================================================
-   Responsive: celulares y pantallas angostas
-   ============================================================ */
-@media (max-width: 600px) {
-  .app-shell {
-    padding: 0 10px 30px;
-  }
-
-  .nav {
-    position: static;
-    padding: 10px;
-    gap: 4px;
-  }
-
-  .nav button {
-    font-size: 13px;
-    padding: 8px 10px;
-  }
-
-  .barra-sesion {
-    flex-direction: column;
-    font-size: 13px;
-  }
-
-  .app-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .app-titulo {
-    text-align: center;
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="date"],
-  input[type="number"],
-  select {
-    width: 100% !important;
-    margin-bottom: 8px;
-  }
-
-  /* Excepción: el campo del chat va en fila junto al botón Enviar,
-     no debe ocupar el 100% ni tener margen abajo */
-  .chat-form input[type="text"] {
-    width: auto !important;
-    flex: 1;
-    margin-bottom: 0;
-  }
-
-  button {
-    width: 100%;
-    margin: 4px 0;
-  }
-
-  .nav button,
-  .barra-sesion button,
-  .btn-enviar {
-    width: auto;
-  }
-}
-
-/* ============================================================
-   TEMA "DARK LUXURY DE COCINA" — se aplica solo dentro de la
-   app (login/registro conservan el fondo animado oscuro tal
-   cual estaba).
+   2) TEMA "DARK LUXURY DE COCINA" — variables y componentes
+   Se aplica solo dentro de la app (clase .tema-cocina)
    ============================================================ */
 
 .tema-cocina {
@@ -188,24 +106,8 @@
 
   --text-primary:   #f0ebe0;
   --text-secondary: #8a8070;
-}
 
-.tema-cocina .app-titulo {
-  color: var(--text-primary);
-  text-shadow: 0 0 20px rgba(212, 160, 60, 0.28);
-}
-
-.tema-cocina .barra-sesion {
-  color: var(--text-secondary);
-}
-
-.tema-cocina .barra-sesion button {
-  color: #ffffff;
-}
-
-.tema-cocina .nav {
-  border: 1.5px solid var(--color-primary);
-  box-shadow: 0 0 10px rgba(212, 160, 60, 0.25);
+  --sidebar-ancho: 272px;
 }
 
 /* Botones normales: fondo oscuro + borde tenue, sin la sombra dura */
@@ -235,8 +137,7 @@
   box-shadow: none;
 }
 
-/* Botón "activo" (menú actual, categoría elegida): brillo ámbar como CTA principal */
-.tema-cocina .nav .nav-activo,
+/* Botón "activo" (categoría elegida): brillo ámbar */
 .tema-cocina .filtro-activo {
   background-color: var(--bg-surface) !important;
   color: var(--color-primary) !important;
@@ -247,17 +148,13 @@
     0 0 40px rgba(212, 160, 60, 0.10) !important;
 }
 
-/* Tarjetas: sin borde, elevación con sombra suave (look premium) */
+/* Tarjetas: sin borde, elevación con sombra suave */
 .tema-cocina .card {
   background-color: var(--bg-surface);
   border: none;
   box-shadow: var(--shadow-md);
   backdrop-filter: none;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.tema-cocina .card[onclick],
-.tema-cocina .card {
   cursor: default;
 }
 
@@ -291,8 +188,292 @@
   color: var(--text-primary);
 }
 
-/* Fondo fijo: casi negro con un único resplandor ámbar abajo al centro,
-   como en las páginas premium tipo SaaS de lujo */
+/* ============================================================
+   3) LAYOUT CON BARRA LATERAL
+   [ sidebar | contenido ]
+   ============================================================ */
+
+.layout-app {
+  display: grid;
+  grid-template-columns: var(--sidebar-ancho) minmax(0, 1fr);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1; /* por encima del fondo */
+  color: var(--text-primary);
+}
+
+/* ---------- Barra lateral ---------- */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 20px;
+  background: linear-gradient(180deg, rgba(22, 20, 18, 0.92), rgba(12, 11, 9, 0.96));
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  text-align: left;
+  z-index: 200;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(212, 160, 60, 0.4);
+  border-radius: 3px;
+}
+
+/* Marca arriba: es lo más "decorado" de toda la barra */
+.sidebar-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 22px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 18px;
+}
+
+.sidebar-logo {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  border-radius: 12px;
+  background: var(--color-lavender);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 16px rgba(212, 160, 60, 0.35);
+  flex-shrink: 0;
+}
+
+.sidebar-nombre {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  text-shadow: 0 0 18px rgba(212, 160, 60, 0.3);
+}
+
+.sidebar-lema {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Grupos de opciones */
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-grupo-titulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0 12px 6px;
+}
+
+/* Cada opción del menú */
+.tema-cocina .side-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 15px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.tema-cocina .side-item:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: transparent;
+  background-color: rgba(255, 248, 230, 0.06);
+}
+
+.side-icono {
+  width: 28px;
+  text-align: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.side-texto {
+  flex: 1;
+  line-height: 1.25;
+}
+
+/* Opción activa: fondo dorado tenue + barra a la izquierda */
+.tema-cocina .side-item.activo {
+  background-color: rgba(212, 160, 60, 0.12);
+  color: var(--color-yellow);
+  border-color: rgba(212, 160, 60, 0.35);
+  font-weight: 600;
+}
+
+.tema-cocina .side-item.activo::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-primary);
+  box-shadow: 0 0 10px rgba(212, 160, 60, 0.8);
+}
+
+/* Foco visible con teclado */
+.tema-cocina .side-item:focus-visible,
+.tema-cocina .side-salir:focus-visible,
+.tema-cocina .menu-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Tarjeta de usuario */
+.sidebar-usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-top: 18px;
+  background-color: var(--bg-elevada);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.usuario-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #1a1408;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.usuario-datos {
+  min-width: 0; /* permite que el nombre largo se corte con "..." */
+}
+
+.usuario-nombre {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuario-estado {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.side-aviso {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  margin: 12px 4px 0;
+}
+
+.tema-cocina .side-salir {
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+/* ---------- Zona de contenido ---------- */
+
+.contenido-principal {
+  min-width: 0; /* evita que contenido ancho desborde la grilla */
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 36px;
+  background: rgba(10, 9, 7, 0.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.topbar-titulo {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topbar-desc {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* El botón de menú solo existe en celular */
+.tema-cocina .menu-btn {
+  display: none;
+  width: auto;
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.vista {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 36px 56px;
+  text-align: center; /* igual que antes: los componentes internos conservan su alineación */
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* ============================================================
+   4) FONDO Y TEXTURA
+   ============================================================ */
+
+/* Fondo fijo: casi negro con un único resplandor ámbar abajo al centro */
 .fondo-cocina {
   position: fixed;
   top: 0;
@@ -329,8 +510,7 @@
   to   { opacity: 1;   transform: translateX(-50%) scale(1.08); }
 }
 
-/* Textura de grano sutil, solo dentro de la app (ver App.jsx: se activa
-   agregando la clase "modo-lujo" al body cuando hay sesión o invitado) */
+/* Textura de grano sutil, solo dentro de la app */
 body.modo-lujo::before {
   content: "";
   position: fixed;
@@ -341,4 +521,268 @@ body.modo-lujo::before {
   mix-blend-mode: overlay;
   background-size: 128px;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   5) RESPONSIVE
+   ============================================================ */
+
+/* Tablets y celulares: la barra lateral pasa a ser un menú deslizable */
+@media (max-width: 860px) {
+  .layout-app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(300px, 84vw);
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar.abierta {
+    transform: translateX(0);
+  }
+
+  .tema-cocina .side-item.activo::before {
+    left: -16px;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 150;
+  }
+
+  .sidebar-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .tema-cocina .menu-btn {
+    display: inline-block;
+  }
+
+  .topbar {
+    padding: 14px 16px;
+  }
+
+  .topbar-titulo {
+    font-size: 18px;
+  }
+
+  .vista {
+    padding: 20px 14px 40px;
+  }
+}
+
+/* Celulares angostos: formularios a ancho completo */
+@media (max-width: 600px) {
+  .app-shell {
+    padding: 0 10px 30px;
+  }
+
+  .nav {
+    padding: 10px;
+    gap: 4px;
+  }
+
+  .nav button {
+    font-size: 13px;
+    padding: 8px 10px;
+    width: auto;
+  }
+
+  .barra-sesion {
+    flex-direction: column;
+    font-size: 13px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .app-titulo {
+    text-align: center;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  input[type="number"],
+  select {
+    width: 100% !important;
+    margin-bottom: 8px;
+  }
+
+  /* Excepción: el campo del chat va en fila junto al botón Enviar */
+  .chat-form input[type="text"] {
+    width: auto !important;
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  button {
+    width: 100%;
+    margin: 4px 0;
+  }
+
+  .btn-enviar {
+    width: auto;
+  }
+}
+
+/* Respeta a quienes desactivan las animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar-overlay,
+  .fondo-cocina::after {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============================================================
+   6) ACABADOS
+   ============================================================ */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+}
+
+/* ---------- Barra lateral ---------- */
+
+.sidebar {
+  background:
+    radial-gradient(120% 55% at 0% 0%, rgba(212, 160, 60, 0.12), transparent 60%),
+    linear-gradient(180deg, rgba(22, 20, 18, 0.94), rgba(10, 9, 7, 0.98));
+}
+
+.sidebar-marca {
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(90deg, rgba(212, 160, 60, 0.55), transparent) 1;
+}
+
+.sidebar-logo {
+  background: linear-gradient(145deg, #2c1f0d, #120d06);
+  box-shadow:
+    0 0 0 3px rgba(212, 160, 60, 0.10),
+    0 0 18px rgba(212, 160, 60, 0.35);
+}
+
+.sidebar-nombre {
+  font-size: 19px;
+  background: linear-gradient(90deg, #f7dea0, #d4a03c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+.sidebar-grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-grupo-titulo::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-color), transparent);
+}
+
+.side-icono {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(255, 248, 230, 0.05);
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.tema-cocina .side-item:hover {
+  transform: translateX(3px);
+  background-color: rgba(255, 248, 230, 0.06);
+}
+
+.tema-cocina .side-item:hover .side-icono {
+  background: rgba(212, 160, 60, 0.18);
+}
+
+.tema-cocina .side-item.activo {
+  background: linear-gradient(90deg, rgba(212, 160, 60, 0.20), rgba(212, 160, 60, 0.04));
+}
+
+.tema-cocina .side-item.activo .side-icono {
+  background: var(--color-primary);
+  color: #1a1408;
+  box-shadow: 0 0 14px rgba(212, 160, 60, 0.45);
+}
+
+.usuario-avatar {
+  background: linear-gradient(145deg, #f0c565, #b9862a);
+  box-shadow: 0 0 0 3px rgba(212, 160, 60, 0.22);
+}
+
+/* ---------- Barra superior ---------- */
+
+.topbar {
+  border-bottom: none;
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(212, 160, 60, 0.55), var(--border-color) 45%, transparent);
+}
+
+.topbar-titulo {
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Contenido ---------- */
+
+@keyframes vista-entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.vista {
+  animation: vista-entra 0.35s ease both;
+}
+
+.tema-cocina .card {
+  background-image: linear-gradient(180deg, rgba(255, 248, 230, 0.035), transparent 45%);
+  border: 1px solid rgba(255, 248, 230, 0.06);
+}
+
+.tema-cocina .card:hover {
+  border-color: rgba(212, 160, 60, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vista {
+    animation: none;
+  }
+
+  .tema-cocina .side-item:hover {
+    transform: none;
+  }
 }

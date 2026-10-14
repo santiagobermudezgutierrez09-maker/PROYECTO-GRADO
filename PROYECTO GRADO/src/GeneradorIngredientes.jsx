@@ -1,6 +1,7 @@
 import { useState } from "react";
 import recetas from "./recetasData";
 import equivalencias from "./equivalencias";
+import "./GeneradorIngredientes.css";
 
 function GeneradorIngredientes() {
   const [textoIngredientes, setTextoIngredientes] = useState("");
@@ -10,13 +11,11 @@ function GeneradorIngredientes() {
   const buscarRecetas = (e) => {
     e.preventDefault();
 
-
     const misIngredientes = textoIngredientes
       .toLowerCase()
       .split(",")
       .map((i) => i.trim())
       .filter((i) => i.length > 0);
-
 
     const resultado = recetas
       .map((receta) => {
@@ -33,7 +32,6 @@ function GeneradorIngredientes() {
     setBuscado(true);
   };
 
-
   const buscarSustituto = (ingrediente) => {
     const encontrado = equivalencias.find(
       (eq) => eq.original.toLowerCase() === ingrediente.toLowerCase()
@@ -42,62 +40,66 @@ function GeneradorIngredientes() {
   };
 
   return (
-    <div style={{ maxWidth: "700px", margin: "20px auto", textAlign: "center" }}>
-      <h2>¿Qué puedo cocinar?</h2>
-      <p>Escribe los ingredientes que tienes, separados por comas.</p>
+    <div className="gi">
+      <p className="gi-intro">
+        Escribe los ingredientes que tienes, separados por comas.
+      </p>
 
-      <form onSubmit={buscarRecetas} style={{ marginBottom: "20px" }}>
+      <form className="gi-form" onSubmit={buscarRecetas}>
         <input
           type="text"
           placeholder="Ej: arroz, pollo, cebolla"
           value={textoIngredientes}
           onChange={(e) => setTextoIngredientes(e.target.value)}
-          style={{ padding: "8px", width: "70%" }}
         />
-        <button type="submit" style={{ padding: "8px 16px", marginLeft: "8px" }}>
-          Buscar recetas
-        </button>
+        <button type="submit">Buscar recetas</button>
       </form>
 
       {buscado && recetasCompatibles.length === 0 && (
-        <p>No encontramos recetas con esos ingredientes. Prueba con otros.</p>
+        <p className="gi-vacio">
+          No encontramos recetas con esos ingredientes. Prueba con otros.
+        </p>
       )}
 
       {recetasCompatibles.map((receta) => (
-        <div
-          key={receta.id}
-          style={{
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "12px",
-            marginBottom: "12px",
-            textAlign: "left",
-          }}
-        >
-          <h4>{receta.nombre}</h4>
-          <p>
-            Coincide con {receta.coincidencias} de tus ingredientes.
-          </p>
-          <p>
-            <strong>Ingredientes necesarios:</strong>
-          </p>
-          <ul>
+        <article key={receta.id} className="gi-receta">
+          <div className="gi-receta-top">
+            <h4 className="gi-nombre">{receta.nombre}</h4>
+            <span className="gi-coincide">
+              {receta.coincidencias} de {receta.ingredientes.length} ingredientes
+            </span>
+          </div>
+
+          <div className="gi-barra" aria-hidden="true">
+            <span
+              style={{
+                width: `${(receta.coincidencias / receta.ingredientes.length) * 100}%`,
+              }}
+            />
+          </div>
+
+          <p className="gi-subtitulo">Ingredientes necesarios</p>
+          <ul className="gi-lista">
             {receta.ingredientes.map((ing, i) => {
               const yaLoTengo = textoIngredientes
                 .toLowerCase()
                 .includes(ing.toLowerCase());
               const sustituto = buscarSustituto(ing);
               return (
-                <li key={i}>
-                  {ing} {yaLoTengo ? "✅" : "❌"}
+                <li key={i} className={yaLoTengo ? "gi-tengo" : "gi-falta"}>
+                  <span>
+                    {ing} {yaLoTengo ? "✅" : "❌"}
+                  </span>
                   {!yaLoTengo && sustituto && (
-                    <span> — Puedes sustituirlo por: {sustituto}</span>
+                    <span className="gi-sustituto">
+                      Puedes sustituirlo por: {sustituto}
+                    </span>
                   )}
                 </li>
               );
             })}
           </ul>
-        </div>
+        </article>
       ))}
     </div>
   );

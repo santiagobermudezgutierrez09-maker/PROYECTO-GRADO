@@ -1,5 +1,15 @@
 # React + Vite
 
+## Asistente de la dona (Gemini)
+
+El chat de Charin usa la API de Gemini. Para activarlo, crea `PROYECTO GRADO/.env.local` con esta variable:
+
+```env
+VITE_GEMINI_KEY=tu_clave_de_Gemini
+```
+
+Obtén la clave en Google AI Studio y reinicia el servidor de desarrollo después de crear o cambiar el archivo. No subas `.env.local` al repositorio. Las variables `VITE_*` se incluyen en el código del navegador; restringe la clave desde Google Cloud y usa un backend para protegerla en una aplicación publicada.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

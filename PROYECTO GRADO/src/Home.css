@@ -1,0 +1,189 @@
+/* ============================================================
+   HOME — se ve bien con la barra lateral y el tema oscuro dorado
+   ============================================================ */
+
+.home {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  text-align: left;
+}
+
+/* ---------- Bienvenida ---------- */
+
+.home-hero.card {
+  padding: 40px 36px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(212, 160, 60, 0.16), transparent 60%),
+    var(--color-lavender);
+  border: 1px solid rgba(212, 160, 60, 0.25);
+}
+
+.home-hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.home-hero p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- Secciones ---------- */
+
+.home-seccion h2 {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.home-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.home-grid--3 {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+/* ---------- Tarjetas ---------- */
+
+.tema-cocina .home-tarjeta {
+  display: flex;
+  gap: 16px;
+  padding: 22px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.tema-cocina .home-tarjeta:hover {
+  border-color: color-mix(in srgb, var(--acento) 55%, transparent);
+}
+
+.tema-cocina .home-tarjeta:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* El color de cada sección se usa solo en el icono */
+.home-icono {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 26px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--acento) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--acento) 55%, transparent);
+}
+
+.home-tarjeta-cuerpo h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.home-tarjeta-cuerpo p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Normal: icono arriba, texto debajo */
+.home-tarjeta--normal {
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Compacta: icono a la izquierda y texto a la derecha */
+.home-tarjeta--compacta {
+  align-items: flex-start;
+  padding: 18px;
+}
+
+.home-tarjeta--compacta .home-icono {
+  width: 44px;
+  height: 44px;
+  font-size: 21px;
+  border-radius: 12px;
+}
+
+/* Destacada: la más grande, con brillo de su color */
+.tema-cocina .home-tarjeta--destacada {
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  background:
+    radial-gradient(ellipse at 0% 50%, color-mix(in srgb, var(--acento) 16%, transparent), transparent 55%),
+    var(--bg-surface);
+  border-color: color-mix(in srgb, var(--acento) 40%, transparent);
+  box-shadow: var(--shadow-md), 0 0 40px color-mix(in srgb, var(--acento) 12%, transparent);
+}
+
+.home-tarjeta--destacada .home-icono {
+  width: 80px;
+  height: 80px;
+  font-size: 40px;
+  border-radius: 20px;
+}
+
+.home-tarjeta--destacada h3 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.home-tarjeta--destacada p {
+  font-size: 1rem;
+  max-width: 56ch;
+}
+
+.home-cta {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1408;
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 600px) {
+  .home {
+    gap: 24px;
+  }
+
+  .home-hero.card {
+    padding: 28px 20px;
+  }
+
+  .tema-cocina .home-tarjeta--destacada {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+    gap: 16px;
+  }
+
+  .home-tarjeta--destacada .home-icono {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tema-cocina .home-tarjeta {
+    transition: none;
+  }
+}

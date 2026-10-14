@@ -1,3 +1,34 @@
+import "./Home.css";
+
+// Tarjeta clickable. Está fuera de Home para que React no la vuelva a crear
+// en cada render. "variante" cambia su forma: "destacada", "normal" o "compacta".
+function Tarjeta({ item, irA, variante = "normal" }) {
+  return (
+    <div
+      className={`card home-tarjeta home-tarjeta--${variante}`}
+      style={{ "--acento": item.color }}
+      onClick={() => irA(item.vista)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          irA(item.vista);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="home-icono">{item.emoji}</div>
+      <div className="home-tarjeta-cuerpo">
+        <h3>{item.titulo}</h3>
+        <p>{item.texto}</p>
+        {variante === "destacada" && (
+          <span className="home-cta">Probar ahora</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Home({ irA, correoUsuario }) {
   const accionPrincipal = {
     vista: "generador",
@@ -55,77 +86,40 @@ function Home({ irA, correoUsuario }) {
     },
   ];
 
-  const Tarjeta = ({ item }) => (
-    <div
-      key={item.vista}
-      className="card"
-      onClick={() => irA(item.vista)}
-      style={{ cursor: "pointer", textAlign: "left" }}
-    >
-      <div
-        style={{
-          width: "48px",
-          height: "48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "24px",
-          backgroundColor: item.color,
-          border: "2px solid #111111",
-          borderRadius: "50%",
-          boxShadow: "3px 3px 0px 0px #111111",
-          marginBottom: "12px",
-        }}
-      >
-        {item.emoji}
-      </div>
-      <h3 style={{ margin: "0 0 6px" }}>{item.titulo}</h3>
-      <p style={{ margin: 0, fontSize: "0.9rem" }}>{item.texto}</p>
-    </div>
-  );
-
-  const grid = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "20px",
-  };
-
   return (
-    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 12px 40px" }}>
-      <div
-        className="card"
-        style={{
-          textAlign: "center",
-          backgroundColor: "var(--color-lavender)",
-          marginBottom: "24px",
-          padding: "40px 20px",
-        }}
-      >
-        <h1 style={{ marginBottom: "8px" }}>
+    <div className="home">
+      {/* Bienvenida */}
+      <section className="card home-hero">
+        <h1>
           {correoUsuario ? `Hola, ${correoUsuario} 👋` : "Bienvenido a Charin Cook 🍳"}
         </h1>
-        <p style={{ color: "var(--text-primary)", fontSize: "1.05rem" }}>
-          ¿Qué postre quieres preparar hoy?
-        </p>
-      </div>
+        <p>¿Qué postre quieres preparar hoy?</p>
+      </section>
 
-      <div style={{ ...grid, gridTemplateColumns: "1fr", marginBottom: "28px" }}>
-        <Tarjeta item={accionPrincipal} />
-      </div>
+      {/* Acción principal: la más importante, ocupa todo el ancho */}
+      <section className="home-seccion">
+        <Tarjeta item={accionPrincipal} irA={irA} variante="destacada" />
+      </section>
 
-      <h2 style={{ textAlign: "left", marginBottom: "12px" }}>Accesos rápidos</h2>
-      <div style={{ ...grid, marginBottom: "28px" }}>
-        {accesosRapidos.map((item) => (
-          <Tarjeta key={item.vista} item={item} />
-        ))}
-      </div>
+      {/* Accesos rápidos */}
+      <section className="home-seccion">
+        <h2>Accesos rápidos</h2>
+        <div className="home-grid home-grid--3">
+          {accesosRapidos.map((item) => (
+            <Tarjeta key={item.vista} item={item} irA={irA} />
+          ))}
+        </div>
+      </section>
 
-      <h2 style={{ textAlign: "left", marginBottom: "12px" }}>Más opciones</h2>
-      <div style={grid}>
-        {masOpciones.map((item) => (
-          <Tarjeta key={item.vista} item={item} />
-        ))}
-      </div>
+      {/* Más opciones: tarjetas más compactas, de menor jerarquía */}
+      <section className="home-seccion">
+        <h2>Más opciones</h2>
+        <div className="home-grid home-grid--3">
+          {masOpciones.map((item) => (
+            <Tarjeta key={item.vista} item={item} irA={irA} variante="compacta" />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

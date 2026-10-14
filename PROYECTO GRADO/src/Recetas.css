@@ -1,0 +1,240 @@
+/* ============================================================
+   RECETAS — catálogo con buscador, chips de categoría y grilla
+   ============================================================ */
+
+.recetas {
+  width: 100%;
+  text-align: left;
+}
+
+/* ---------- Búsqueda + botón de filtros ---------- */
+
+.recetas-barra {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.recetas-busqueda {
+  position: relative;
+  flex: 1 1 280px;
+}
+
+.recetas-busqueda-icono {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.tema-cocina .recetas-busqueda input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 14px 16px 14px 44px;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+.tema-cocina .recetas-btn-filtros {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tema-cocina .recetas-btn-filtros.abierto {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.recetas-badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1408;
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+/* ---------- Chips de categoría ---------- */
+
+.recetas-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tema-cocina .recetas-chip {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 999px;
+  background-color: transparent;
+}
+
+.tema-cocina .recetas-chip.activo {
+  background-color: rgba(212, 160, 60, 0.14);
+  color: var(--color-yellow);
+  border-color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 0 14px rgba(212, 160, 60, 0.25);
+}
+
+.tema-cocina .recetas-chip:focus-visible,
+.tema-cocina .recetas-btn-filtros:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Filtros avanzados ---------- */
+
+.recetas-filtros.card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  align-items: end;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.recetas-campo label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.tema-cocina .recetas-campo select {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.tema-cocina .recetas-campo-boton button {
+  width: 100%;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+/* ---------- Conteo ---------- */
+
+.recetas-conteo {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ---------- Sin resultados ---------- */
+
+.recetas-vacio.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.recetas-vacio p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.tema-cocina .recetas-vacio button {
+  width: auto;
+  margin: 0;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+/* ---------- Secciones por categoría ---------- */
+
+.recetas-seccion {
+  margin-top: 28px;
+}
+
+.recetas-seccion-titulo {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.recetas-seccion-titulo h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.recetas-seccion-titulo span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Las tarjetas de receta se acomodan en columnas según el espacio */
+.recetas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 600px) {
+  .recetas-barra {
+    flex-direction: column;
+  }
+
+  .tema-cocina .recetas-btn-filtros {
+    justify-content: center;
+    padding: 12px 20px;
+  }
+
+  /* Las categorías van en una fila deslizable, sin ocupar todo el ancho */
+  .recetas-categorias {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .recetas-categorias::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tema-cocina .recetas-chip {
+    width: auto;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .recetas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tema-cocina .recetas-vacio button {
+    width: auto;
+  }
+}

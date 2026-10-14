@@ -12,6 +12,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
+import "./RecetaCard.css";
 
 function RecetaCard({ receta }) {
   const [esFavorita, setEsFavorita] = useState(false);
@@ -121,79 +122,115 @@ ${listaPasos}`;
   };
 
   return (
-    <div className="card" style={{ marginBottom: "16px", textAlign: "left" }}>
-      <h4>{receta.nombre}</h4>
-      <p>
-        Tiempo: {receta.tiempo} min — Porciones: {receta.porciones}
-      </p>
-      <p>
-        Dificultad: {receta.dificultad} — Calorías: {receta.calorias} kcal — Dieta:{" "}
-        {receta.dieta}
-      </p>
-      <p>
-        <strong>Ingredientes:</strong> {receta.ingredientes.join(", ")}
-      </p>
-      <p>
-        <strong>Pasos:</strong>
-      </p>
-      <ol>
-        {receta.pasos.map((paso, i) => (
-          <li key={i}>{paso}</li>
-        ))}
-      </ol>
+    <article className="rc">
+      {/* Encabezado */}
+      <header className="rc-header">
+        <h3 className="rc-title">{receta.nombre}</h3>
+        <div className="rc-tags">
+          {receta.dificultad && <span className="rc-tag">{receta.dificultad}</span>}
+          {receta.dieta && <span className="rc-tag rc-tag--soft">{receta.dieta}</span>}
+        </div>
+      </header>
 
-      {/* Botones de favorito y compartir */}
-      <div style={{ marginBottom: "8px" }}>
-        <button onClick={toggleFavorito}>
-          {esFavorita ? "❤️ Quitar de favoritos" : "🤍 Guardar en favoritos"}
-        </button>
-        <button onClick={compartir} style={{ marginLeft: "8px" }}>
-          🔗 Compartir
-        </button>
+      {/* Datos rápidos */}
+      <dl className="rc-stats">
+        <div>
+          <dt>Tiempo</dt>
+          <dd>{receta.tiempo} min</dd>
+        </div>
+        <div>
+          <dt>Porciones</dt>
+          <dd>{receta.porciones}</dd>
+        </div>
+        <div>
+          <dt>Calorías</dt>
+          <dd>{receta.calorias} kcal</dd>
+        </div>
+      </dl>
+
+      {/* Ingredientes y pasos */}
+      <div className="rc-body">
+        <section>
+          <h4 className="rc-subtitle">Ingredientes</h4>
+          <ul className="rc-ingredientes">
+            {receta.ingredientes.map((ing, i) => (
+              <li key={i}>{ing}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h4 className="rc-subtitle">Pasos</h4>
+          <ol className="rc-pasos">
+            {receta.pasos.map((paso, i) => (
+              <li key={i}>{paso}</li>
+            ))}
+          </ol>
+        </section>
       </div>
 
-      {/* Calificación con estrellas */}
-      <div style={{ marginBottom: "8px" }}>
-        <strong>Calificar: </strong>
-        {[1, 2, 3, 4, 5].map((n) => (
-          <span
-            key={n}
-            onClick={() => calificar(n)}
-            style={{ cursor: "pointer", fontSize: "20px" }}
+      {/* Acciones y calificación */}
+      <div className="rc-actions">
+        <div className="rc-buttons">
+          <button
+            type="button"
+            className={`rc-btn ${esFavorita ? "rc-btn--active" : ""}`}
+            onClick={toggleFavorito}
           >
-            {n <= calificacion ? "⭐" : "☆"}
-          </span>
-        ))}
+            {esFavorita ? "❤️ Quitar de favoritos" : "🤍 Guardar en favoritos"}
+          </button>
+          <button type="button" className="rc-btn" onClick={compartir}>
+            🔗 Compartir
+          </button>
+        </div>
+
+        <div className="rc-stars" role="group" aria-label="Calificar receta">
+          <span className="rc-stars-label">Calificar</span>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              className={`rc-star ${n <= calificacion ? "rc-star--on" : ""}`}
+              onClick={() => calificar(n)}
+              aria-label={`${n} ${n === 1 ? "estrella" : "estrellas"}`}
+            >
+              {n <= calificacion ? "★" : "☆"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {mensaje && <p style={{ color: "orange" }}>{mensaje}</p>}
+      {mensaje && <p className="rc-mensaje">{mensaje}</p>}
 
       {/* Comentarios */}
-      <div>
-        <strong>Comentarios:</strong>
-        <ul>
+      <details className="rc-comentarios">
+        <summary>Comentarios ({comentarios.length})</summary>
+
+        <ul className="rc-lista">
           {comentarios.map((c) => (
             <li key={c.id}>
-              <em>{c.correo}:</em> {c.texto}
+              <span className="rc-autor">{c.correo}</span>
+              <span>{c.texto}</span>
             </li>
           ))}
-          {comentarios.length === 0 && <li>Sé el primero en comentar.</li>}
+          {comentarios.length === 0 && (
+            <li className="rc-vacio">Aún no hay comentarios. Escribe el primero.</li>
+          )}
         </ul>
 
-        <form onSubmit={enviarComentario}>
+        <form className="rc-form" onSubmit={enviarComentario}>
           <input
             type="text"
             placeholder="Escribe un comentario..."
             value={nuevoComentario}
             onChange={(e) => setNuevoComentario(e.target.value)}
-            style={{ padding: "6px", width: "70%" }}
           />
-          <button type="submit" style={{ marginLeft: "6px" }}>
+          <button type="submit" className="rc-btn rc-btn--primary">
             Enviar
           </button>
         </form>
-      </div>
-    </div>
+      </details>
+    </article>
   );
 }
 
