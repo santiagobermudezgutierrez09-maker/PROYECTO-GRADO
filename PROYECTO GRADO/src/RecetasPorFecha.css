@@ -273,4 +273,8 @@
     justify-content: space-between;
     width: 100%;
   }
+  .tema-cocina .rf-evento-lado .rf-btn-borrar {
+    width: auto;
+    margin: 0;
+  }
 }

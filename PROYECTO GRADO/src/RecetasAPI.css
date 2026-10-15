@@ -367,4 +367,14 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+  .ra-segmentado {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .tema-cocina .ra-segmentado button {
+    width: auto;
+    margin: 0;
+    white-space: normal;
+  }
 }

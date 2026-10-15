@@ -388,6 +388,11 @@
     margin: 0;
   }
 
+  .tema-cocina .rc-buttons .rc-btn {
+    width: auto;
+    margin: 0;
+  }
+
   .tema-cocina .rc-form .rc-btn {
     width: auto;
     margin: 0;

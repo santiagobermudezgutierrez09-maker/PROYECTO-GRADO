@@ -130,3 +130,15 @@
     right: 6px;
   }
 }
+
+@media (max-width: 600px) {
+  .asistente-chips button,
+  .asistente-entrada button {
+    width: auto;
+    margin: 0;
+  }
+
+  .asistente-entrada button {
+    flex-shrink: 0;
+  }
+}
