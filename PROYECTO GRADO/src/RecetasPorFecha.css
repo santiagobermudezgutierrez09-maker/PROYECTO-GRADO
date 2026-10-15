@@ -1,0 +1,276 @@
+.rf-contenedor {
+  max-width: 780px;
+  margin: 10px auto 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  text-align: left;
+}
+
+.rf-titulo {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #f3e3b5;
+}
+
+/* ---------- Hoy ---------- */
+.rf-hoy {
+  background: linear-gradient(135deg, #2a2110, #171717);
+  border: 1px solid #d4a640;
+  border-radius: 16px;
+  padding: 18px 22px;
+}
+.rf-hoy-titulo {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #f3e3b5;
+}
+.rf-hoy-sub {
+  margin: 0 0 10px;
+  color: #bdb39a;
+  font-size: 14px;
+}
+.rf-hoy-vacio {
+  margin: 0;
+  color: #bdb39a;
+  line-height: 1.5;
+}
+.rf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rf-chip {
+  background: #232323;
+  border: 1px solid #d4a640;
+  color: #f3e3b5;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+/* ---------- Próximas fechas especiales ---------- */
+.rf-fechas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+.rf-fecha-card {
+  background: #171717;
+  border: 1px solid #2f2a1c;
+  border-radius: 14px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.rf-fecha-card:hover {
+  transform: translateY(-3px);
+  border-color: #d4a640;
+}
+.rf-fecha-icono {
+  font-size: 34px;
+}
+.rf-fecha-nombre {
+  font-weight: 700;
+  color: #f3e3b5;
+}
+.rf-fecha-dia {
+  font-size: 12px;
+  color: #9a917c;
+  text-transform: capitalize;
+}
+.rf-fecha-cuenta {
+  margin: 6px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d4a640;
+}
+
+/* ---------- Formulario ---------- */
+.rf-tarjeta {
+  background: #141414;
+  border: 1px solid #2f2a1c;
+  border-radius: 16px;
+  padding: 22px;
+}
+.rf-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.rf-fieldset:disabled {
+  opacity: 0.55;
+}
+
+.rf-campo {
+  width: 100%;
+  box-sizing: border-box;
+  height: 46px;
+  background: #1e1e1e;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 15px;
+  font-family: inherit;
+  color-scheme: dark; /* hace blanco el icono del calendario */
+}
+.rf-campo:focus {
+  outline: none;
+  border-color: #d4a640;
+  box-shadow: 0 0 0 3px rgba(212, 166, 64, 0.2);
+}
+
+.rf-fila {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 12px;
+}
+
+.rf-btn-principal {
+  height: 46px;
+  background: #d4a640;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+.rf-btn-principal:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.rf-btn-secundario {
+  margin-top: auto;
+  background: transparent;
+  color: #f3e3b5;
+  border: 1px solid #d4a640;
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rf-btn-secundario:hover:not(:disabled) {
+  background: #2a2212;
+}
+.rf-btn-secundario:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rf-aviso {
+  background: #2a2212;
+  border: 1px dashed #d4a640;
+  color: #f3e3b5;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.rf-mensaje {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.rf-mensaje.ok {
+  color: #6ee7b7;
+}
+.rf-mensaje.error {
+  color: #ffb36b;
+}
+
+/* ---------- Mis eventos ---------- */
+.rf-vacio {
+  color: #9a917c;
+  background: #141414;
+  border: 1px dashed #3a3a3a;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.rf-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rf-evento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  background: #171717;
+  border: 1px solid #2f2a1c;
+  border-left: 4px solid #d4a640;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+.rf-evento.pasado {
+  opacity: 0.55;
+  border-left-color: #555;
+}
+.rf-evento-nombre {
+  font-weight: 700;
+  color: #f3e3b5;
+}
+.rf-evento-detalle {
+  font-size: 13px;
+  color: #9a917c;
+  margin-top: 3px;
+  text-transform: none;
+}
+.rf-evento-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.rf-cuenta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d4a640;
+}
+.rf-btn-borrar {
+  background: none;
+  border: none;
+  color: #ff8a8a;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 640px) {
+  .rf-fila {
+    grid-template-columns: 1fr;
+  }
+  .rf-evento {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rf-evento-lado {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+}

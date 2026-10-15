@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useState as useState2 } from "react";
+import { useState, useEffect, useMemo } from "react";
 import recetas from "./recetasData";
 import { obtenerFechaEspecialHoy } from "./eventosFechas";
 import {
@@ -12,6 +11,60 @@ import {
   doc,
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
+import "./RecetasPorFecha.css";
+
+/* ---------- Ayudas para trabajar con fechas (hora local, sin líos de zona horaria) ---------- */
+const aFechaLocal = (iso) => {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+const hoySinHora = () => {
+  const h = new Date();
+  return new Date(h.getFullYear(), h.getMonth(), h.getDate());
+};
+const aISO = (f) =>
+  `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
+const diasHasta = (f) => Math.round((f - hoySinHora()) / 86400000);
+
+// n-ésimo día de la semana de un mes (diaSemana: 0 = domingo ... 6 = sábado; mes: 0 = enero)
+const enesimoDia = (anio, mes, diaSemana, n) => {
+  const primero = new Date(anio, mes, 1);
+  const desplazamiento = (diaSemana - primero.getDay() + 7) % 7;
+  return new Date(anio, mes, 1 + desplazamiento + (n - 1) * 7);
+};
+
+const textoCuenta = (dias) => {
+  if (dias === 0) return "¡Es hoy!";
+  if (dias === 1) return "Mañana";
+  if (dias > 1) return `Faltan ${dias} días`;
+  return `Pasó hace ${-dias} día${dias === -1 ? "" : "s"}`;
+};
+
+const formatoBonito = (f) =>
+  f.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" });
+
+/* ---------- Fechas especiales (Colombia). Se recalculan solas cada año ---------- */
+const FECHAS_ESPECIALES = [
+  { nombre: "Año Nuevo", icono: "🎆", fecha: (a) => new Date(a, 0, 1) },
+  { nombre: "San Valentín", icono: "💝", fecha: (a) => new Date(a, 1, 14) },
+  { nombre: "Día de la Madre", icono: "🌷", fecha: (a) => enesimoDia(a, 4, 0, 2) },
+  { nombre: "Día del Padre", icono: "👔", fecha: (a) => enesimoDia(a, 5, 0, 3) },
+  { nombre: "Amor y Amistad", icono: "🤝", fecha: (a) => enesimoDia(a, 8, 6, 3) },
+  { nombre: "Halloween", icono: "🎃", fecha: (a) => new Date(a, 9, 31) },
+  { nombre: "Día de las Velitas", icono: "🕯️", fecha: (a) => new Date(a, 11, 7) },
+  { nombre: "Navidad", icono: "🎄", fecha: (a) => new Date(a, 11, 25) },
+];
+
+function calcularProximasFechas() {
+  const hoy = hoySinHora();
+  return FECHAS_ESPECIALES.map((f) => {
+    let fecha = f.fecha(hoy.getFullYear());
+    if (fecha < hoy) fecha = f.fecha(hoy.getFullYear() + 1);
+    return { nombre: f.nombre, icono: f.icono, fecha, dias: diasHasta(fecha) };
+  })
+    .sort((a, b) => a.dias - b.dias)
+    .slice(0, 4);
+}
 
 function RecetasPorFecha() {
   const fechaEspecial = obtenerFechaEspecialHoy();
@@ -19,12 +72,15 @@ function RecetasPorFecha() {
     ? recetas.filter((r) => r.categoria === fechaEspecial.categoriaSugerida).slice(0, 6)
     : [];
 
+  const proximasFechas = useMemo(() => calcularProximasFechas(), []);
+  const hoyISO = aISO(hoySinHora());
 
   const [eventos, setEventos] = useState([]);
   const [recetaElegida, setRecetaElegida] = useState("");
   const [fechaEvento, setFechaEvento] = useState("");
   const [nombreEvento, setNombreEvento] = useState("");
-  const [mensaje, setMensaje] = useState("");
+  const [mensaje, setMensaje] = useState({ texto: "", ok: false });
+  const [guardando, setGuardando] = useState(false);
 
   const usuario = auth.currentUser;
 
@@ -33,7 +89,7 @@ function RecetasPorFecha() {
     const q = query(collection(db, "eventos"), where("usuarioId", "==", usuario.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const lista = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      lista.sort((a, b) => a.fecha.localeCompare(b.fecha));
+      lista.sort((a, b) => (a.fecha || "").localeCompare(b.fecha || ""));
       setEventos(lista);
     });
     return () => unsubscribe();
@@ -42,122 +98,202 @@ function RecetasPorFecha() {
   const guardarEvento = async (e) => {
     e.preventDefault();
     if (!usuario) {
-      setMensaje("Debes iniciar sesión para guardar eventos.");
+      setMensaje({ texto: "Debes iniciar sesión para guardar eventos.", ok: false });
       return;
     }
     if (!recetaElegida || !fechaEvento || !nombreEvento.trim()) {
-      setMensaje("Completa el nombre del evento, la receta y la fecha.");
+      setMensaje({ texto: "Completa el nombre del evento, la receta y la fecha.", ok: false });
       return;
     }
 
     const receta = recetas.find((r) => r.id === Number(recetaElegida));
+    if (!receta) {
+      setMensaje({ texto: "Elige una receta de la lista.", ok: false });
+      return;
+    }
 
-    await addDoc(collection(db, "eventos"), {
-      usuarioId: usuario.uid,
-      nombreEvento,
-      fecha: fechaEvento,
-      recetaId: receta.id,
-      recetaNombre: receta.nombre,
-    });
-
-    setNombreEvento("");
-    setFechaEvento("");
-    setRecetaElegida("");
-    setMensaje("¡Evento guardado!");
+    setGuardando(true);
+    try {
+      await addDoc(collection(db, "eventos"), {
+        usuarioId: usuario.uid,
+        nombreEvento: nombreEvento.trim(),
+        fecha: fechaEvento,
+        recetaId: receta.id,
+        recetaNombre: receta.nombre,
+      });
+      setNombreEvento("");
+      setFechaEvento("");
+      setRecetaElegida("");
+      setMensaje({ texto: "¡Evento guardado! 🎉", ok: true });
+    } catch (error) {
+      setMensaje({ texto: "No se pudo guardar el evento. Inténtalo de nuevo.", ok: false });
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const eliminarEvento = async (id) => {
-    await deleteDoc(doc(db, "eventos", id));
+    if (!window.confirm("¿Eliminar este evento?")) return;
+    try {
+      await deleteDoc(doc(db, "eventos", id));
+    } catch (error) {
+      setMensaje({ texto: "No se pudo eliminar el evento.", ok: false });
+    }
+  };
+
+  // Al pulsar "Planear" en una fecha especial, se llena el formulario solo
+  const planearFecha = (f) => {
+    setNombreEvento(f.nombre);
+    setFechaEvento(aISO(f.fecha));
+    setMensaje({ texto: "", ok: false });
+    document.getElementById("form-evento")?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "20px auto", textAlign: "center" }}>
-      <h2>Recetas por fecha y eventos</h2>
-
-      {}
-      {fechaEspecial ? (
-        <div style={{ marginBottom: "24px" }}>
-          <p>
-            🎉 ¡Hoy es una buena fecha para <strong>{fechaEspecial.nombre}</strong>! Aquí unas
-            recetas sugeridas:
+    <div className="rf-contenedor">
+      {/* ---------- Hoy ---------- */}
+      <section className="rf-hoy">
+        {fechaEspecial ? (
+          <>
+            <p className="rf-hoy-titulo">
+              🎉 ¡Hoy es una buena fecha para <strong>{fechaEspecial.nombre}</strong>!
+            </p>
+            <p className="rf-hoy-sub">Recetas sugeridas para hoy:</p>
+            <div className="rf-chips">
+              {recetasSugeridas.map((r) => (
+                <span key={r.id} className="rf-chip">
+                  {r.nombre}
+                </span>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="rf-hoy-vacio">
+            Hoy no hay ninguna fecha especial registrada, pero puedes seguir viendo el catálogo
+            completo en "Ver recetas".
           </p>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {recetasSugeridas.map((r) => (
-              <li key={r.id}>{r.nombre}</li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p style={{ marginBottom: "24px" }}>
-          Hoy no hay ninguna fecha especial registrada, pero puedes seguir viendo el catálogo
-          completo en "Ver recetas".
-        </p>
-      )}
+        )}
+      </section>
 
-      {}
-      <h3>Planifica una receta para un evento futuro</h3>
-      <form onSubmit={guardarEvento} style={{ marginBottom: "20px" }}>
-        <div style={{ marginBottom: "8px" }}>
-          <input
-            type="text"
-            placeholder="Nombre del evento (ej: Cumpleaños de mamá)"
-            value={nombreEvento}
-            onChange={(e) => setNombreEvento(e.target.value)}
-            style={{ padding: "8px", width: "80%" }}
-          />
-        </div>
-        <div style={{ marginBottom: "8px" }}>
-          <input
-            type="date"
-            value={fechaEvento}
-            onChange={(e) => setFechaEvento(e.target.value)}
-            style={{ padding: "8px" }}
-          />
-        </div>
-        <div style={{ marginBottom: "8px" }}>
-          <select
-            value={recetaElegida}
-            onChange={(e) => setRecetaElegida(e.target.value)}
-            style={{ padding: "8px", width: "80%" }}
-          >
-            <option value="">-- Elige una receta --</option>
-            {recetas.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button type="submit" style={{ padding: "8px 16px" }}>
-          Guardar evento
-        </button>
-      </form>
-
-      {mensaje && <p style={{ color: "orange" }}>{mensaje}</p>}
-
-      {eventos.length > 0 && (
-        <div style={{ textAlign: "left" }}>
-          <h3>Tus eventos guardados</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {eventos.map((ev) => (
-              <li
-                key={ev.id}
-                style={{
-                  border: "1px solid #444",
-                  borderRadius: "8px",
-                  padding: "10px",
-                  marginBottom: "8px",
-                }}
+      {/* ---------- Próximas fechas especiales ---------- */}
+      <section>
+        <h3 className="rf-titulo">Próximas fechas especiales</h3>
+        <div className="rf-fechas">
+          {proximasFechas.map((f) => (
+            <div className="rf-fecha-card" key={f.nombre}>
+              <div className="rf-fecha-icono">{f.icono}</div>
+              <div className="rf-fecha-nombre">{f.nombre}</div>
+              <div className="rf-fecha-dia">{formatoBonito(f.fecha)}</div>
+              <div className="rf-fecha-cuenta">{textoCuenta(f.dias)}</div>
+              <button
+                type="button"
+                className="rf-btn-secundario"
+                onClick={() => planearFecha(f)}
+                disabled={!usuario}
+                title={!usuario ? "Inicia sesión para planear eventos" : ""}
               >
-                <strong>{ev.nombreEvento}</strong> — {ev.fecha}
-                <br />
-                Receta: {ev.recetaNombre}
-                <br />
-                <button onClick={() => eliminarEvento(ev.id)}>Eliminar</button>
-              </li>
-            ))}
-          </ul>
+                Planear
+              </button>
+            </div>
+          ))}
         </div>
+      </section>
+
+      {/* ---------- Formulario ---------- */}
+      <section id="form-evento" className="rf-tarjeta">
+        <h3 className="rf-titulo">Planifica una receta para un evento</h3>
+
+        {!usuario && (
+          <div className="rf-aviso">
+            🔒 Inicia sesión para guardar tus eventos. Como invitado puedes explorar las fechas,
+            pero no guardarlas.
+          </div>
+        )}
+
+        <form onSubmit={guardarEvento}>
+          <fieldset disabled={!usuario || guardando} className="rf-fieldset">
+            <input
+              type="text"
+              className="rf-campo"
+              placeholder="Nombre del evento (ej: Cumpleaños de mamá)"
+              value={nombreEvento}
+              onChange={(e) => setNombreEvento(e.target.value)}
+              maxLength={60}
+            />
+
+            <div className="rf-fila">
+              <input
+                type="date"
+                className="rf-campo"
+                value={fechaEvento}
+                min={hoyISO}
+                onChange={(e) => setFechaEvento(e.target.value)}
+              />
+              <select
+                className="rf-campo"
+                value={recetaElegida}
+                onChange={(e) => setRecetaElegida(e.target.value)}
+              >
+                <option value="">-- Elige una receta --</option>
+                {recetas.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button type="submit" className="rf-btn-principal">
+              {guardando ? "Guardando…" : "Guardar evento"}
+            </button>
+          </fieldset>
+        </form>
+
+        {mensaje.texto && (
+          <p className={`rf-mensaje ${mensaje.ok ? "ok" : "error"}`}>{mensaje.texto}</p>
+        )}
+      </section>
+
+      {/* ---------- Mis eventos ---------- */}
+      {usuario && (
+        <section>
+          <h3 className="rf-titulo">Tus eventos guardados</h3>
+
+          {eventos.length === 0 ? (
+            <p className="rf-vacio">
+              Aún no tienes eventos. Planea el primero arriba o toca "Planear" en una fecha
+              especial 🍰
+            </p>
+          ) : (
+            <ul className="rf-lista">
+              {eventos.map((ev) => {
+                const fecha = ev.fecha ? aFechaLocal(ev.fecha) : null;
+                const dias = fecha ? diasHasta(fecha) : null;
+                return (
+                  <li key={ev.id} className={`rf-evento ${dias !== null && dias < 0 ? "pasado" : ""}`}>
+                    <div className="rf-evento-info">
+                      <div className="rf-evento-nombre">{ev.nombreEvento}</div>
+                      <div className="rf-evento-detalle">
+                        📅 {fecha ? formatoBonito(fecha) : ev.fecha} · 🍰 {ev.recetaNombre}
+                      </div>
+                    </div>
+                    <div className="rf-evento-lado">
+                      {dias !== null && <span className="rf-cuenta">{textoCuenta(dias)}</span>}
+                      <button
+                        type="button"
+                        className="rf-btn-borrar"
+                        onClick={() => eliminarEvento(ev.id)}
+                        aria-label={`Eliminar ${ev.nombreEvento}`}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
       )}
     </div>
   );

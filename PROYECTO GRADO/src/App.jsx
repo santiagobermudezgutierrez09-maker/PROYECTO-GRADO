@@ -49,6 +49,9 @@ const GRUPOS_MENU = [
 
 const TODOS_LOS_ITEMS = GRUPOS_MENU.flatMap((g) => g.items);
 
+// 🍩 NUEVO: pantallas donde aparece la dona asistente
+const VISTAS_CON_DONA = ["home", "generador", "cocina", "api", "fechas"];
+
 function App() {
   const [vista, setVista] = useState("login");
   const [usuario, setUsuario] = useState(null);
@@ -278,11 +281,8 @@ function App() {
         </div>
       </div>
 
-      {/* 🍩 Dona asistente con chat IA: solo en Inicio, ¿Qué puedo cocinar?, Modo cocina y Más postres */}
-      <AsistenteDona
-        vista={vista}
-        visible={["home", "generador", "cocina", "api"].includes(vista)}
-      />
+      {/* 🍩 Dona asistente con chat IA: Inicio, ¿Qué puedo cocinar?, Modo cocina, Más postres y Fechas */}
+      <AsistenteDona vista={vista} visible={VISTAS_CON_DONA.includes(vista)} />
     </>
   );
 }

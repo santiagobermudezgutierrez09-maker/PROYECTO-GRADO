@@ -19,6 +19,9 @@ const CONTEXTO = {
   cocina:
     "El usuario está en 'Modo cocina', siguiendo una receta paso a paso con las manos ocupadas. Sé muy breve y práctico: tiempos, punto de cocción, qué hacer si algo sale mal.",
   api: "El usuario está en 'Más postres', explorando ideas de postres de todo el mundo. Cuéntale curiosidades, de dónde viene cada postre y cómo prepararlo.",
+  // 🍩 NUEVO
+  fechas:
+    "El usuario está en 'Fechas y eventos', planeando una receta para una ocasión especial. Sugiere postres según la ocasión, el número de invitados y el tiempo que tiene para prepararlo.",
 };
 
 export async function preguntarChef(historial, mensaje, vista = "home") {
@@ -57,4 +60,51 @@ export async function preguntarChef(historial, mensaje, vista = "home") {
   const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!texto) throw new Error("Sin respuesta");
   return texto;
+}
+
+// 🍩 NUEVO: traduce una receta de TheMealDB (inglés) al español
+export async function traducirReceta({ nombre, ingredientes, instrucciones }) {
+  if (!KEY) {
+    throw new Error("Falta configurar VITE_GEMINI_KEY en el archivo .env.local.");
+  }
+
+  const prompt = `Traduce al español natural y claro esta receta de postre.
+Convierte las instrucciones en pasos cortos (sin numerarlos en el texto).
+Mantén el mismo orden y la misma cantidad de ingredientes.
+Pasa las medidas a español (cup = taza, tbsp = cucharada, tsp = cucharadita, etc.) sin cambiar las cantidades.
+Responde SOLO con JSON con esta forma exacta:
+{"nombre": "...", "ingredientes": ["..."], "pasos": ["..."]}
+
+NOMBRE: ${nombre}
+INGREDIENTES:
+${ingredientes.map((i) => "- " + i).join("\n")}
+INSTRUCCIONES:
+${String(instrucciones).slice(0, 6000)}`;
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 2500,
+          responseMimeType: "application/json",
+        },
+      }),
+    }
+  );
+
+  if (!res.ok) throw new Error("Error " + res.status);
+  const data = await res.json();
+  const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!texto) throw new Error("Sin respuesta");
+
+  const resultado = JSON.parse(texto.replace(/```json|```/g, "").trim());
+  if (!Array.isArray(resultado.pasos) || !Array.isArray(resultado.ingredientes)) {
+    throw new Error("Formato inválido");
+  }
+  return resultado;
 }

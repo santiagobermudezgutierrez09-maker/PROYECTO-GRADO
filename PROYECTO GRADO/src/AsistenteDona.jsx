@@ -8,6 +8,7 @@ const SALUDOS = {
   generador: "¡Dime qué ingredientes tienes y te digo qué postre puedes hacer y qué te falta! 🥕",
   cocina: "Estoy contigo mientras cocinas 🔥 Pregúntame lo que necesites, sin soltar la cuchara.",
   api: "¡Pregúntame por cualquier postre del mundo! 🍰 Te cuento cómo se prepara.",
+  fechas: "¿Tienes un evento? 🎉 Dime la ocasión y te sugiero qué postre preparar.", // 🍩 NUEVO
 };
 
 const SUGERENCIAS = {
@@ -23,6 +24,8 @@ const SUGERENCIAS = {
     "¿Puedo reemplazar un ingrediente?",
   ],
   api: ["¿Cuál es un postre típico de Francia?", "Postre fácil de otro país", "¿Cómo se hace un flan?"],
+  // 🍩 NUEVO
+  fechas: ["Postre para un cumpleaños", "¿Qué hago para Halloween?", "Postre para 20 personas"],
 };
 
 // Quita asteriscos de markdown por si la IA se le escapan
