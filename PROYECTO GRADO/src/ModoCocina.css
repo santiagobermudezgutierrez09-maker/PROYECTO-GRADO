@@ -1,51 +1,158 @@
 /* ============================================================
    MODO COCINA
+   Los botones usan ".tema-cocina .mc ..." para ganarle a los
+   estilos globales de button (width:100%, margin, etc.)
    ============================================================ */
 
+/* ---------- Selector de recetas ---------- */
 .mc-selector {
-  max-width: 480px;
+  max-width: 760px;
   margin: 0 auto;
+  text-align: center;
 }
 
-.mc-selector select {
+.mc-selector-titulo {
+  margin: 0 0 4px;
+  font-size: 26px;
+}
+
+.mc-selector-sub {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+}
+
+.mc-selector .mc-buscar {
   width: 100%;
-  padding: 10px;
+  max-width: 360px;
+  margin: 0 auto 18px;
+  padding: 10px 14px;
+  box-sizing: border-box;
 }
 
-.mc {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 28px;
+.mc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.tema-cocina .mc-grid .mc-tarjeta {
+  width: auto;
+  margin: 0;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  border-radius: 16px;
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tema-cocina .mc-grid .mc-tarjeta:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(212, 160, 60, 0.18);
+}
+
+.mc-tarjeta-emoji {
+  font-size: 38px;
+  line-height: 1;
+}
+
+.mc-tarjeta-nombre {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mc-tarjeta-pasos {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.mc-vacio {
+  margin-top: 20px;
+  color: var(--text-secondary);
+}
+
+/* ---------- Contenedor principal ---------- */
+.mc {
+  --mc-texto-paso: clamp(22px, 3.4vw, 32px);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 26px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
   box-shadow: var(--shadow-md);
   text-align: center;
 }
 
+.mc--grande {
+  --mc-texto-paso: clamp(30px, 5vw, 46px);
+}
+
+/* ---------- Cabecera ---------- */
 .mc-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   text-align: left;
+}
+
+.mc-titulo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .mc-nombre {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1.2;
 }
 
-.tema-cocina .mc-volver {
+.tema-cocina .mc .mc-volver {
   width: auto;
   margin: 0;
-  padding: 8px 14px;
-  font-size: 14px;
-  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
+.tema-cocina .mc .mc-volver:hover {
+  color: var(--text-primary);
+  border-color: var(--color-primary);
+}
+
+.tema-cocina .mc .mc-aa {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.tema-cocina .mc .mc-aa--on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+}
+
+/* ---------- Progreso ---------- */
 .mc-progreso {
   height: 6px;
   border-radius: 999px;
@@ -62,20 +169,110 @@
   transition: width 0.3s ease;
 }
 
+.mc-puntos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 4px;
+}
+
+.tema-cocina .mc .mc-punto {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.tema-cocina .mc .mc-punto--hecho {
+  background: rgba(212, 160, 60, 0.18);
+  border-color: transparent;
+  color: var(--color-yellow);
+}
+
+.tema-cocina .mc .mc-punto--actual {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+  transform: scale(1.15);
+}
+
+/* ---------- Paso actual ---------- */
+.mc-escenario {
+  margin: 8px 0 22px;
+  touch-action: pan-y;
+}
+
 .mc-contador {
-  margin: 10px 0 0;
+  margin: 14px 0 0;
   font-size: 14px;
   color: var(--text-secondary);
 }
 
 .mc-paso {
-  margin: 24px 0;
-  min-height: 140px;
+  margin: 16px 0 20px;
+  min-height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(22px, 3.2vw, 30px);
+  font-size: var(--mc-texto-paso);
   line-height: 1.45;
+  animation: mc-entrada 0.25s ease;
+}
+
+@keyframes mc-entrada {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Botón automático cuando se detecta un tiempo */
+.tema-cocina .mc .mc-auto {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 14px;
+  background: rgba(212, 160, 60, 0.14);
+  border: 1px dashed var(--color-primary);
+  color: var(--color-yellow);
+  cursor: pointer;
+}
+
+.tema-cocina .mc .mc-auto:hover {
+  background: rgba(212, 160, 60, 0.26);
+}
+
+.mc-auto-icono {
+  font-size: 28px;
+}
+
+.mc-auto small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .mc-fin {
@@ -84,62 +281,46 @@
   color: var(--color-yellow);
 }
 
+/* ---------- Navegación ---------- */
 .mc-nav {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.4fr;
   gap: 12px;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
-.tema-cocina .mc-nav button {
+.tema-cocina .mc .mc-nav button {
   width: 100%;
   margin: 0;
-  padding: 14px;
+  padding: 16px;
   font-size: 18px;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
-.tema-cocina .mc-nav .mc-siguiente {
+.tema-cocina .mc .mc-nav .mc-siguiente {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #1a1408;
   font-weight: 700;
 }
 
-.tema-cocina .mc-nav .mc-siguiente:hover:not(:disabled) {
+.tema-cocina .mc .mc-nav .mc-siguiente:hover:not(:disabled) {
   background: var(--color-yellow);
 }
 
-.tema-cocina .mc-nav .mc-siguiente:disabled {
-  background: #2a2620;
-  border-color: var(--border-color);
-  color: #5a544a;
-}
-
-/* Temporizador */
+/* ---------- Temporizador ---------- */
 .mc-timer {
-  padding-top: 22px;
-  border-top: 1px solid var(--border-color);
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 248, 230, 0.04);
+  border: 1px solid var(--border-color);
 }
 
 .mc-timer h4 {
-  margin: 0;
+  margin: 0 0 12px;
   font-size: 15px;
   font-weight: 600;
   color: var(--text-secondary);
-}
-
-.mc-reloj {
-  margin: 6px 0 14px;
-  font-size: 56px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
-}
-
-.mc-reloj--activo {
-  color: var(--color-yellow);
-  text-shadow: 0 0 24px rgba(212, 160, 60, 0.45);
 }
 
 .mc-presets {
@@ -150,48 +331,167 @@
   margin-bottom: 12px;
 }
 
-.tema-cocina .mc-presets button {
+.tema-cocina .mc .mc-presets button {
   width: auto;
   margin: 0;
-  padding: 6px 14px;
-  font-size: 14px;
+  padding: 8px 16px;
+  font-size: 15px;
   border-radius: 999px;
 }
 
 .mc-controles {
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .mc-controles input {
   width: 80px;
+  margin: 0;
   padding: 9px;
   font-size: 18px;
   text-align: center;
 }
 
-.tema-cocina .mc-controles button {
+.tema-cocina .mc .mc-controles button {
   width: auto;
   margin: 0;
-  padding: 10px 20px;
+  padding: 10px 18px;
   font-size: 16px;
   border-radius: 10px;
 }
 
+.tema-cocina .mc .mc-controles .mc-iniciar {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+  font-weight: 700;
+}
+
+/* Temporizador en marcha: anillo + info */
+.mc-timer-vivo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.mc-anillo {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.mc-anillo svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.mc-anillo circle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.mc-anillo-fondo {
+  stroke: rgba(255, 248, 230, 0.09);
+}
+
+.mc-anillo-valor {
+  stroke: var(--color-yellow);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s linear;
+  filter: drop-shadow(0 0 6px rgba(212, 160, 60, 0.5));
+}
+
+.mc-anillo-tiempo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.mc-timer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.mc-timer-label {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.mc-timer--pausa .mc-anillo-valor {
+  stroke: var(--text-secondary);
+  filter: none;
+}
+
+.mc-timer--fin {
+  border-color: var(--color-yellow);
+  animation: mc-latido 0.9s ease-in-out infinite;
+}
+
+.mc-timer--fin .mc-timer-label {
+  color: var(--color-yellow);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+@keyframes mc-latido {
+  50% {
+    box-shadow: 0 0 0 6px rgba(212, 160, 60, 0.25);
+  }
+}
+
+/* ---------- Foco visible y movimiento reducido ---------- */
+.mc button:focus-visible,
+.mc-selector button:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-paso,
+  .mc-timer--fin {
+    animation: none;
+  }
+}
+
+/* ---------- Celular ---------- */
 @media (max-width: 600px) {
   .mc {
-    padding: 18px;
+    padding: 16px;
+    border-radius: 16px;
   }
 
-  .mc-reloj {
-    font-size: 46px;
+  .mc-nombre {
+    font-size: 20px;
   }
 
-  .mc-controles input[type="number"] {
-    width: 90px !important;
-    margin-bottom: 0;
+  .mc-paso {
+    min-height: 120px;
+  }
+
+  .mc-anillo {
+    width: 130px;
+    height: 130px;
+  }
+
+  .mc-anillo-tiempo {
+    font-size: 26px;
+  }
+
+  .mc-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
