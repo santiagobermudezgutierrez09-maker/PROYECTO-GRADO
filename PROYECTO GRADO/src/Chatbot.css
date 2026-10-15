@@ -1,0 +1,342 @@
+/* ============================================================
+   CHATBOT — dona grande (sección Chatbot)
+   ============================================================ */
+
+.cb {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cb-escena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+/* Contenedor de la dona: atrapa la mascota dentro de este espacio,
+   aunque en otras pantallas esté flotando en una esquina */
+.cb-muneco {
+  position: relative;
+  width: clamp(240px, 40vw, 340px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  transform: translateZ(0);
+}
+
+.cb-muneco > * {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  display: grid;
+  place-items: center;
+}
+
+.cb-muneco img,
+.cb-muneco svg,
+.cb-muneco canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
+
+/* Oculta el globo de texto de la mascota solo en esta sección */
+.cb-muneco [class*="burbuja"],
+.cb-muneco [class*="globo"],
+.cb-muneco [class*="bubble"],
+.cb-muneco [class*="mensaje"],
+.cb-muneco [class*="dialogo"] {
+  display: none !important;
+}
+
+/* Halo que cambia según lo que hace la dona */
+.cb-muneco::before {
+  content: "";
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 160, 60, 0.28), transparent 70%);
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+.cb-escuchando .cb-muneco::before {
+  background: radial-gradient(circle, rgba(66, 184, 114, 0.45), transparent 70%);
+  animation: cb-halo 1.4s ease-in-out infinite;
+}
+
+.cb-pensando .cb-muneco::before {
+  background: radial-gradient(circle, rgba(232, 184, 78, 0.45), transparent 70%);
+  animation: cb-halo 1s ease-in-out infinite;
+}
+
+.cb-hablando .cb-muneco::before {
+  background: radial-gradient(circle, rgba(200, 56, 90, 0.42), transparent 70%);
+  animation: cb-halo 0.7s ease-in-out infinite;
+}
+
+@keyframes cb-halo {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.12); }
+}
+
+.cb-estado {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.cb-escuchando .cb-estado,
+.cb-pensando .cb-estado,
+.cb-hablando .cb-estado {
+  color: var(--color-yellow);
+}
+
+/* Historial */
+.cb-historial {
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+}
+
+.cb-msg {
+  margin: 0;
+  max-width: 88%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.cb-msg--bot {
+  align-self: flex-start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 4px;
+}
+
+.cb-msg--user {
+  align-self: flex-end;
+  background: rgba(212, 160, 60, 0.16);
+  border: 1px solid rgba(212, 160, 60, 0.35);
+  color: var(--color-yellow);
+  border-bottom-right-radius: 4px;
+}
+
+/* Sugerencias */
+.cb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tema-cocina .cb-chips button {
+  width: auto;
+  margin: 0;
+  padding: 7px 14px;
+  font-size: 14px;
+  border-radius: 999px;
+}
+
+.cb-error {
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(200, 56, 90, 0.12);
+  color: #f08aa0;
+  font-size: 14px;
+}
+
+/* Controles */
+.cb-controles {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cb-form {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.tema-cocina .cb-form input {
+  flex: 1;
+  min-width: 0;
+  width: auto !important;
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+.tema-cocina .cb-form button {
+  width: auto;
+  margin: 0;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 12px;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+}
+
+.tema-cocina .cb-form button:disabled {
+  background: #2a2620;
+  border-color: var(--border-color);
+  color: #5a544a;
+}
+
+.tema-cocina .cb-mic {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  margin: 0;
+  padding: 0;
+  font-size: 22px;
+  border-radius: 50%;
+}
+
+.tema-cocina .cb-mic--on {
+  background: rgba(66, 184, 114, 0.18);
+  border-color: var(--color-teal);
+  box-shadow: 0 0 0 6px rgba(66, 184, 114, 0.14);
+}
+
+.tema-cocina .cb-voz {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  border-radius: 50%;
+}
+
+.cb-nota {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .cb-controles {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cb-form {
+    order: 3;
+    flex-basis: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cb-escuchando .cb-muneco::before,
+  .cb-pensando .cb-muneco::before,
+  .cb-hablando .cb-muneco::before {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   CHATBOT COMPACTO (dentro de Modo cocina)
+   ============================================================ */
+
+.cbc {
+  max-width: 440px;
+  margin: 24px auto 0;
+  padding: 16px;
+  text-align: left;
+  background: var(--bg-elevada);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+}
+
+.cbc-titulo {
+  margin: 0 0 12px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.cbc-mensajes {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+}
+
+.cbc-msg {
+  max-width: 88%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.cbc-msg--bot {
+  align-self: flex-start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+}
+
+.cbc-msg--usuario {
+  align-self: flex-end;
+  background: rgba(212, 160, 60, 0.16);
+  border: 1px solid rgba(212, 160, 60, 0.35);
+  color: var(--color-yellow);
+}
+
+.cbc-form {
+  display: flex;
+  gap: 8px;
+}
+
+.tema-cocina .cbc-form input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.tema-cocina .cbc-form button {
+  width: auto;
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+}
