@@ -1,6 +1,5 @@
 const KEY = import.meta.env.VITE_GEMINI_KEY;
-// Si falla, prueba otro modelo gratis que veas en tu AI Studio
-const MODEL = "gemini-2.5-flash-lite";
+const MODEL = "gemini-3.5-flash-lite";
 
 const BASE = `Eres Charin, una dona chef amable, alegre y paciente que vive en la app "Charin Cook",
 especializada en postres. Ayudas al usuario a cocinar: sugieres recetas, dices qué ingredientes

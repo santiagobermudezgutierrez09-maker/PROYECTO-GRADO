@@ -13,8 +13,13 @@ const FRASES = [
 const mat = (color, extra = {}) =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.5, ...extra });
 
-// 🍩 NUEVO: se agrega la prop alClic
-export default function Mascota({ mensaje: mensajeExterno, hablando = false, alClic }) {
+// 🍩 NUEVO: se agrega la prop variante (para la versión junto al formulario)
+export default function Mascota({
+  mensaje: mensajeExterno,
+  hablando = false,
+  alClic,
+  variante = "",
+}) {
   const mountRef = useRef(null);
   const saltoRef = useRef(0);
   const saludoRef = useRef(0);
@@ -309,11 +314,12 @@ export default function Mascota({ mensaje: mensajeExterno, hablando = false, alC
     saltoRef.current = 1;
     saludoRef.current = 1.6;
     setFrase(FRASES[Math.floor(Math.random() * FRASES.length)]);
-    alClic?.(); // 🍩 NUEVO: avisa al asistente para abrir/cerrar el chat
+    alClic?.(); // avisa al asistente para abrir/cerrar el chat
   };
 
   return (
-    <div className="mascota-wrap">
+    // 🍩 NUEVO: se agrega la variante como clase extra
+    <div className={`mascota-wrap ${variante}`}>
       <div ref={mountRef} className="mascota-canvas" onClick={alHacerClic} />
       <div className={`mascota-burbuja ${verBurbuja ? "" : "oculta"}`}>
         {textoBurbuja}

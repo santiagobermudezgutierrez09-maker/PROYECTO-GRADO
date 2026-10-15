@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import recetas from "./recetasData";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db, auth } from "./firebase";
+import "./ListaCompras.css";
 
 function ListaCompras() {
   const [recetasSeleccionadas, setRecetasSeleccionadas] = useState([]);
@@ -9,7 +10,6 @@ function ListaCompras() {
   const [mensaje, setMensaje] = useState("");
 
   const usuario = auth.currentUser;
-
 
   useEffect(() => {
     const cargarLista = async () => {
@@ -39,14 +39,11 @@ function ListaCompras() {
       return;
     }
 
-
     const ingredientesUnicos = new Set();
     recetasSeleccionadas.forEach((id) => {
       const receta = recetas.find((r) => r.id === id);
       receta.ingredientes.forEach((ing) => ingredientesUnicos.add(ing));
     });
-
-
 
     const nuevaLista = Array.from(ingredientesUnicos).map((ing) => {
       const existente = lista.find((item) => item.nombre === ing);
@@ -77,67 +74,89 @@ function ListaCompras() {
     }
   };
 
+  const comprados = lista.filter((item) => item.comprado).length;
+
   return (
-    <div style={{ maxWidth: "600px", margin: "20px auto", textAlign: "center" }}>
-      <h2>Lista de compras</h2>
-      <p>Elige las recetas que vas a preparar y arma tu lista automáticamente.</p>
+    <div className="lc">
+      <p className="lc-intro">
+        Elige las recetas que vas a preparar y arma tu lista automáticamente.
+      </p>
 
-      <div
-        style={{
-          textAlign: "left",
-          border: "1px solid #444",
-          borderRadius: "8px",
-          padding: "12px",
-          maxHeight: "200px",
-          overflowY: "auto",
-          marginBottom: "12px",
-        }}
-      >
-        {recetas.map((r) => (
-          <label key={r.id} style={{ display: "block", marginBottom: "4px" }}>
-            <input
-              type="checkbox"
-              checked={recetasSeleccionadas.includes(r.id)}
-              onChange={() => toggleReceta(r.id)}
-            />{" "}
-            {r.nombre}
-          </label>
-        ))}
-      </div>
+      <div className="lc-grid">
+        {/* Columna izquierda: elegir recetas */}
+        <section className="lc-panel">
+          <div className="lc-panel-top">
+            <h3 className="lc-titulo">Recetas</h3>
+            <span className="lc-contador">
+              {recetasSeleccionadas.length} seleccionadas
+            </span>
+          </div>
 
-      <button onClick={generarLista} style={{ padding: "8px 16px", marginRight: "8px" }}>
-        Generar lista de compras
-      </button>
-      <button onClick={limpiarLista} style={{ padding: "8px 16px" }}>
-        Limpiar todo
-      </button>
-
-      {mensaje && <p style={{ color: "orange" }}>{mensaje}</p>}
-
-      {lista.length > 0 && (
-        <div style={{ textAlign: "left", marginTop: "20px" }}>
-          <h3>Tu lista:</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {lista.map((item) => (
-              <li key={item.nombre} style={{ marginBottom: "6px" }}>
-                <label
-                  style={{
-                    textDecoration: item.comprado ? "line-through" : "none",
-                    color: item.comprado ? "#888" : "inherit",
-                  }}
-                >
+          <div className="lc-recetas">
+            {recetas.map((r) => {
+              const activa = recetasSeleccionadas.includes(r.id);
+              return (
+                <label key={r.id} className={`lc-receta ${activa ? "lc-receta--on" : ""}`}>
                   <input
                     type="checkbox"
-                    checked={item.comprado}
-                    onChange={() => marcarComprado(item.nombre)}
-                  />{" "}
-                  {item.nombre}
+                    checked={activa}
+                    onChange={() => toggleReceta(r.id)}
+                  />
+                  <span>{r.nombre}</span>
                 </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+              );
+            })}
+          </div>
+
+          <div className="lc-acciones">
+            <button className="lc-principal" onClick={generarLista}>
+              Generar lista de compras
+            </button>
+            <button onClick={limpiarLista}>Limpiar todo</button>
+          </div>
+
+          {mensaje && <p className="lc-mensaje">{mensaje}</p>}
+        </section>
+
+        {/* Columna derecha: la lista */}
+        <section className="lc-panel">
+          <div className="lc-panel-top">
+            <h3 className="lc-titulo">Tu lista</h3>
+            {lista.length > 0 && (
+              <span className="lc-contador">
+                {comprados} de {lista.length} comprados
+              </span>
+            )}
+          </div>
+
+          {lista.length > 0 ? (
+            <>
+              <div className="lc-barra" aria-hidden="true">
+                <span style={{ width: `${(comprados / lista.length) * 100}%` }} />
+              </div>
+
+              <ul className="lc-lista">
+                {lista.map((item) => (
+                  <li key={item.nombre}>
+                    <label className={item.comprado ? "lc-item lc-item--hecho" : "lc-item"}>
+                      <input
+                        type="checkbox"
+                        checked={item.comprado}
+                        onChange={() => marcarComprado(item.nombre)}
+                      />
+                      <span>{item.nombre}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="lc-vacio">
+              Tu lista aparecerá aquí cuando elijas recetas y pulses "Generar lista".
+            </p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

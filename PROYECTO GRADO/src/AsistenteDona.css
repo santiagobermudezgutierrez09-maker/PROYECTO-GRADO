@@ -1,7 +1,8 @@
+/* Panel del chat, pegado debajo de la dona */
 .asistente-panel {
   position: fixed;
-  top: calc(clamp(92px, 10vw, 150px) / 0.88 + 18px);
-  right: 14px;
+  top: calc(clamp(78px, 8vw, 118px) / 0.88 + 10px);
+  right: 8px;
   width: min(340px, 92vw);
   max-height: min(62vh, 480px);
   display: flex;
@@ -122,9 +123,10 @@
   cursor: default;
 }
 
+/* Celular */
 @media (max-width: 768px) {
   .asistente-panel {
-    top: 104px;
-    right: 8px;
+    top: 86px;
+    right: 6px;
   }
 }

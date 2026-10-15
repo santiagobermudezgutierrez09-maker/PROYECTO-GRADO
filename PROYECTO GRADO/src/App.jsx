@@ -16,7 +16,8 @@ import Chatbot from "./Chatbot";
 import ListaCompras from "./ListaCompras";
 import RecetasPorFecha from "./RecetasPorFecha";
 import RecetasAPI from "./RecetasAPI";
-import AsistenteDona from "./AsistenteDona";
+import AsistenteDona from "./AsistenteDona"; // 🍩 dona con chat IA (dentro de la app)
+import Mascota from "./Mascota"; // 🍩 dona de bienvenida (login y registro)
 
 // Menú lateral agrupado por secciones.
 // "titulo" y "descripcion" se muestran en la barra superior de cada pantalla.
@@ -137,6 +138,7 @@ function App() {
     return (
       <>
         <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
+
         <div className="app-shell">
           <div className="app-header">
             <h1 className="app-titulo">🍳 CHARIN COOK</h1>
@@ -149,8 +151,20 @@ function App() {
             <button onClick={entrarComoInvitado}>Entrar como invitado</button>
           </nav>
 
-          {vista === "login" && <Login />}
-          {vista === "register" && <Register />}
+          {/* 🍩 La dona vive junto al formulario */}
+          <div className="zona-formulario">
+            <Mascota
+              variante="en-formulario"
+              mensaje={
+                vista === "register"
+                  ? "¡Qué bueno que te unas a Charin Cook! 🎉"
+                  : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
+              }
+            />
+
+            {vista === "login" && <Login />}
+            {vista === "register" && <Register />}
+          </div>
         </div>
       </>
     );
@@ -264,7 +278,11 @@ function App() {
         </div>
       </div>
 
-      <AsistenteDona vista={vista} visible />
+      {/* 🍩 Dona asistente con chat IA: solo en Inicio, ¿Qué puedo cocinar?, Modo cocina y Más postres */}
+      <AsistenteDona
+        vista={vista}
+        visible={["home", "generador", "cocina", "api"].includes(vista)}
+      />
     </>
   );
 }

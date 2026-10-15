@@ -1,0 +1,202 @@
+/* ============================================================
+   LISTA DE COMPRAS
+   ============================================================ */
+
+.lc {
+  max-width: 980px;
+  margin: 0 auto;
+  container-type: inline-size;
+}
+
+.lc-intro {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+}
+
+.lc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@container (max-width: 640px) {
+  .lc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lc-panel {
+  padding: 22px;
+  text-align: left;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.lc-panel-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lc-titulo {
+  margin: 0;
+  font-size: 18px;
+}
+
+.lc-contador {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-yellow);
+}
+
+/* Casillas */
+.lc input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Selector de recetas */
+.lc-recetas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+}
+
+.lc-receta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.lc-receta:hover {
+  background: rgba(255, 248, 230, 0.05);
+}
+
+.lc-receta--on {
+  background: rgba(212, 160, 60, 0.10);
+  border-color: rgba(212, 160, 60, 0.35);
+  color: var(--color-yellow);
+}
+
+/* Botones */
+.lc-acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tema-cocina .lc-acciones button {
+  width: auto;
+  margin: 0;
+  padding: 10px 18px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+.tema-cocina .lc-acciones .lc-principal {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #1a1408;
+  font-weight: 700;
+}
+
+.tema-cocina .lc-acciones .lc-principal:hover {
+  background: var(--color-yellow);
+  border-color: var(--color-yellow);
+}
+
+.lc-mensaje {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(232, 184, 78, 0.12);
+  color: var(--color-yellow);
+  font-size: 14px;
+}
+
+/* La lista */
+.lc-barra {
+  height: 5px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: rgba(255, 248, 230, 0.08);
+  overflow: hidden;
+}
+
+.lc-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-teal), #7ad9a1);
+  transition: width 0.3s ease;
+}
+
+.lc-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 248, 230, 0.04);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lc-item:hover {
+  background: rgba(255, 248, 230, 0.07);
+}
+
+.lc-item--hecho {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.lc-vacio {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .lc-panel {
+    padding: 16px;
+  }
+
+  .tema-cocina .lc-acciones button {
+    width: 100%;
+  }
+}

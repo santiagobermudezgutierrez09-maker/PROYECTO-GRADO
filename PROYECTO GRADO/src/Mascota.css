@@ -1,9 +1,9 @@
 /* Esquina superior derecha, pequeña y que no estorba */
 .mascota-wrap {
   position: fixed;
-  top: 10px;
-  right: 14px;
-  width: clamp(92px, 10vw, 150px);
+  top: 2px;
+  right: 6px;
+  width: clamp(78px, 8vw, 118px);
   aspect-ratio: 0.88;
   z-index: 40;
   pointer-events: none; /* no bloquea clics de tu app */
@@ -41,7 +41,7 @@
   content: "";
   position: absolute;
   top: -7px;
-  right: 34px;
+  right: 28px;
   width: 12px;
   height: 12px;
   background: #1a1a1a;
@@ -58,12 +58,42 @@
 /* Celular */
 @media (max-width: 768px) {
   .mascota-wrap {
-    top: 6px;
-    right: 8px;
-    width: 78px;
+    top: 2px;
+    right: 4px;
+    width: 68px;
   }
   .mascota-burbuja {
     font-size: 12px;
     padding: 7px 10px;
+  }
+}
+
+/* ============================================================
+   🍩 NUEVO: dona junto al formulario de login / registro
+   ============================================================ */
+.zona-formulario {
+  position: relative;
+}
+
+.mascota-wrap.en-formulario {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  right: auto;
+  margin-left: 250px; /* a la derecha de la tarjeta */
+  width: clamp(150px, 15vw, 220px);
+}
+
+/* Pantallas angostas: la dona va arriba de la tarjeta, centrada */
+@media (max-width: 1100px) {
+  .mascota-wrap.en-formulario {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0 auto 6px;
+    width: 120px;
+  }
+  .mascota-wrap.en-formulario .mascota-burbuja {
+    display: none; /* para que no tape el formulario */
   }
 }
