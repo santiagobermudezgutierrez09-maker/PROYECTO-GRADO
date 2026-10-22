@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
 import { generarRespuesta } from "./chatbotEngine";
-import { limpiarRespuestaChef, preguntarChef } from "./geminiService";
+import { explicarErrorGemini, limpiarRespuestaChef, preguntarChef } from "./geminiService";
 import {
   Reconocimiento,
   validarMicrofono,
@@ -36,6 +36,7 @@ function ChatDona() {
   const [estado, setEstado] = useState("reposo");
   const [vozActiva, setVozActiva] = useState(true);
   const [error, setError] = useState("");
+  const [transcripcionParcial, setTranscripcionParcial] = useState("");
 
   const mensajesRef = useRef(mensajes);
   const estadoRef = useRef("reposo");
@@ -93,11 +94,15 @@ function ChatDona() {
     let respuesta;
     try {
       respuesta = limpiarRespuestaChef(await preguntarChef(historial, pregunta, "home"));
-    } catch {
+    } catch (errorGemini) {
       // Si la IA falla, responde el asistente local para no quedarse callada
+      if (!errorGemini?.message?.includes("superó el límite")) {
+        setError(`${explicarErrorGemini(errorGemini)} Te doy una respuesta básica por ahora.`);
+      }
       respuesta = generarRespuesta(pregunta, null, null);
     }
 
+    setTranscripcionParcial("");
     setMensajes((m) => [...m, { rol: "bot", texto: respuesta }]);
     hablar(respuesta);
   };
@@ -121,12 +126,18 @@ function ChatDona() {
     }
 
     const rec = crearReconocimiento({
-      alResultado: (texto) => enviar(texto),
+      alResultado: (texto) => {
+        setTranscripcionParcial("");
+        enviar(texto);
+      },
+      alParcial: setTranscripcionParcial,
       alError: (mensaje) => {
+        setTranscripcionParcial("");
         cambiarEstado("reposo");
         setError(mensaje);
       },
       alTerminar: () => {
+        setTranscripcionParcial("");
         if (estadoRef.current === "escuchando") cambiarEstado("reposo");
       },
     });
@@ -168,7 +179,9 @@ function ChatDona() {
           />
         </div>
         <p className="cb-estado" aria-live="polite">
-          {ETIQUETAS[estado]}
+          {estado === "escuchando" && transcripcionParcial
+            ? `Te entendí: ${transcripcionParcial}`
+            : ETIQUETAS[estado]}
         </p>
       </div>
 
@@ -280,6 +293,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
   const [escuchando, setEscuchando] = useState(false);
   const [vozActiva, setVozActiva] = useState(true);
   const [error, setError] = useState("");
+  const [transcripcionParcial, setTranscripcionParcial] = useState("");
 
   const finRef = useRef(null);
   const recRef = useRef(null);
@@ -340,11 +354,15 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
       respuesta = limpiarRespuestaChef(
         await preguntarChef(historial, pregunta, "cocina", contextoReceta(receta, paso))
       );
-    } catch {
+    } catch (errorGemini) {
       // Si la IA falla, responde el motor de reglas para no quedarse callado
+      if (!errorGemini?.message?.includes("superó el límite")) {
+        setError(`${explicarErrorGemini(errorGemini)} Te doy una respuesta básica por ahora.`);
+      }
       respuesta = generarRespuesta(pregunta, receta, paso);
     }
 
+    setTranscripcionParcial("");
     setMensajes((m) => [...m, { autor: "bot", texto: respuesta }]);
     pensandoRef.current = false;
     setPensando(false);
@@ -381,9 +399,19 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
     }
 
     const rec = crearReconocimiento({
-      alResultado: (texto) => enviarRef.current(texto),
-      alError: (mensaje) => setError(mensaje),
-      alTerminar: () => cambiarEscuchando(false),
+      alResultado: (texto) => {
+        setTranscripcionParcial("");
+        enviarRef.current(texto);
+      },
+      alParcial: setTranscripcionParcial,
+      alError: (mensaje) => {
+        setTranscripcionParcial("");
+        setError(mensaje);
+      },
+      alTerminar: () => {
+        setTranscripcionParcial("");
+        cambiarEscuchando(false);
+      },
     });
     recRef.current = rec;
     try {
@@ -441,7 +469,11 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
         </button>
         <input
           type="text"
-          placeholder={escuchando ? "Te escucho…" : "Escribe tu pregunta..."}
+          placeholder={
+            escuchando
+              ? transcripcionParcial || "Te escucho…"
+              : "Escribe tu pregunta..."
+          }
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
           maxLength={300}
