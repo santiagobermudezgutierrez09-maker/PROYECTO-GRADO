@@ -1,23 +1,23 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import "./App.css";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { auth } from "./firebaseAuth";
 import { useCierreSesionInactividad } from "./useCierreSesionInactividad";
-import { ShaderAnimation } from "./ShaderAnimation";
 
-import Home from "./Home";
-import Register from "./Register";
 import Login from "./Login";
-import Recetas from "./Recetas";
-import GeneradorIngredientes from "./GeneradorIngredientes";
-import ModoCocina from "./ModoCocina";
-import Chatbot from "./Chatbot";
-import ListaCompras from "./ListaCompras";
-import RecetasPorFecha from "./RecetasPorFecha";
-import RecetasAPI from "./RecetasAPI";
-import AsistenteDona from "./AsistenteDona"; // 🍩 dona con chat IA (dentro de la app)
-import Mascota from "./Mascota"; // 🍩 dona de bienvenida (login y registro)
+const ShaderAnimation = lazy(() => import("./ShaderAnimation"));
+const Mascota = lazy(() => import("./Mascota"));
+const Register = lazy(() => import("./Register"));
+const Home = lazy(() => import("./Home"));
+const Recetas = lazy(() => import("./Recetas"));
+const Favoritos = lazy(() => import("./Favoritos"));
+const GeneradorIngredientes = lazy(() => import("./GeneradorIngredientes"));
+const ModoCocina = lazy(() => import("./ModoCocina"));
+const Chatbot = lazy(() => import("./Chatbot"));
+const ListaCompras = lazy(() => import("./ListaCompras"));
+const RecetasPorFecha = lazy(() => import("./RecetasPorFecha"));
+const RecetasAPI = lazy(() => import("./RecetasAPI"));
+const AsistenteDona = lazy(() => import("./AsistenteDona"));
 
 // Menú lateral agrupado por secciones.
 // "titulo" y "descripcion" se muestran en la barra superior de cada pantalla.
@@ -27,6 +27,7 @@ const GRUPOS_MENU = [
     items: [
       { vista: "home", icono: "🏠", texto: "Inicio", titulo: "Bienvenido a la cocina", descripcion: "Tu punto de partida" },
       { vista: "recetas", icono: "📖", texto: "Ver recetas", titulo: "Recetas", descripcion: "Explora el catálogo completo" },
+      { vista: "favoritos", icono: "❤️", texto: "Mis favoritos", titulo: "Mis favoritos", descripcion: "Tus recetas guardadas" },
       { vista: "generador", icono: "🥕", texto: "¿Qué puedo cocinar?", titulo: "¿Qué puedo cocinar?", descripcion: "Dinos qué ingredientes tienes" },
       { vista: "cocina", icono: "🔥", texto: "Modo cocina", titulo: "Modo cocina", descripcion: "Paso a paso, con las manos libres" },
     ],
@@ -75,6 +76,10 @@ function App() {
 
         // Busca el nombre guardado en Firestore (colección "usuarios")
         try {
+          const [{ doc, getDoc }, { db }] = await Promise.all([
+            import("firebase/firestore"),
+            import("./firebase"),
+          ]);
           const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
           if (snap.exists() && snap.data().nombre) {
             setNombreUsuario(snap.data().nombre);
@@ -140,7 +145,9 @@ function App() {
   if (!tieneAcceso) {
     return (
       <>
-        <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
+        <Suspense fallback={null}>
+          <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
+        </Suspense>
 
         <div className="app-shell">
           <div className="app-header">
@@ -156,14 +163,16 @@ function App() {
 
           {/* 🍩 La dona vive junto al formulario */}
           <div className="zona-formulario">
-            <Mascota
-              variante="en-formulario"
-              mensaje={
-                vista === "register"
-                  ? "¡Qué bueno que te unas a Charin Cook! 🎉"
-                  : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
-              }
-            />
+            <Suspense fallback={null}>
+              <Mascota
+                variante="en-formulario"
+                mensaje={
+                  vista === "register"
+                    ? "¡Qué bueno que te unas a Charin Cook! 🎉"
+                    : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
+                }
+              />
+            </Suspense>
 
             {vista === "login" && <Login />}
             {vista === "register" && <Register />}
@@ -269,20 +278,25 @@ function App() {
           </header>
 
           <main className="vista">
-            {vista === "home" && <Home irA={irA} correoUsuario={nombreParaMostrar} />}
-            {vista === "recetas" && <Recetas />}
-            {vista === "generador" && <GeneradorIngredientes />}
-            {vista === "cocina" && <ModoCocina />}
-            {vista === "chatbot" && <Chatbot />}
-            {vista === "compras" && <ListaCompras />}
-            {vista === "fechas" && <RecetasPorFecha />}
-            {vista === "api" && <RecetasAPI />}
+            <Suspense fallback={<p style={{ textAlign: "center" }}>Cargando...</p>}>
+              {vista === "home" && <Home irA={irA} correoUsuario={nombreParaMostrar} />}
+              {vista === "recetas" && <Recetas />}
+              {vista === "favoritos" && <Favoritos irA={irA} />}
+              {vista === "generador" && <GeneradorIngredientes />}
+              {vista === "cocina" && <ModoCocina />}
+              {vista === "chatbot" && <Chatbot />}
+              {vista === "compras" && <ListaCompras />}
+              {vista === "fechas" && <RecetasPorFecha />}
+              {vista === "api" && <RecetasAPI />}
+            </Suspense>
           </main>
         </div>
       </div>
 
       {/* 🍩 Dona asistente con chat IA: Inicio, ¿Qué puedo cocinar?, Modo cocina, Más postres y Fechas */}
-      <AsistenteDona vista={vista} visible={VISTAS_CON_DONA.includes(vista)} />
+      <Suspense fallback={null}>
+        <AsistenteDona vista={vista} visible={VISTAS_CON_DONA.includes(vista)} />
+      </Suspense>
     </>
   );
 }

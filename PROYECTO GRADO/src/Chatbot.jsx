@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
 import { generarRespuesta } from "./chatbotEngine";
-import { preguntarChef } from "./geminiService";
+import { limpiarRespuestaChef, preguntarChef } from "./geminiService";
+import {
+  Reconocimiento,
+  validarMicrofono,
+  crearReconocimiento,
+  prepararVoz,
+  hablarTexto,
+} from "./voz";
 import "./Chatbot.css";
-
-const Reconocimiento =
-  typeof window !== "undefined" &&
-  (window.SpeechRecognition || window.webkitSpeechRecognition);
 
 const SALUDO =
   "¡Hola! Soy Charin 🍩 Háblame con el micrófono o escríbeme lo que quieras saber de postres.";
@@ -23,12 +26,6 @@ const ETIQUETAS = {
   pensando: "Charin está pensando…",
   hablando: "Charin está hablando…",
 };
-
-// Quita asteriscos de markdown por si la IA los deja
-const limpiar = (t) => t.replace(/\*\*/g, "").replace(/^\s*\*\s/gm, "• ");
-
-// La voz del navegador lee mal los emojis: se quitan solo para hablar
-const sinEmojis = (t) => t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "");
 
 /* ------------------------------------------------------------
    Sección "Chatbot": dona grande, voz y escritura
@@ -69,21 +66,14 @@ function ChatDona() {
   }, []);
 
   const hablar = (texto) => {
-    if (!vozRef.current || !window.speechSynthesis) {
+    if (!vozRef.current) {
       cambiarEstado("reposo");
       return;
     }
-    window.speechSynthesis.cancel();
-    const voz = new SpeechSynthesisUtterance(sinEmojis(texto));
-    voz.lang = "es-ES";
-    const espanola = window.speechSynthesis
-      .getVoices()
-      .find((v) => v.lang.toLowerCase().startsWith("es"));
-    if (espanola) voz.voice = espanola;
-    voz.onstart = () => cambiarEstado("hablando");
-    voz.onend = () => cambiarEstado("reposo");
-    voz.onerror = () => cambiarEstado("reposo");
-    window.speechSynthesis.speak(voz);
+    hablarTexto(texto, {
+      alEmpezar: () => cambiarEstado("hablando"),
+      alTerminar: () => cambiarEstado("reposo"),
+    });
   };
 
   const enviar = async (textoDirecto) => {
@@ -102,8 +92,8 @@ function ChatDona() {
 
     let respuesta;
     try {
-      respuesta = limpiar(await preguntarChef(historial, pregunta, "home"));
-    } catch (e) {
+      respuesta = limpiarRespuestaChef(await preguntarChef(historial, pregunta, "home"));
+    } catch {
       // Si la IA falla, responde el asistente local para no quedarse callada
       respuesta = generarRespuesta(pregunta, null, null);
     }
@@ -112,7 +102,7 @@ function ChatDona() {
     hablar(respuesta);
   };
 
-  const alternarMicrofono = () => {
+  const alternarMicrofono = async () => {
     if (!Reconocimiento) return;
     if (estadoRef.current === "escuchando") {
       recRef.current?.stop();
@@ -121,30 +111,34 @@ function ChatDona() {
     window.speechSynthesis?.cancel();
     setError("");
 
-    const rec = new Reconocimiento();
-    rec.lang = "es-CO";
-    rec.interimResults = false;
-    rec.onresult = (e) => enviar(e.results[0][0].transcript);
-    rec.onerror = (e) => {
-      cambiarEstado("reposo");
-      setError(
-        e.error === "not-allowed"
-          ? "Permite el uso del micrófono en tu navegador."
-          : "No te escuché bien, intenta otra vez."
-      );
-    };
-    rec.onend = () => {
-      if (estadoRef.current === "escuchando") cambiarEstado("reposo");
-    };
+    const errorPermiso = await validarMicrofono();
+    if (errorPermiso) {
+      setError(errorPermiso);
+      return;
+    }
+    const rec = crearReconocimiento({
+      alResultado: (transcripcion) => enviar(transcripcion),
+      alError: setError,
+      alTerminar: () => {
+        if (estadoRef.current === "escuchando") cambiarEstado("reposo");
+      },
+    });
     recRef.current = rec;
-    rec.start();
-    cambiarEstado("escuchando");
+    try {
+      rec.start();
+      cambiarEstado("escuchando");
+    } catch {
+      recRef.current = null;
+      setError("No se pudo iniciar el micrófono. Inténtalo de nuevo o escribe tu pregunta.");
+    }
   };
 
   const alternarVoz = () => {
     if (vozActiva) {
       window.speechSynthesis?.cancel();
       if (estadoRef.current === "hablando") cambiarEstado("reposo");
+    } else {
+      prepararVoz();
     }
     setVozActiva((v) => !v);
   };

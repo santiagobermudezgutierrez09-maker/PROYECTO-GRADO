@@ -11,10 +11,11 @@ import {
   onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
-import { db, auth } from "./firebase";
+import { db } from "./firebase";
+import { auth } from "./firebaseAuth";
 import "./RecetaCard.css";
 
-function RecetaCard({ receta }) {
+function RecetaCard({ receta, alQuitarFavorito }) {
   const [esFavorita, setEsFavorita] = useState(false);
   const [calificacion, setCalificacion] = useState(0);
   const [comentarios, setComentarios] = useState([]);
@@ -23,24 +24,36 @@ function RecetaCard({ receta }) {
 
   const usuario = auth.currentUser;
 
-  // Revisa si ya está marcada como favorita al cargar
+  // Revisa si ya está marcada como favorita y si el usuario ya la calificó
   useEffect(() => {
-    const revisarFavorito = async () => {
+    const cargarDatosDelUsuario = async () => {
       if (!usuario) return;
-      const ref = doc(db, "favoritos", `${usuario.uid}_${receta.id}`);
-      const snap = await getDoc(ref);
-      setEsFavorita(snap.exists());
+      try {
+        const snapFav = await getDoc(doc(db, "favoritos", `${usuario.uid}_${receta.id}`));
+        setEsFavorita(snapFav.exists());
+        const snapCal = await getDoc(doc(db, "calificaciones", `${usuario.uid}_${receta.id}`));
+        if (snapCal.exists()) setCalificacion(snapCal.data().estrellas || 0);
+      } catch {
+        setMensaje("No se pudieron cargar tus datos de esta receta. Inténtalo de nuevo.");
+      }
     };
-    revisarFavorito();
+    cargarDatosDelUsuario();
   }, [usuario, receta.id]);
 
   // Escucha los comentarios de esta receta en tiempo real
   useEffect(() => {
     const q = query(collection(db, "comentarios"), where("recetaId", "==", receta.id));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const lista = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setComentarios(lista);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const lista = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Del más antiguo al más nuevo (si la fecha aún no llega del servidor, va al final)
+        const milis = (c) => (c.fecha?.toMillis ? c.fecha.toMillis() : Infinity);
+        lista.sort((a, b) => milis(a) - milis(b));
+        setComentarios(lista);
+      },
+      () => setMensaje("No se pudieron cargar los comentarios de esta receta.")
+    );
     return () => unsubscribe();
   }, [receta.id]);
 
@@ -50,16 +63,23 @@ function RecetaCard({ receta }) {
       return;
     }
     const ref = doc(db, "favoritos", `${usuario.uid}_${receta.id}`);
-    if (esFavorita) {
-      await deleteDoc(ref);
-      setEsFavorita(false);
-    } else {
-      await setDoc(ref, {
-        usuarioId: usuario.uid,
-        recetaId: receta.id,
-        nombreReceta: receta.nombre,
-      });
-      setEsFavorita(true);
+    try {
+      if (esFavorita) {
+        await deleteDoc(ref);
+        setEsFavorita(false);
+        setMensaje("Quitaste esta receta de tus favoritos.");
+        if (alQuitarFavorito) alQuitarFavorito(receta.id);
+      } else {
+        await setDoc(ref, {
+          usuarioId: usuario.uid,
+          recetaId: receta.id,
+          nombreReceta: receta.nombre,
+        });
+        setEsFavorita(true);
+        setMensaje("Guardada en tus favoritos ❤️ Búscala en el menú, en \"Mis favoritos\".");
+      }
+    } catch {
+      setMensaje("No se pudo actualizar tus favoritos. Revisa tu conexión e inténtalo de nuevo.");
     }
   };
 
@@ -68,13 +88,20 @@ function RecetaCard({ receta }) {
       setMensaje("Debes iniciar sesión para calificar.");
       return;
     }
+    const anterior = calificacion;
     setCalificacion(estrellas);
-    const ref = doc(db, "calificaciones", `${usuario.uid}_${receta.id}`);
-    await setDoc(ref, {
-      usuarioId: usuario.uid,
-      recetaId: receta.id,
-      estrellas: estrellas,
-    });
+    try {
+      const ref = doc(db, "calificaciones", `${usuario.uid}_${receta.id}`);
+      await setDoc(ref, {
+        usuarioId: usuario.uid,
+        recetaId: receta.id,
+        estrellas: estrellas,
+      });
+      setMensaje(`¡Gracias! Calificaste esta receta con ${estrellas} ${estrellas === 1 ? "estrella" : "estrellas"}.`);
+    } catch {
+      setCalificacion(anterior);
+      setMensaje("No se pudo guardar tu calificación. Inténtalo de nuevo.");
+    }
   };
 
   const enviarComentario = async (e) => {
@@ -85,14 +112,18 @@ function RecetaCard({ receta }) {
     }
     if (!nuevoComentario.trim()) return;
 
-    await addDoc(collection(db, "comentarios"), {
-      recetaId: receta.id,
-      usuarioId: usuario.uid,
-      correo: usuario.email,
-      texto: nuevoComentario,
-      fecha: serverTimestamp(),
-    });
-    setNuevoComentario("");
+    try {
+      await addDoc(collection(db, "comentarios"), {
+        recetaId: receta.id,
+        usuarioId: usuario.uid,
+        correo: usuario.email,
+        texto: nuevoComentario.trim(),
+        fecha: serverTimestamp(),
+      });
+      setNuevoComentario("");
+    } catch {
+      setMensaje("No se pudo enviar tu comentario. Inténtalo de nuevo.");
+    }
   };
 
   const compartir = async () => {
@@ -113,11 +144,17 @@ ${listaPasos}`;
       try {
         await navigator.share({ title: receta.nombre, text: textoCompartir });
       } catch (error) {
-        // el usuario canceló, no pasa nada
+        if (error?.name !== "AbortError") {
+          setMensaje("No se pudo compartir esta receta. Inténtalo de nuevo.");
+        }
       }
     } else {
-      await navigator.clipboard.writeText(textoCompartir);
-      setMensaje("Copiado al portapapeles, ¡ya puedes pegarlo donde quieras!");
+      try {
+        await navigator.clipboard.writeText(textoCompartir);
+        setMensaje("Copiado al portapapeles, ¡ya puedes pegarlo donde quieras!");
+      } catch {
+        setMensaje("Tu navegador no permitió copiar. Prueba desde Chrome o Edge.");
+      }
     }
   };
 
@@ -209,7 +246,10 @@ ${listaPasos}`;
         <ul className="rc-lista">
           {comentarios.map((c) => (
             <li key={c.id}>
-              <span className="rc-autor">{c.correo}</span>
+              <span className="rc-autor">
+                {c.correo}
+                {c.fecha?.toDate ? ` · ${c.fecha.toDate().toLocaleDateString("es-CO")}` : ""}
+              </span>
               <span>{c.texto}</span>
             </li>
           ))}

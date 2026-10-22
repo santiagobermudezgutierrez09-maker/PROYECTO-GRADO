@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { auth } from "./firebaseAuth";
+import { db } from "./firebase";
+import { mensajeErrorAuth } from "./mensajesAuth";
 
 function Register() {
   const [nombre, setNombre] = useState("");
@@ -24,7 +26,7 @@ function Register() {
 
       setMensaje("¡Cuenta creada con éxito!");
     } catch (error) {
-      setMensaje("Error: " + error.message);
+      setMensaje(mensajeErrorAuth(error));
     }
   };
 

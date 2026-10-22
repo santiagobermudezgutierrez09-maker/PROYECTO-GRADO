@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "./firebaseAuth";
+import { mensajeErrorAuth } from "./mensajesAuth";
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -14,7 +15,7 @@ function Login() {
       await signInWithEmailAndPassword(auth, correo, clave);
       setMensaje("¡Sesión iniciada!");
     } catch (error) {
-      setMensaje("Error: " + error.message);
+      setMensaje(mensajeErrorAuth(error));
     }
   };
 
@@ -29,7 +30,7 @@ function Login() {
       await sendPasswordResetEmail(auth, correo);
       setMensaje("Te enviamos un correo a " + correo + " con un enlace para restablecer tu contraseña.");
     } catch (error) {
-      setMensaje("Error: " + error.message);
+      setMensaje(mensajeErrorAuth(error));
     }
   };
 

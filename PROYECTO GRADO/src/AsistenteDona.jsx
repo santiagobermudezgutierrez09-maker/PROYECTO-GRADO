@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
-import { preguntarChef } from "./geminiService";
+import { limpiarRespuestaChef, preguntarChef } from "./geminiService";
 import "./AsistenteDona.css";
 
 const SALUDOS = {
@@ -27,9 +27,6 @@ const SUGERENCIAS = {
   // 🍩 NUEVO
   fechas: ["Postre para un cumpleaños", "¿Qué hago para Halloween?", "Postre para 20 personas"],
 };
-
-// Quita asteriscos de markdown por si la IA se le escapan
-const limpiar = (t) => t.replace(/\*\*/g, "").replace(/^\s*\*\s/gm, "• ");
 
 export default function AsistenteDona({ vista, visible }) {
   const [abierto, setAbierto] = useState(false);
@@ -58,7 +55,7 @@ export default function AsistenteDona({ vista, visible }) {
 
     try {
       const respuesta = await preguntarChef(historial, pregunta, vistaSegura);
-      setMensajes((m) => [...m, { rol: "bot", texto: limpiar(respuesta) }]);
+      setMensajes((m) => [...m, { rol: "bot", texto: limpiarRespuestaChef(respuesta) }]);
     } catch (e) {
       const textoError = e.message?.includes("VITE_GEMINI_KEY")
         ? "Falta configurar VITE_GEMINI_KEY en .env.local para conectar a Charin con Gemini."

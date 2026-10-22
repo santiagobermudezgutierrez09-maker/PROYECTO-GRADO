@@ -10,7 +10,8 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import { db, auth } from "./firebase";
+import { db } from "./firebase";
+import { auth } from "./firebaseAuth";
 import "./RecetasPorFecha.css";
 
 /* ---------- Ayudas para trabajar con fechas (hora local, sin líos de zona horaria) ---------- */

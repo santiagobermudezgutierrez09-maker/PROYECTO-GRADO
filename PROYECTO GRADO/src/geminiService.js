@@ -24,6 +24,9 @@ const CONTEXTO = {
     "El usuario está en 'Fechas y eventos', planeando una receta para una ocasión especial. Sugiere postres según la ocasión, el número de invitados y el tiempo que tiene para prepararlo.",
 };
 
+export const limpiarRespuestaChef = (texto) =>
+  texto.replace(/\*\*/g, "").replace(/^\s*\*\s/gm, "• ");
+
 export async function preguntarChef(historial, mensaje, vista = "home") {
   if (!KEY) {
     throw new Error("Falta configurar VITE_GEMINI_KEY en el archivo .env.local.");

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import recetas from "./recetasData";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db, auth } from "./firebase";
+import { db } from "./firebase";
+import { auth } from "./firebaseAuth";
 import "./ListaCompras.css";
 
 function ListaCompras() {
