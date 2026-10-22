@@ -172,7 +172,15 @@ ${listaPasos}`;
       {/* Datos rápidos */}
       <dl className="rc-stats">
         <div>
-          <dt>Tiempo</dt>
+          <dt>Preparación (aprox.)</dt>
+          <dd>{receta.tiempoPreparacion} min</dd>
+        </div>
+        <div>
+          <dt>Cocción (aprox.)</dt>
+          <dd>{receta.tiempoCoccion} min</dd>
+        </div>
+        <div>
+          <dt>Tiempo total</dt>
           <dd>{receta.tiempo} min</dd>
         </div>
         <div>
@@ -213,6 +221,7 @@ ${listaPasos}`;
             type="button"
             className={`rc-btn ${esFavorita ? "rc-btn--active" : ""}`}
             onClick={toggleFavorito}
+            disabled={!usuario}
           >
             {esFavorita ? "❤️ Quitar de favoritos" : "🤍 Guardar en favoritos"}
           </button>
@@ -229,6 +238,7 @@ ${listaPasos}`;
               type="button"
               className={`rc-star ${n <= calificacion ? "rc-star--on" : ""}`}
               onClick={() => calificar(n)}
+              disabled={!usuario}
               aria-label={`${n} ${n === 1 ? "estrella" : "estrellas"}`}
             >
               {n <= calificacion ? "★" : "☆"}
@@ -236,6 +246,10 @@ ${listaPasos}`;
           ))}
         </div>
       </div>
+
+      {!usuario && (
+        <p className="rc-aviso-invitado">Inicia sesión para guardar, calificar o comentar</p>
+      )}
 
       {mensaje && <p className="rc-mensaje">{mensaje}</p>}
 
@@ -264,8 +278,9 @@ ${listaPasos}`;
             placeholder="Escribe un comentario..."
             value={nuevoComentario}
             onChange={(e) => setNuevoComentario(e.target.value)}
+            disabled={!usuario}
           />
-          <button type="submit" className="rc-btn rc-btn--primary">
+          <button type="submit" className="rc-btn rc-btn--primary" disabled={!usuario}>
             Enviar
           </button>
         </form>

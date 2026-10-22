@@ -21,8 +21,8 @@ const SUGERENCIAS = [
 ];
 
 const ETIQUETAS = {
-  reposo: "Toca a Charin para hablarle, o escribe abajo",
-  escuchando: "Te escucho…",
+  reposo: "Toca a Charin o el micrófono para hablar, o escribe abajo",
+  escuchando: "Te escucho… habla ahora",
   pensando: "Charin está pensando…",
   hablando: "Charin está hablando…",
 };
@@ -103,22 +103,29 @@ function ChatDona() {
   };
 
   const alternarMicrofono = async () => {
-    if (!Reconocimiento) return;
+    prepararVoz(); // en el celular, la voz de Charin se activa con este toque
     if (estadoRef.current === "escuchando") {
       recRef.current?.stop();
       return;
     }
-    window.speechSynthesis?.cancel();
-    setError("");
+    if (estadoRef.current === "pensando") return;
 
-    const errorPermiso = await validarMicrofono();
-    if (errorPermiso) {
-      setError(errorPermiso);
+    setError("");
+    window.speechSynthesis?.cancel();
+
+    // Revisa el micrófono y pide el permiso (en el celular sale el aviso "¿Permitir?")
+    const problema = await validarMicrofono();
+    if (problema) {
+      setError(problema);
       return;
     }
+
     const rec = crearReconocimiento({
-      alResultado: (transcripcion) => enviar(transcripcion),
-      alError: setError,
+      alResultado: (texto) => enviar(texto),
+      alError: (mensaje) => {
+        cambiarEstado("reposo");
+        setError(mensaje);
+      },
       alTerminar: () => {
         if (estadoRef.current === "escuchando") cambiarEstado("reposo");
       },
@@ -129,6 +136,7 @@ function ChatDona() {
       cambiarEstado("escuchando");
     } catch {
       recRef.current = null;
+      cambiarEstado("reposo");
       setError("No se pudo iniciar el micrófono. Inténtalo de nuevo o escribe tu pregunta.");
     }
   };
@@ -145,6 +153,7 @@ function ChatDona() {
 
   const enviarEscrito = (e) => {
     e.preventDefault();
+    prepararVoz();
     enviar();
   };
 
@@ -154,12 +163,12 @@ function ChatDona() {
         <div className="cb-muneco">
           <Mascota
             hablando={estado === "pensando" || estado === "hablando"}
-            alClic={Reconocimiento ? alternarMicrofono : () => {}}
+            alClic={alternarMicrofono}
             mensaje=""
           />
         </div>
         <p className="cb-estado" aria-live="polite">
-          {Reconocimiento ? ETIQUETAS[estado] : ETIQUETAS[estado].replace("Toca a Charin para hablarle, o escribe abajo", "Escríbele a Charin abajo")}
+          {ETIQUETAS[estado]}
         </p>
       </div>
 
@@ -175,27 +184,37 @@ function ChatDona() {
       {!hayConversacion && (
         <div className="cb-chips">
           {SUGERENCIAS.map((s) => (
-            <button key={s} type="button" onClick={() => enviar(s)}>
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                prepararVoz();
+                enviar(s);
+              }}
+            >
               {s}
             </button>
           ))}
         </div>
       )}
 
-      {error && <p className="cb-error">{error}</p>}
+      {error && (
+        <p className="cb-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <div className="cb-controles">
-        {Reconocimiento && (
-          <button
-            type="button"
-            className={`cb-mic ${estado === "escuchando" ? "cb-mic--on" : ""}`}
-            onClick={alternarMicrofono}
-            aria-pressed={estado === "escuchando"}
-            aria-label={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con Charin"}
-          >
-            🎤
-          </button>
-        )}
+        <button
+          type="button"
+          className={`cb-mic ${estado === "escuchando" ? "cb-mic--on" : ""}`}
+          onClick={alternarMicrofono}
+          aria-pressed={estado === "escuchando"}
+          aria-label={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con Charin"}
+          title={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con Charin"}
+        >
+          🎤
+        </button>
 
         <form className="cb-form" onSubmit={enviarEscrito}>
           <input
@@ -233,39 +252,165 @@ function ChatDona() {
 }
 
 /* ------------------------------------------------------------
-   Dentro de Modo cocina: versión compacta (igual que antes)
+   Dentro de Modo cocina: chat compacto con voz.
+   Responde con la IA sabiendo la receta y el paso en que vas;
+   si la IA no está disponible, responde el motor de reglas.
    ------------------------------------------------------------ */
+function contextoReceta(receta, paso) {
+  const pasos = receta.pasos.map((p, i) => `${i + 1}. ${p}`).join(" ");
+  return (
+    `RECETA QUE EL USUARIO ESTÁ PREPARANDO: "${receta.nombre}" (${receta.tiempo} min, ` +
+    `${receta.porciones} porciones, dificultad ${receta.dificultad}). ` +
+    `Ingredientes: ${receta.ingredientes.join(", ")}. Pasos: ${pasos} ` +
+    `PASO ACTUAL: ${paso + 1} de ${receta.pasos.length}. ` +
+    `Responde pensando en esta receta y en este paso.`
+  );
+}
+
 function ChatCompacto({ recetaActiva, pasoActualIndex }) {
   const [mensajes, setMensajes] = useState([
     {
       autor: "bot",
-      texto: `¡Hola! Estoy contigo mientras preparas "${recetaActiva.nombre}". Escribe "ayuda" si quieres ver todo lo que puedo hacer.`,
+      texto: `¡Hola! Estoy contigo mientras preparas "${recetaActiva.nombre}". Pregúntame lo que necesites o háblame con el micrófono 🎤`,
     },
   ]);
   const [entrada, setEntrada] = useState("");
+  const [pensando, setPensando] = useState(false);
+  const [hablando, setHablando] = useState(false);
+  const [escuchando, setEscuchando] = useState(false);
+  const [vozActiva, setVozActiva] = useState(true);
+  const [error, setError] = useState("");
+
   const finRef = useRef(null);
+  const recRef = useRef(null);
+  const mensajesRef = useRef(mensajes);
+  const pensandoRef = useRef(false);
+  const escuchandoRef = useRef(false);
+  const vozRef = useRef(true);
+  const recetaRef = useRef(recetaActiva);
+  const pasoRef = useRef(pasoActualIndex);
+  const enviarRef = useRef(null);
+
+  mensajesRef.current = mensajes;
+  vozRef.current = vozActiva;
+  recetaRef.current = recetaActiva;
+  pasoRef.current = pasoActualIndex ?? 0;
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [mensajes]);
+  }, [mensajes, pensando]);
+
+  useEffect(() => {
+    window.speechSynthesis?.getVoices();
+    return () => {
+      recRef.current?.abort();
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  const cambiarEscuchando = (valor) => {
+    escuchandoRef.current = valor;
+    setEscuchando(valor);
+  };
+
+  const enviar = async (texto) => {
+    const pregunta = texto.trim();
+    if (!pregunta || pensandoRef.current) return;
+
+    window.speechSynthesis?.cancel();
+    setHablando(false);
+    setError("");
+
+    // El saludo (primer mensaje) no se manda a la IA
+    const historial = mensajesRef.current.slice(1).map((m) => ({
+      rol: m.autor === "bot" ? "bot" : "user",
+      texto: m.texto,
+    }));
+
+    setMensajes((m) => [...m, { autor: "usuario", texto: pregunta }]);
+    setEntrada("");
+    pensandoRef.current = true;
+    setPensando(true);
+
+    const receta = recetaRef.current;
+    const paso = pasoRef.current;
+
+    let respuesta;
+    try {
+      respuesta = limpiarRespuestaChef(
+        await preguntarChef(historial, pregunta, "cocina", contextoReceta(receta, paso))
+      );
+    } catch {
+      // Si la IA falla, responde el motor de reglas para no quedarse callado
+      respuesta = generarRespuesta(pregunta, receta, paso);
+    }
+
+    setMensajes((m) => [...m, { autor: "bot", texto: respuesta }]);
+    pensandoRef.current = false;
+    setPensando(false);
+    if (vozRef.current) {
+      hablarTexto(respuesta, {
+        alEmpezar: () => setHablando(true),
+        alTerminar: () => setHablando(false),
+      });
+    }
+  };
+  enviarRef.current = enviar;
 
   const enviarMensaje = (e) => {
     e.preventDefault();
-    if (!entrada.trim()) return;
+    prepararVoz();
+    enviar(entrada);
+  };
 
-    const mensajeUsuario = { autor: "usuario", texto: entrada };
-    const respuestaBot = {
-      autor: "bot",
-      texto: generarRespuesta(entrada, recetaActiva, pasoActualIndex),
-    };
+  const alternarMicrofono = async () => {
+    prepararVoz();
+    if (escuchandoRef.current) {
+      recRef.current?.stop();
+      return;
+    }
+    if (pensandoRef.current) return;
 
-    setMensajes((prev) => [...prev, mensajeUsuario, respuestaBot]);
-    setEntrada("");
+    setError("");
+    window.speechSynthesis?.cancel();
+
+    const problema = await validarMicrofono();
+    if (problema) {
+      setError(problema);
+      return;
+    }
+
+    const rec = crearReconocimiento({
+      alResultado: (texto) => enviarRef.current(texto),
+      alError: (mensaje) => setError(mensaje),
+      alTerminar: () => cambiarEscuchando(false),
+    });
+    recRef.current = rec;
+    try {
+      rec.start();
+      cambiarEscuchando(true);
+    } catch {
+      recRef.current = null;
+      cambiarEscuchando(false);
+      setError("No se pudo iniciar el micrófono. Inténtalo de nuevo.");
+    }
+  };
+
+  const alternarVoz = () => {
+    if (vozActiva) {
+      window.speechSynthesis?.cancel();
+      setHablando(false);
+    }
+    else prepararVoz();
+    setVozActiva((v) => !v);
   };
 
   return (
     <div className="cbc">
       <h3 className="cbc-titulo">💬 Asistente de cocina</h3>
+      <div className="cbc-mascota">
+        <Mascota variante="en-chat-compacto" hablando={pensando || hablando} mensaje="" />
+      </div>
 
       <div className="cbc-mensajes">
         {mensajes.map((m, i) => (
@@ -273,18 +418,46 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
             {m.texto}
           </div>
         ))}
+        {pensando && <div className="cbc-msg cbc-msg--bot">Charin está pensando…</div>}
         <div ref={finRef} />
       </div>
 
+      {error && (
+        <p className="cb-error" role="alert">
+          {error}
+        </p>
+      )}
+
       <form onSubmit={enviarMensaje} className="chat-form cbc-form">
+        <button
+          type="button"
+          className={`cbc-icono ${escuchando ? "cbc-icono--on" : ""}`}
+          onClick={alternarMicrofono}
+          aria-pressed={escuchando}
+          aria-label={escuchando ? "Dejar de escuchar" : "Hablar con el asistente"}
+          title={escuchando ? "Dejar de escuchar" : "Hablar con el asistente"}
+        >
+          🎤
+        </button>
         <input
           type="text"
-          placeholder="Escribe tu pregunta..."
+          placeholder={escuchando ? "Te escucho…" : "Escribe tu pregunta..."}
           value={entrada}
           onChange={(e) => setEntrada(e.target.value)}
+          maxLength={300}
         />
-        <button type="submit" className="btn-enviar">
+        <button type="submit" className="btn-enviar" disabled={pensando || !entrada.trim()}>
           Enviar
+        </button>
+        <button
+          type="button"
+          className="cbc-icono"
+          onClick={alternarVoz}
+          aria-pressed={vozActiva}
+          aria-label={vozActiva ? "Silenciar voz" : "Activar voz"}
+          title={vozActiva ? "Silenciar voz" : "Activar voz"}
+        >
+          {vozActiva ? "🔊" : "🔇"}
         </button>
       </form>
     </div>

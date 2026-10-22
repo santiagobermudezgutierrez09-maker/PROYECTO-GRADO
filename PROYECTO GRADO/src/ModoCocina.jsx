@@ -81,6 +81,10 @@ function ModoCocina() {
   const [pasoActual, setPasoActual] = useState(inicial.paso);
   const [busqueda, setBusqueda] = useState("");
   const [grande, setGrande] = useState(false);
+  const [sinDistracciones, setSinDistracciones] = useState(false);
+  const [pantallaCompleta, setPantallaCompleta] = useState(false);
+  const [pantallaCompletaFallback, setPantallaCompletaFallback] = useState(false);
+  const [errorPantallaCompleta, setErrorPantallaCompleta] = useState("");
   const [minutosInput, setMinutosInput] = useState(10);
   const [timer, setTimer] = useState({
     estado: "idle", // idle | corriendo | pausa | fin
@@ -90,6 +94,7 @@ function ModoCocina() {
     paso: 0,
   });
   const toqueInicio = useRef(null);
+  const modoCocinaRef = useRef(null);
 
   const receta = recetas.find((r) => r.id === Number(recetaId));
   const totalPasos = receta ? receta.pasos.length : 0;
@@ -138,6 +143,42 @@ function ModoCocina() {
     };
   }, [receta]);
 
+  useEffect(() => {
+    const cambiarPantallaCompleta = () => {
+      const activa = document.fullscreenElement === modoCocinaRef.current;
+      setPantallaCompleta(activa);
+      if (!activa) setPantallaCompletaFallback(false);
+    };
+    document.addEventListener("fullscreenchange", cambiarPantallaCompleta);
+    return () => document.removeEventListener("fullscreenchange", cambiarPantallaCompleta);
+  }, []);
+
+  useEffect(() => {
+    const modoFocoActivo = sinDistracciones || pantallaCompletaFallback;
+    document.body.classList.toggle("mc-sin-distracciones", modoFocoActivo);
+    return () => document.body.classList.remove("mc-sin-distracciones");
+  }, [sinDistracciones, pantallaCompletaFallback]);
+
+  useEffect(() => {
+    const alPulsarEscape = (e) => {
+      if (e.key === "Escape" && sinDistracciones) {
+        setSinDistracciones(false);
+        setPantallaCompletaFallback(false);
+      }
+    };
+    window.addEventListener("keydown", alPulsarEscape);
+    return () => window.removeEventListener("keydown", alPulsarEscape);
+  }, [sinDistracciones]);
+
+  useEffect(
+    () => () => {
+      if (document.fullscreenElement === modoCocinaRef.current) {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    },
+    []
+  );
+
   /* Flechas del teclado (no interfiere cuando escribes en el chat) */
   const ir = useCallback(
     (delta) =>
@@ -183,6 +224,36 @@ function ModoCocina() {
     setRecetaId("");
     setPasoActual(0);
     reiniciar();
+  };
+
+  const entrarPantallaCompleta = async () => {
+    setErrorPantallaCompleta("");
+    const elemento = modoCocinaRef.current;
+    if (!elemento) return;
+
+    if (!elemento.requestFullscreen) {
+      setPantallaCompletaFallback(true);
+      return;
+    }
+
+    try {
+      await elemento.requestFullscreen();
+    } catch {
+      setErrorPantallaCompleta("El navegador no permitió pantalla completa; se activó la vista ampliada.");
+      setPantallaCompletaFallback(true);
+    }
+  };
+
+  const salirPantallaCompleta = async () => {
+    setSinDistracciones(false);
+    setPantallaCompletaFallback(false);
+    if (document.fullscreenElement !== modoCocinaRef.current || !document.exitFullscreen) return;
+
+    try {
+      await document.exitFullscreen();
+    } catch {
+      setErrorPantallaCompleta("No se pudo salir de pantalla completa. Pulsa Escape para volver.");
+    }
   };
 
   /* Deslizar con el dedo */
@@ -241,7 +312,17 @@ function ModoCocina() {
   const timerDeOtroPaso = hayTimer && timer.paso !== pasoActual;
 
   return (
-    <div className={`mc ${grande ? "mc--grande" : ""}`}>
+    <div
+      ref={modoCocinaRef}
+      className={`mc ${grande ? "mc--grande" : ""} ${
+        sinDistracciones ? "mc--sin-distracciones" : ""
+      } ${pantallaCompletaFallback ? "mc--pantalla-fallback" : ""}`}
+    >
+      {sinDistracciones && (
+        <button type="button" className="mc-salir-foco" onClick={salirPantallaCompleta}>
+          Salir del modo sin distracciones
+        </button>
+      )}
       <div className="mc-top">
         <div className="mc-titulo-wrap">
           <button className="mc-volver" onClick={volver}>
@@ -249,15 +330,43 @@ function ModoCocina() {
           </button>
           <h3 className="mc-nombre">{receta.nombre}</h3>
         </div>
-        <button
-          className={`mc-aa ${grande ? "mc-aa--on" : ""}`}
-          onClick={() => setGrande((g) => !g)}
-          aria-pressed={grande}
-          title="Letra grande"
-        >
-          Aa
-        </button>
+        <div className="mc-acciones-pantalla">
+          <button
+            type="button"
+            className={`mc-aa ${grande ? "mc-aa--on" : ""}`}
+            onClick={() => setGrande((g) => !g)}
+            aria-pressed={grande}
+            title="Letra grande"
+          >
+            Aa
+          </button>
+          <button
+            type="button"
+            className="mc-btn-pantalla"
+            onClick={
+              pantallaCompleta || pantallaCompletaFallback
+                ? salirPantallaCompleta
+                : entrarPantallaCompleta
+            }
+          >
+            {pantallaCompleta || pantallaCompletaFallback ? "Pantalla completa activa" : "Pantalla completa"}
+          </button>
+          <button
+            type="button"
+            className="mc-btn-pantalla"
+            onClick={() => setSinDistracciones((actual) => !actual)}
+            aria-pressed={sinDistracciones}
+          >
+            Modo sin distracciones
+          </button>
+        </div>
       </div>
+
+      {errorPantallaCompleta && (
+        <p className="mc-pantalla-error" role="status">
+          {errorPantallaCompleta}
+        </p>
+      )}
 
       <div
         className="mc-progreso"

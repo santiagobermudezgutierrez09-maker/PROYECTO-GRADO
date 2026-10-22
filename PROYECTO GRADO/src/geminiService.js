@@ -1,5 +1,31 @@
 const KEY = import.meta.env.VITE_GEMINI_KEY;
 const MODEL = "gemini-3.5-flash-lite";
+const TIMEOUT_MS = 10_000;
+
+async function obtenerRespuestaGemini(url, body) {
+  const controller = new AbortController();
+  let agotado = false;
+  const timeoutId = setTimeout(() => {
+    agotado = true;
+    controller.abort();
+  }, TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error("Error " + res.status);
+    return await res.json();
+  } catch (error) {
+    if (agotado) throw new Error("La solicitud a Gemini superó el límite de 10 segundos.");
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 const BASE = `Eres Charin, una dona chef amable, alegre y paciente que vive en la app "Charin Cook",
 especializada en postres. Ayudas al usuario a cocinar: sugieres recetas, dices qué ingredientes
@@ -27,7 +53,8 @@ const CONTEXTO = {
 export const limpiarRespuestaChef = (texto) =>
   texto.replace(/\*\*/g, "").replace(/^\s*\*\s/gm, "• ");
 
-export async function preguntarChef(historial, mensaje, vista = "home") {
+// "contextoExtra" sirve para darle a Charin datos extra (por ejemplo, la receta y el paso en que va el usuario)
+export async function preguntarChef(historial, mensaje, vista = "home", contextoExtra = "") {
   if (!KEY) {
     throw new Error("Falta configurar VITE_GEMINI_KEY en el archivo .env.local.");
   }
@@ -43,23 +70,22 @@ export async function preguntarChef(historial, mensaje, vista = "home") {
     { role: "user", parts: [{ text: mensaje }] },
   ];
 
-  const res = await fetch(
+  const data = await obtenerRespuestaGemini(
     `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
     {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: `${BASE}\n\nCONTEXTO ACTUAL: ${CONTEXTO[vista] || CONTEXTO.home}` }],
-        },
-        contents,
-        generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
-      }),
+      systemInstruction: {
+        parts: [
+          {
+            text: `${BASE}\n\nCONTEXTO ACTUAL: ${CONTEXTO[vista] || CONTEXTO.home}${
+              contextoExtra ? `\n\n${contextoExtra}` : ""
+            }`,
+          },
+        ],
+      },
+      contents,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
     }
   );
-
-  if (!res.ok) throw new Error("Error " + res.status);
-  const data = await res.json();
   const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!texto) throw new Error("Sin respuesta");
   return texto;
@@ -84,24 +110,17 @@ ${ingredientes.map((i) => "- " + i).join("\n")}
 INSTRUCCIONES:
 ${String(instrucciones).slice(0, 6000)}`;
 
-  const res = await fetch(
+  const data = await obtenerRespuestaGemini(
     `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
     {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 2500,
-          responseMimeType: "application/json",
-        },
-      }),
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 2500,
+        responseMimeType: "application/json",
+      },
     }
   );
-
-  if (!res.ok) throw new Error("Error " + res.status);
-  const data = await res.json();
   const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!texto) throw new Error("Sin respuesta");
 

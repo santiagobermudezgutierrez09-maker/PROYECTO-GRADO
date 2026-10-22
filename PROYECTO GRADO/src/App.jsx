@@ -60,6 +60,7 @@ function App() {
   const [cargandoSesion, setCargandoSesion] = useState(true);
   const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
   const [menuAbierto, setMenuAbierto] = useState(false); // solo se usa en celular
+  const [busquedaRecetas, setBusquedaRecetas] = useState("");
 
   // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
   useCierreSesionInactividad();
@@ -108,8 +109,9 @@ function App() {
     return () => window.removeEventListener("keydown", alPulsar);
   }, []);
 
-  const irA = (nuevaVista) => {
+  const irA = (nuevaVista, busquedaInicial = "") => {
     setVista(nuevaVista);
+    setBusquedaRecetas(nuevaVista === "recetas" ? busquedaInicial : "");
     setMenuAbierto(false); // en celular, al elegir una opción se cierra el menú
   };
 
@@ -280,13 +282,13 @@ function App() {
           <main className="vista">
             <Suspense fallback={<p style={{ textAlign: "center" }}>Cargando...</p>}>
               {vista === "home" && <Home irA={irA} correoUsuario={nombreParaMostrar} />}
-              {vista === "recetas" && <Recetas />}
+              {vista === "recetas" && <Recetas busquedaInicial={busquedaRecetas} />}
               {vista === "favoritos" && <Favoritos irA={irA} />}
               {vista === "generador" && <GeneradorIngredientes />}
               {vista === "cocina" && <ModoCocina />}
               {vista === "chatbot" && <Chatbot />}
               {vista === "compras" && <ListaCompras />}
-              {vista === "fechas" && <RecetasPorFecha />}
+              {vista === "fechas" && <RecetasPorFecha irA={irA} />}
               {vista === "api" && <RecetasAPI />}
             </Suspense>
           </main>

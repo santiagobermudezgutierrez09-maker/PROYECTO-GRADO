@@ -654,4 +654,17 @@ const recetas = [
   },
 ];
 
-export default recetas;
+const PALABRAS_COCCION = /\b(hornea|hornear|horno|cocina|cocinar|calienta|calentar|hierve|hervir|cuece|cocer|fríe|freír|derrite|derretir)\b/i;
+
+export default recetas.map((receta) => {
+  const requiereCoccion = receta.pasos.some((paso) => PALABRAS_COCCION.test(paso));
+  const tiempoPreparacion = requiereCoccion
+    ? Math.round(receta.tiempo * 0.4)
+    : receta.tiempo;
+
+  return {
+    ...receta,
+    tiempoPreparacion,
+    tiempoCoccion: receta.tiempo - tiempoPreparacion,
+  };
+});

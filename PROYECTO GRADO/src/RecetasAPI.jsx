@@ -3,6 +3,27 @@ import { traducirReceta } from "./geminiService";
 import "./RecetasAPI.css";
 
 const API = "https://www.themealdb.com/api/json/v1/1";
+const TIMEOUT_MS = 10_000;
+
+async function obtenerJsonConTimeout(url) {
+  const controller = new AbortController();
+  let agotado = false;
+  const timeoutId = setTimeout(() => {
+    agotado = true;
+    controller.abort();
+  }, TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    if (agotado) throw new Error("La solicitud tardó más de 10 segundos.");
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 // Nombres de países en español (si falta alguno, se muestra el original)
 const PAISES = {
@@ -92,6 +113,7 @@ function RecetasAPI() {
   const [receta, setReceta] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const [errorDetalle, setErrorDetalle] = useState("");
+  const [idDetalleFallido, setIdDetalleFallido] = useState(null);
 
   const [traducciones, setTraducciones] = useState({}); // guardadas por idMeal
   const [traduciendo, setTraduciendo] = useState(false);
@@ -105,12 +127,14 @@ function RecetasAPI() {
     setCargandoLista(true);
     setError("");
     try {
-      const r = await fetch(`${API}/filter.php?c=Dessert`);
-      if (!r.ok) throw new Error();
-      const d = await r.json();
+      const d = await obtenerJsonConTimeout(`${API}/filter.php?c=Dessert`);
       setLista(d.meals || []);
-    } catch {
-      setError("No se pudo conectar con los postres. Revisa tu conexión a internet.");
+    } catch (e) {
+      setError(
+        e.message?.includes("10 segundos")
+          ? "La búsqueda de postres tardó más de 10 segundos."
+          : "No se pudo conectar con los postres. Revisa tu conexión a internet."
+      );
     } finally {
       setCargandoLista(false);
     }
@@ -136,16 +160,20 @@ function RecetasAPI() {
     if (cargandoDetalle) return;
     setCargandoDetalle(true);
     setErrorDetalle("");
+    setIdDetalleFallido(null);
     try {
-      const r = await fetch(`${API}/lookup.php?i=${id}`);
-      if (!r.ok) throw new Error();
-      const d = await r.json();
+      const d = await obtenerJsonConTimeout(`${API}/lookup.php?i=${id}`);
       if (!d.meals?.[0]) throw new Error();
       setReceta(d.meals[0]);
       setIdioma(traducciones[id] ? "es" : "original");
       setErrorTraduccion("");
-    } catch {
-      setErrorDetalle("No se pudo cargar el detalle de este postre. Inténtalo de nuevo.");
+    } catch (e) {
+      setIdDetalleFallido(id);
+      setErrorDetalle(
+        e.message?.includes("10 segundos")
+          ? "La receta tardó más de 10 segundos en cargar."
+          : "No se pudo cargar el detalle de este postre. Inténtalo de nuevo."
+      );
     } finally {
       setCargandoDetalle(false);
     }
@@ -324,7 +352,16 @@ function RecetasAPI() {
             />
           </div>
 
-          {errorDetalle && <p className="ra-error-chico centrado">{errorDetalle}</p>}
+          {errorDetalle && (
+            <div className="ra-estado">
+              <p>{errorDetalle}</p>
+              {idDetalleFallido && (
+                <button className="ra-btn-principal" onClick={() => verDetalle(idDetalleFallido)}>
+                  Reintentar
+                </button>
+              )}
+            </div>
+          )}
           {cargandoDetalle && <p className="ra-sub">Abriendo la receta…</p>}
 
           {cargandoLista ? (

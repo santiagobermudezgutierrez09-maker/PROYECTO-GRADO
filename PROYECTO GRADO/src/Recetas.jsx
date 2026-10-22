@@ -17,8 +17,8 @@ const botonesCategoria = [
   { valor: "especial", texto: "Fechas especiales" },
 ];
 
-function Recetas() {
-  const [busqueda, setBusqueda] = useState("");
+function Recetas({ busquedaInicial = "" }) {
+  const [busqueda, setBusqueda] = useState(busquedaInicial);
   const [categoriaActiva, setCategoriaActiva] = useState("todas");
 
   const [tiempoMax, setTiempoMax] = useState("todos");

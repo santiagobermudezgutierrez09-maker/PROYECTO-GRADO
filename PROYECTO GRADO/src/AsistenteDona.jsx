@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
+import { generarRespuesta } from "./chatbotEngine";
 import { limpiarRespuestaChef, preguntarChef } from "./geminiService";
 import "./AsistenteDona.css";
 
@@ -56,18 +57,9 @@ export default function AsistenteDona({ vista, visible }) {
     try {
       const respuesta = await preguntarChef(historial, pregunta, vistaSegura);
       setMensajes((m) => [...m, { rol: "bot", texto: limpiarRespuestaChef(respuesta) }]);
-    } catch (e) {
-      const textoError = e.message?.includes("VITE_GEMINI_KEY")
-        ? "Falta configurar VITE_GEMINI_KEY en .env.local para conectar a Charin con Gemini."
-        : "Uy, no pude responder ahora mismo. Inténtalo de nuevo en un momentico 🍩";
-      setMensajes((m) => [
-        ...m,
-        {
-          rol: "bot",
-          error: true,
-          texto: textoError,
-        },
-      ]);
+    } catch {
+      const respuesta = generarRespuesta(pregunta);
+      setMensajes((m) => [...m, { rol: "bot", texto: respuesta }]);
     } finally {
       setCargando(false);
     }

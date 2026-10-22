@@ -40,13 +40,30 @@
   flex-wrap: wrap;
   gap: 8px;
 }
-.rf-chip {
+.tema-cocina .rf-chip {
+  appearance: none;
   background: #232323;
   border: 1px solid #d4a640;
   color: #f3e3b5;
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.4;
+  margin: 0;
+  width: auto;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.tema-cocina .rf-chip:hover {
+  background: #2a2212;
+  border-color: #f3d27a;
+  transform: translateY(-1px);
+}
+.tema-cocina .rf-chip:focus-visible {
+  outline: 2px solid #f3d27a;
+  outline-offset: 2px;
 }
 
 /* ---------- Próximas fechas especiales ---------- */

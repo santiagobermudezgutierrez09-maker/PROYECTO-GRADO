@@ -58,7 +58,7 @@
 /* Datos rápidos */
 .rc-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin: 0 0 20px;
   border: 1px solid var(--rc-linea);
   border-radius: 12px;
@@ -155,6 +155,13 @@
   border-color: var(--rc-fresa);
 }
 
+.rc-btn:disabled,
+.rc-star:disabled,
+.rc-form input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .rc-btn--active {
   background: var(--rc-rosa-suave);
   border-color: var(--rc-fresa);
@@ -216,6 +223,12 @@
   background: #fff4dc;
   color: #7a5200;
   font-size: 0.9rem;
+}
+
+.rc-aviso-invitado {
+  margin: 12px 0 0;
+  color: var(--rc-tinta-suave);
+  font-size: 0.85rem;
 }
 
 /* Comentarios */
@@ -291,6 +304,18 @@
 
   .rc-stats > div {
     padding: 10px;
+  }
+
+  .rc-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rc-stats > div:nth-child(2n + 1) {
+    border-left: 0;
+  }
+
+  .rc-stats > div:nth-child(n + 3) {
+    border-top: 1px solid var(--rc-linea);
   }
 }
 

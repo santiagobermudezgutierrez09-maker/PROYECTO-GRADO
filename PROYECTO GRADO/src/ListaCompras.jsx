@@ -5,6 +5,8 @@ import { db } from "./firebase";
 import { auth } from "./firebaseAuth";
 import "./ListaCompras.css";
 
+const CLAVE_LISTA_INVITADO = "charinCook:listaComprasInvitado";
+
 function ListaCompras() {
   const [recetasSeleccionadas, setRecetasSeleccionadas] = useState([]);
   const [lista, setLista] = useState([]);
@@ -14,11 +16,33 @@ function ListaCompras() {
 
   useEffect(() => {
     const cargarLista = async () => {
-      if (!usuario) return;
-      const ref = doc(db, "listaCompras", usuario.uid);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        setLista(snap.data().items || []);
+      if (!usuario) {
+        try {
+          const guardada = localStorage.getItem(CLAVE_LISTA_INVITADO);
+          if (!guardada) return;
+          const items = JSON.parse(guardada);
+          if (
+            !Array.isArray(items) ||
+            items.some(
+              (item) =>
+                typeof item?.nombre !== "string" || typeof item?.comprado !== "boolean"
+            )
+          ) {
+            throw new Error("La lista guardada no tiene un formato válido.");
+          }
+          setLista(items);
+        } catch {
+          setMensaje("No se pudo cargar la lista guardada en este dispositivo.");
+        }
+        return;
+      }
+
+      try {
+        const ref = doc(db, "listaCompras", usuario.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) setLista(snap.data().items || []);
+      } catch {
+        setMensaje("No se pudo cargar tu lista de compras desde Firestore.");
       }
     };
     cargarLista();
@@ -31,10 +55,6 @@ function ListaCompras() {
   };
 
   const generarLista = async () => {
-    if (!usuario) {
-      setMensaje("Debes iniciar sesión para guardar tu lista de compras.");
-      return;
-    }
     if (recetasSeleccionadas.length === 0) {
       setMensaje("Selecciona al menos una receta.");
       return;
@@ -51,27 +71,70 @@ function ListaCompras() {
       return { nombre: ing, comprado: existente ? existente.comprado : false };
     });
 
-    setLista(nuevaLista);
-    setMensaje("");
+    if (!usuario) {
+      try {
+        localStorage.setItem(CLAVE_LISTA_INVITADO, JSON.stringify(nuevaLista));
+        setLista(nuevaLista);
+        setMensaje("Tu lista y tus cambios se guardan en este dispositivo.");
+      } catch {
+        setLista(nuevaLista);
+        setMensaje("La lista está disponible, pero no se pudo guardar en este dispositivo.");
+      }
+      return;
+    }
 
-    await setDoc(doc(db, "listaCompras", usuario.uid), { items: nuevaLista });
+    setMensaje("");
+    try {
+      await setDoc(doc(db, "listaCompras", usuario.uid), { items: nuevaLista });
+      setLista(nuevaLista);
+    } catch {
+      setMensaje("La lista se armó, pero no se pudo guardar. Revisa tu conexión.");
+      setLista(nuevaLista);
+    }
   };
 
   const marcarComprado = async (nombre) => {
     const nuevaLista = lista.map((item) =>
       item.nombre === nombre ? { ...item, comprado: !item.comprado } : item
     );
+    if (!usuario) {
+      try {
+        localStorage.setItem(CLAVE_LISTA_INVITADO, JSON.stringify(nuevaLista));
+        setLista(nuevaLista);
+        setMensaje("");
+      } catch {
+        setMensaje("No se pudo guardar el cambio en este dispositivo.");
+      }
+      return;
+    }
+
     setLista(nuevaLista);
-    if (usuario) {
+    try {
       await setDoc(doc(db, "listaCompras", usuario.uid), { items: nuevaLista });
+      setMensaje("");
+    } catch {
+      setMensaje("No se pudo guardar el cambio. Revisa tu conexión.");
     }
   };
 
   const limpiarLista = async () => {
-    setLista([]);
-    setRecetasSeleccionadas([]);
-    if (usuario) {
-      await setDoc(doc(db, "listaCompras", usuario.uid), { items: [] });
+    if (!window.confirm("¿Vaciar la lista de compras? Esta acción no se puede deshacer.")) return;
+
+    try {
+      if (usuario) {
+        await setDoc(doc(db, "listaCompras", usuario.uid), { items: [] });
+      } else {
+        localStorage.removeItem(CLAVE_LISTA_INVITADO);
+      }
+      setLista([]);
+      setRecetasSeleccionadas([]);
+      setMensaje("");
+    } catch {
+      setMensaje(
+        usuario
+          ? "No se pudo vaciar la lista en Firestore. Inténtalo de nuevo."
+          : "No se pudo vaciar la lista guardada en este dispositivo."
+      );
     }
   };
 
@@ -113,7 +176,7 @@ function ListaCompras() {
             <button className="lc-principal" onClick={generarLista}>
               Generar lista de compras
             </button>
-            <button onClick={limpiarLista}>Limpiar todo</button>
+            <button onClick={limpiarLista}>Vaciar lista</button>
           </div>
 
           {mensaje && <p className="lc-mensaje">{mensaje}</p>}

@@ -56,6 +56,18 @@ const FECHAS_ESPECIALES = [
   { nombre: "Navidad", icono: "🎄", fecha: (a) => new Date(a, 11, 25) },
 ];
 
+// Postres del catálogo que mejor van con cada fecha especial (por id)
+const SUGERIDOS_POR_FECHA = {
+  "Año Nuevo": [203, 207, 210, 214],
+  "San Valentín": [206, 209, 218, 217],
+  "Día de la Madre": [209, 214, 212, 217],
+  "Día del Padre": [204, 218, 212, 215],
+  "Amor y Amistad": [206, 209, 218, 210],
+  Halloween: [211, 213, 218, 212],
+  "Día de las Velitas": [201, 202, 216, 205],
+  Navidad: [201, 202, 205, 216],
+};
+
 function calcularProximasFechas() {
   const hoy = hoySinHora();
   return FECHAS_ESPECIALES.map((f) => {
@@ -67,7 +79,7 @@ function calcularProximasFechas() {
     .slice(0, 4);
 }
 
-function RecetasPorFecha() {
+function RecetasPorFecha({ irA }) {
   const fechaEspecial = obtenerFechaEspecialHoy();
   const recetasSugeridas = fechaEspecial
     ? recetas.filter((r) => r.categoria === fechaEspecial.categoriaSugerida).slice(0, 6)
@@ -75,6 +87,17 @@ function RecetasPorFecha() {
 
   const proximasFechas = useMemo(() => calcularProximasFechas(), []);
   const hoyISO = aISO(hoySinHora());
+
+  // RF30: postres sugeridos para la fecha especial más cercana (ids del catálogo "especial")
+  const fechaCercana = proximasFechas[0];
+  const recetasFechaCercana = useMemo(() => {
+    if (!fechaCercana) return [];
+    const ids = SUGERIDOS_POR_FECHA[fechaCercana.nombre] || [];
+    const elegidas = ids.map((id) => recetas.find((r) => r.id === id)).filter(Boolean);
+    if (elegidas.length > 0) return elegidas;
+    // Si alguna fecha no tiene lista propia, se muestran postres de la categoría "especial"
+    return recetas.filter((r) => r.categoria === "especial").slice(0, 4);
+  }, [fechaCercana]);
 
   const [eventos, setEventos] = useState([]);
   const [recetaElegida, setRecetaElegida] = useState("");
@@ -150,6 +173,8 @@ function RecetasPorFecha() {
     document.getElementById("form-evento")?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
+  const verReceta = (nombre) => irA("recetas", nombre);
+
   return (
     <div className="rf-contenedor">
       {/* ---------- Hoy ---------- */}
@@ -162,9 +187,9 @@ function RecetasPorFecha() {
             <p className="rf-hoy-sub">Recetas sugeridas para hoy:</p>
             <div className="rf-chips">
               {recetasSugeridas.map((r) => (
-                <span key={r.id} className="rf-chip">
+                <button key={r.id} type="button" className="rf-chip" onClick={() => verReceta(r.nombre)}>
                   {r.nombre}
-                </span>
+                </button>
               ))}
             </div>
           </>
@@ -175,6 +200,24 @@ function RecetasPorFecha() {
           </p>
         )}
       </section>
+
+      {/* ---------- Sugeridos para la fecha especial más cercana ---------- */}
+      {fechaCercana && recetasFechaCercana.length > 0 && (
+        <section className="rf-hoy">
+          <p className="rf-hoy-titulo">
+            {fechaCercana.icono} La fecha especial más cercana es <strong>{fechaCercana.nombre}</strong> ·{" "}
+            {textoCuenta(fechaCercana.dias)}
+          </p>
+          <p className="rf-hoy-sub">Postres que te sugerimos para esa fecha:</p>
+          <div className="rf-chips">
+            {recetasFechaCercana.map((r) => (
+              <button key={r.id} type="button" className="rf-chip" onClick={() => verReceta(r.nombre)}>
+                {r.nombre}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ---------- Próximas fechas especiales ---------- */}
       <section>
