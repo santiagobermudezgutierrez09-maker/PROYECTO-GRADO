@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { auth } from "./firebaseAuth";
 import recetas from "./recetasData";
@@ -19,20 +19,10 @@ function Favoritos({ irA }) {
 
     const cargar = async () => {
       try {
-        let lista;
-        try {
-          // Forma rápida: una sola consulta con todos los favoritos del usuario
-          const snap = await getDocs(
-            query(collection(db, "favoritos"), where("usuarioId", "==", usuario.uid))
-          );
-          lista = snap.docs.map((d) => d.data().recetaId);
-        } catch {
-          // Respaldo: revisa receta por receta (cada favorito se guarda como uid_recetaId)
-          const lecturas = await Promise.all(
-            recetas.map((r) => getDoc(doc(db, "favoritos", `${usuario.uid}_${r.id}`)))
-          );
-          lista = lecturas.filter((s) => s.exists()).map((s) => s.data().recetaId);
-        }
+        const lecturas = await Promise.all(
+          recetas.map((r) => getDoc(doc(db, "favoritos", `${usuario.uid}_${r.id}`)))
+        );
+        const lista = lecturas.filter((s) => s.exists()).map((s) => s.data().recetaId);
         if (activo) setIds(lista);
       } catch {
         if (activo) setError("No se pudieron cargar tus favoritos. Revisa tu conexión e inténtalo de nuevo.");
