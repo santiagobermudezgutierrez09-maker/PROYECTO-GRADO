@@ -1,7 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
 import { generarRespuesta } from "./chatbotEngine";
-import { explicarErrorGemini, limpiarRespuestaChef, preguntarChef } from "./geminiService";
+import {
+  explicarErrorGemini,
+  limpiarRespuestaChef,
+  preguntarChef,
+  saludoPorHora,
+} from "./geminiService";
 import {
   Reconocimiento,
   validarMicrofono,
@@ -11,13 +16,13 @@ import {
 } from "./voz";
 import "./Chatbot.css";
 
-const SALUDO =
-  "¡Hola! Soy Charin 🍩 Háblame con el micrófono o escríbeme lo que quieras saber de postres.";
+const construirSaludo = (nombre) =>
+  `${saludoPorHora(nombre)} Soy Charin. Cuéntame qué se te antoja hoy: puedo sugerirte un postre rápido, algo saludable o una receta para una ocasión especial. Háblame con el micrófono o escríbeme.`;
 
 const SUGERENCIAS = [
   "¿Qué postre fácil hago hoy?",
-  "Dame una receta sin horno",
-  "Postre rápido para visitas",
+  "Dame un postre saludable",
+  "Quiero hacer ajiaco",
 ];
 
 const ETIQUETAS = {
@@ -30,8 +35,10 @@ const ETIQUETAS = {
 /* ------------------------------------------------------------
    Sección "Chatbot": dona grande, voz y escritura
    ------------------------------------------------------------ */
-function ChatDona() {
-  const [mensajes, setMensajes] = useState([{ rol: "bot", saludo: true }]);
+function ChatDona({ nombreUsuario }) {
+  const [mensajes, setMensajes] = useState(() => [
+    { rol: "bot", saludo: true, texto: construirSaludo(nombreUsuario) },
+  ]);
   const [entrada, setEntrada] = useState("");
   const [estado, setEstado] = useState("reposo");
   const [vozActiva, setVozActiva] = useState(true);
@@ -93,7 +100,9 @@ function ChatDona() {
 
     let respuesta;
     try {
-      respuesta = limpiarRespuestaChef(await preguntarChef(historial, pregunta, "home"));
+      respuesta = limpiarRespuestaChef(
+        await preguntarChef(historial, pregunta, "home", "", nombreUsuario)
+      );
     } catch (errorGemini) {
       // Si la IA falla, responde el asistente local para no quedarse callada
       if (!errorGemini?.message?.includes("superó el límite")) {
@@ -188,7 +197,7 @@ function ChatDona() {
       <div className="cb-historial" aria-live="polite">
         {mensajes.map((m, i) => (
           <p key={i} className={`cb-msg cb-msg--${m.rol}`}>
-            {m.saludo ? SALUDO : m.texto}
+            {m.texto}
           </p>
         ))}
         <div ref={finRef} />
@@ -280,11 +289,11 @@ function contextoReceta(receta, paso) {
   );
 }
 
-function ChatCompacto({ recetaActiva, pasoActualIndex }) {
-  const [mensajes, setMensajes] = useState([
+function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
+  const [mensajes, setMensajes] = useState(() => [
     {
       autor: "bot",
-      texto: `¡Hola! Estoy contigo mientras preparas "${recetaActiva.nombre}". Pregúntame lo que necesites o háblame con el micrófono 🎤`,
+      texto: `${saludoPorHora(nombreUsuario)} Estoy contigo mientras preparas "${recetaActiva.nombre}". Pregúntame lo que necesites o háblame con el micrófono 🎤`,
     },
   ]);
   const [entrada, setEntrada] = useState("");
@@ -352,7 +361,13 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
     let respuesta;
     try {
       respuesta = limpiarRespuestaChef(
-        await preguntarChef(historial, pregunta, "cocina", contextoReceta(receta, paso))
+        await preguntarChef(
+          historial,
+          pregunta,
+          "cocina",
+          contextoReceta(receta, paso),
+          nombreUsuario
+        )
       );
     } catch (errorGemini) {
       // Si la IA falla, responde el motor de reglas para no quedarse callado
@@ -428,8 +443,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
     if (vozActiva) {
       window.speechSynthesis?.cancel();
       setHablando(false);
-    }
-    else prepararVoz();
+    } else prepararVoz();
     setVozActiva((v) => !v);
   };
 
@@ -497,13 +511,19 @@ function ChatCompacto({ recetaActiva, pasoActualIndex }) {
 }
 
 /* ------------------------------------------------------------
-   Punto de entrada: mismas props que antes
+   Punto de entrada: mismas props que antes (+ nombreUsuario opcional)
    ------------------------------------------------------------ */
-function Chatbot({ recetaActiva = null, pasoActualIndex = null }) {
+function Chatbot({ recetaActiva = null, pasoActualIndex = null, nombreUsuario = "" }) {
   if (recetaActiva) {
-    return <ChatCompacto recetaActiva={recetaActiva} pasoActualIndex={pasoActualIndex} />;
+    return (
+      <ChatCompacto
+        recetaActiva={recetaActiva}
+        pasoActualIndex={pasoActualIndex}
+        nombreUsuario={nombreUsuario}
+      />
+    );
   }
-  return <ChatDona />;
+  return <ChatDona nombreUsuario={nombreUsuario} />;
 }
 
 export default Chatbot;

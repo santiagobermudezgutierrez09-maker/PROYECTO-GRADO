@@ -18,12 +18,30 @@ const buscarSustituto = (ingrediente) => {
   return encontrado ? encontrado.sustituto : null;
 };
 
-function GeneradorIngredientes() {
+// Lo que casi siempre hay en casa
+const BASICOS = ["huevos", "harina", "azúcar", "leche", "mantequilla"];
+
+// Grupos para que sea fácil encontrar cada ingrediente
+const GRUPOS = [
+  { id: "lacteos", icono: "🥛", titulo: "Lácteos y huevos", patron: /leche|huevo|queso|crema|mantequilla|yogur|yogurt|arequipe|nata/ },
+  { id: "harinas", icono: "🌾", titulo: "Harinas y secos", patron: /harina|avena|maicena|polvo|levadura|galleta|arroz|almendra|nuez|nueces|mani|semilla|pan|pasas|bicarbonato|sal/ },
+  { id: "dulces", icono: "🍫", titulo: "Dulces y sabores", patron: /azucar|panela|miel|chocolate|cacao|esencia|vainilla|canela|bocadillo|jarabe|stevia|gelatina|caramelo|cafe/ },
+  { id: "frutas", icono: "🍓", titulo: "Frutas", patron: /limon|fresa|banano|mora|mango|manzana|coco|pina|maracuya|durazno|naranja|uva|guayaba|pera|fruta|zanahoria|calabaza/ },
+];
+
+function clasificar(nombre) {
+  const n = limpiar(nombre);
+  return GRUPOS.find((g) => g.patron.test(n))?.id || "otros";
+}
+
+function GeneradorIngredientes({ irA }) {
   const [seleccion, setSeleccion] = useState([]);
   const [texto, setTexto] = useState("");
+  const [verMasIngredientes, setVerMasIngredientes] = useState(false);
+  const [verResto, setVerResto] = useState(false);
 
-  // Los ingredientes más usados en tus recetas, calculados automáticamente
-  const sugeridos = useMemo(() => {
+  // Los ingredientes más usados en tus recetas, ordenados por frecuencia
+  const populares = useMemo(() => {
     const conteo = {};
     recetas.forEach((r) =>
       r.ingredientes.forEach((ing) => {
@@ -33,9 +51,16 @@ function GeneradorIngredientes() {
     );
     return Object.entries(conteo)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 18)
       .map(([nombre]) => nombre);
   }, []);
+
+  const visibles = populares.slice(0, verMasIngredientes ? 90 : 30);
+
+  const agrupados = useMemo(() => {
+    const mapa = { lacteos: [], harinas: [], dulces: [], frutas: [], otros: [] };
+    visibles.forEach((n) => mapa[clasificar(n)].push(n));
+    return mapa;
+  }, [visibles]);
 
   const estaSeleccionado = (nombre) =>
     seleccion.some((s) => limpiar(s) === limpiar(nombre));
@@ -56,6 +81,11 @@ function GeneradorIngredientes() {
       .filter((i) => i.length >= 2 && !estaSeleccionado(i));
     if (nuevos.length > 0) setSeleccion((prev) => [...prev, ...nuevos]);
     setTexto("");
+  };
+
+  const agregarBasicos = () => {
+    const nuevos = BASICOS.filter((b) => !estaSeleccionado(b));
+    if (nuevos.length > 0) setSeleccion((prev) => [...prev, ...nuevos]);
   };
 
   // Recetas posibles: se recalculan solas cada vez que cambia la selección
@@ -102,48 +132,95 @@ function GeneradorIngredientes() {
   const casi = resultados.filter((r) => r.faltan >= 1 && r.faltan <= 2);
   const resto = resultados.filter((r) => r.faltan > 2);
 
-  const renderReceta = (r) => (
-    <article key={r.id} className="gi-receta">
-      <div className="gi-receta-top">
-        <h4 className="gi-nombre">{r.nombre}</h4>
-        <span className={`gi-estado ${r.faltan === 0 ? "gi-estado--lista" : ""}`}>
-          {r.faltan === 0
-            ? "¡Lista para preparar!"
-            : `Te ${r.faltan === 1 ? "falta" : "faltan"} ${r.faltan}`}
-        </span>
-      </div>
+  const renderReceta = (r) => {
+    const faltantes = r.detalle.filter((d) => !d.tengo && !d.sustituido);
+    const sustituidos = r.detalle.filter((d) => d.sustituido);
 
-      {(r.tiempo || r.dificultad) && (
-        <p className="gi-meta">
-          {r.tiempo && <span>{r.tiempo} min</span>}
-          {r.dificultad && <span>{r.dificultad}</span>}
-        </p>
-      )}
+    return (
+      <article key={r.id} className="gi-receta">
+        <div className="gi-receta-top">
+          <h4 className="gi-nombre">
+            {r.emoji || "🍩"} {r.nombre}
+          </h4>
+          <span className={`gi-estado ${r.faltan === 0 ? "gi-estado--lista" : ""}`}>
+            {r.faltan === 0
+              ? "¡Puedes hacerla ya!"
+              : r.faltan === 1
+              ? "Te falta 1 ingrediente"
+              : `Te faltan ${r.faltan} ingredientes`}
+          </span>
+        </div>
 
-      <div className="gi-barra" aria-hidden="true">
-        <span style={{ width: `${(r.cubiertos / r.detalle.length) * 100}%` }} />
-      </div>
+        {(r.tiempo || r.dificultad) && (
+          <p className="gi-meta">
+            {r.tiempo && <span>⏱ {r.tiempo} min</span>}
+            {r.dificultad && <span>{r.dificultad}</span>}
+            {r.calorias && <span>🔥 {r.calorias} kcal</span>}
+          </p>
+        )}
 
-      <ul className="gi-lista">
-        {r.detalle.map((d, i) => (
-          <li
-            key={i}
-            className={d.tengo ? "gi-tengo" : d.sustituido ? "gi-sustituido" : "gi-falta"}
-          >
-            <span>
-              {d.nombre} {d.tengo ? "✅" : d.sustituido ? "🔄" : "❌"}
-            </span>
-            {!d.tengo && d.sustituto && (
-              <span className="gi-sustituto">
-                {d.sustituido ? "Lo cubres con: " : "Puedes sustituirlo por: "}
-                {d.sustituto}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </article>
-  );
+        <div className="gi-barra" aria-hidden="true">
+          <span style={{ width: `${(r.cubiertos / r.detalle.length) * 100}%` }} />
+        </div>
+
+        {r.faltan === 0 ? (
+          <p className="gi-todo">
+            ✅ Tienes todo lo que necesitas
+            {sustituidos.length > 0 && ` (usando sustitutos en ${sustituidos.length})`}.
+          </p>
+        ) : (
+          <div className="gi-faltan">
+            <strong>Te falta:</strong>
+            <ul>
+              {faltantes.map((d, i) => (
+                <li key={i}>
+                  ❌ {d.nombre}
+                  {d.sustituto && <small> · prueba con: {d.sustituto}</small>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <details className="gi-detalle">
+          <summary>Ver todos los ingredientes</summary>
+          <ul className="gi-lista">
+            {r.detalle.map((d, i) => (
+              <li
+                key={i}
+                className={d.tengo ? "gi-tengo" : d.sustituido ? "gi-sustituido" : "gi-falta"}
+              >
+                <span>
+                  {d.nombre} {d.tengo ? "✅" : d.sustituido ? "🔄" : "❌"}
+                </span>
+                {!d.tengo && d.sustituto && (
+                  <span className="gi-sustituto">
+                    {d.sustituido ? "Lo cubres con: " : "Puedes sustituirlo por: "}
+                    {d.sustituto}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </details>
+
+        {irA && (
+          <div className="gi-botones">
+            <button type="button" onClick={() => irA("recetas", r.nombre)}>
+              📖 Ver receta
+            </button>
+            <button
+              type="button"
+              className="gi-boton-principal"
+              onClick={() => irA("cocina", String(r.id))}
+            >
+              🔥 Cocinar
+            </button>
+          </div>
+        )}
+      </article>
+    );
+  };
 
   const renderGrupo = (titulo, lista, clase) =>
     lista.length > 0 && (
@@ -155,16 +232,14 @@ function GeneradorIngredientes() {
       </section>
     );
 
-  return (
-    <div className="gi">
-      <section className="gi-panel">
-        <p className="gi-intro">
-          Toca los ingredientes que tienes en casa y te mostramos qué postres puedes preparar.
-        </p>
-
-        <h3 className="gi-subtitulo">Ingredientes comunes</h3>
-        <div className="gi-chips">
-          {sugeridos.map((nombre) => (
+  const grupoChips = (icono, titulo, nombres) =>
+    nombres.length > 0 && (
+      <div className="gi-ing-grupo" key={titulo}>
+        <h4 className="gi-ing-titulo">
+          {icono} {titulo}
+        </h4>
+        <div className="gi-chips gi-chips--grande">
+          {nombres.map((nombre) => (
             <button
               key={nombre}
               type="button"
@@ -172,15 +247,43 @@ function GeneradorIngredientes() {
               aria-pressed={estaSeleccionado(nombre)}
               onClick={() => alternar(nombre)}
             >
+              {estaSeleccionado(nombre) ? "✓ " : ""}
               {nombre}
             </button>
           ))}
         </div>
+      </div>
+    );
+
+  return (
+    <div className="gi">
+      <section className="gi-panel">
+        <p className="gi-intro">
+          <strong>1.</strong> Toca lo que tienes en casa. <strong>2.</strong> Mira abajo qué postres
+          puedes hacer. ¡Así de fácil!
+        </p>
+
+        <button type="button" className="gi-atajo" onClick={agregarBasicos}>
+          ⚡ Tengo lo básico (huevos, harina, azúcar, leche, mantequilla)
+        </button>
+
+        {GRUPOS.map((g) => grupoChips(g.icono, g.titulo, agrupados[g.id]))}
+        {grupoChips("🧺", "Otros", agrupados.otros)}
+
+        {populares.length > 30 && (
+          <button
+            type="button"
+            className="gi-ver-mas"
+            onClick={() => setVerMasIngredientes((v) => !v)}
+          >
+            {verMasIngredientes ? "Ver menos ingredientes ▲" : "Ver más ingredientes ▾"}
+          </button>
+        )}
 
         <form className="gi-form" onSubmit={agregarEscritos}>
           <input
             type="text"
-            placeholder="¿Otro ingrediente? Ej: leche, huevos, azúcar"
+            placeholder="¿No lo ves? Escríbelo aquí. Ej: leche, huevos, azúcar"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
           />
@@ -214,7 +317,7 @@ function GeneradorIngredientes() {
 
       {seleccion.length === 0 && (
         <p className="gi-vacio">
-          Elige al menos un ingrediente y aquí aparecerán tus recetas posibles.
+          Elige al menos un ingrediente y aquí aparecerán tus recetas posibles. 🥕
         </p>
       )}
 
@@ -227,13 +330,28 @@ function GeneradorIngredientes() {
       {resultados.length > 0 && (
         <p className="gi-resumen">
           {resultados.length} {resultados.length === 1 ? "receta posible" : "recetas posibles"}
-          {listas.length > 0 && ` · ${listas.length} lista${listas.length === 1 ? "" : "s"} para preparar`}
+          {listas.length > 0 &&
+            ` · ${listas.length} lista${listas.length === 1 ? "" : "s"} para preparar ya`}
         </p>
       )}
 
-      {renderGrupo("Listas para preparar", listas, "gi-grupo--lista")}
-      {renderGrupo("Casi listas", casi, "gi-grupo--casi")}
-      {renderGrupo("Con lo que tienes", resto, "")}
+      {renderGrupo("✅ Puedes hacerlas ya", listas, "gi-grupo--lista")}
+      {renderGrupo("🛒 Casi listas (te falta poquito)", casi, "gi-grupo--casi")}
+
+      {resto.length > 0 && (
+        <section className="gi-grupo">
+          <button
+            type="button"
+            className="gi-ver-mas"
+            onClick={() => setVerResto((v) => !v)}
+          >
+            {verResto
+              ? "Ocultar las demás recetas ▲"
+              : `Ver ${resto.length} recetas más con lo que tienes ▾`}
+          </button>
+          {verResto && resto.map(renderReceta)}
+        </section>
+      )}
     </div>
   );
 }

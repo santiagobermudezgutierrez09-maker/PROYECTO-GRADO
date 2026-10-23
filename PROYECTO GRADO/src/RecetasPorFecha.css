@@ -295,3 +295,299 @@
     margin: 0;
   }
 }
+
+/* ============================================================
+   FECHA MÁS CERCANA, CALENDARIO Y TARJETAS DE POSTRES
+   ============================================================ */
+
+/* Fecha especial más cercana */
+.rf-hero {
+  margin: 0 0 20px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 160, 60, 0.5);
+  background: linear-gradient(135deg, rgba(212, 160, 60, 0.16), rgba(200, 56, 90, 0.1));
+}
+
+.rf-hero-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.rf-hero-icono {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.rf-hero-textos {
+  flex: 1;
+  min-width: 160px;
+}
+
+.rf-hero-etiqueta {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a89f8c;
+}
+
+.rf-hero-nombre {
+  margin: 2px 0;
+  font-size: 1.5rem;
+  color: var(--color-primary, #d4a03c);
+}
+
+.rf-hero-fecha {
+  margin: 0;
+  text-transform: capitalize;
+  color: #d8d0bd;
+}
+
+.rf-hero-cuenta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 84px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.rf-hero-numero {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-primary, #d4a03c);
+}
+
+.rf-hero-unidad {
+  font-size: 0.8rem;
+  color: #a89f8c;
+}
+
+/* Tarjetas de postres sugeridos */
+.rf-postres {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 8px 0 14px;
+}
+
+.tema-cocina .rf-postre {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 12px;
+  text-align: left;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 248, 230, 0.14);
+  background: #161412;
+  color: #f0ebe0;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.tema-cocina .rf-postre:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary, #d4a03c);
+}
+
+.rf-postre-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.rf-postre-nombre {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.rf-postre-meta {
+  font-size: 0.78rem;
+  color: #a89f8c;
+}
+
+/* Calendario */
+.rf-cal-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rf-cal-mes {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  text-transform: capitalize;
+  font-size: 1.15rem;
+}
+
+.tema-cocina .rf-cal-flecha {
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tema-cocina .rf-cal-hoy {
+  width: auto;
+  margin: 0;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.rf-cal-semana,
+.rf-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.rf-cal-semana {
+  margin-bottom: 4px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a89f8c;
+}
+
+.tema-cocina .rf-dia {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 4px 0;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255, 248, 230, 0.04);
+  color: #f0ebe0;
+  cursor: pointer;
+}
+
+.tema-cocina .rf-dia--vacio {
+  background: transparent;
+  cursor: default;
+}
+
+.tema-cocina .rf-dia--especial {
+  background: rgba(212, 160, 60, 0.16);
+  border-color: rgba(212, 160, 60, 0.5);
+}
+
+.tema-cocina .rf-dia--hoy {
+  border-color: #6fe0a0;
+  font-weight: 800;
+}
+
+.tema-cocina .rf-dia--sel {
+  background: var(--color-primary, #d4a03c);
+  border-color: var(--color-primary, #d4a03c);
+  color: #1a1408;
+}
+
+.rf-dia-num {
+  font-size: 0.95rem;
+}
+
+.rf-dia-icono {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.rf-dia-punto {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c8385a;
+}
+
+.rf-dia-punto--leyenda {
+  position: static;
+  display: inline-block;
+}
+
+.rf-cal-leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: #a89f8c;
+}
+
+.rf-panel {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 248, 230, 0.14);
+  background: rgba(255, 248, 230, 0.04);
+}
+
+.rf-panel-titulo {
+  margin: 0 0 10px;
+  text-transform: capitalize;
+  font-size: 1rem;
+}
+
+.rf-panel-nombre {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-primary, #d4a03c);
+}
+
+.rf-panel-evento {
+  margin: 6px 0;
+}
+
+.tema-cocina .rf-ver-mas {
+  display: block;
+  width: auto;
+  margin: 12px auto 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .rf-hero {
+    padding: 16px;
+  }
+
+  .rf-hero-nombre {
+    font-size: 1.25rem;
+  }
+
+  .rf-postres {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tema-cocina .rf-dia {
+    min-height: 42px;
+  }
+}

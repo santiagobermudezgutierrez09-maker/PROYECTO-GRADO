@@ -282,3 +282,102 @@
     padding: 16px;
   }
 }
+
+/* Ingredientes agrupados, atajo y resultados más claros */
+.gi-atajo {
+  display: block;
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 1px dashed var(--color-primary, #d4a03c);
+  background: rgba(212, 160, 60, 0.1);
+  color: var(--color-primary, #d4a03c);
+}
+
+.gi-ing-grupo {
+  margin: 0 0 14px;
+}
+
+.gi-ing-titulo {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #a89f8c;
+}
+
+.gi-chips--grande .gi-chip {
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.gi-ver-mas {
+  display: block;
+  margin: 8px auto 16px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.gi-todo {
+  margin: 8px 0;
+  color: #6fe0a0;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.gi-faltan {
+  margin: 8px 0;
+  font-size: 0.92rem;
+}
+
+.gi-faltan ul {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gi-faltan li {
+  padding: 3px 0;
+}
+
+.gi-faltan small {
+  color: #e8b84e;
+}
+
+.gi-detalle {
+  margin: 8px 0;
+}
+
+.gi-detalle summary {
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: #a89f8c;
+}
+
+.gi-botones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.tema-cocina .gi-botones button {
+  width: auto;
+  margin: 0;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tema-cocina .gi-botones .gi-boton-principal {
+  background: var(--color-primary, #d4a03c);
+  border-color: var(--color-primary, #d4a03c);
+  color: #1a1408;
+}

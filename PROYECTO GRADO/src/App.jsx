@@ -26,7 +26,7 @@ const GRUPOS_MENU = [
     nombre: "Cocinar",
     items: [
       { vista: "home", icono: "🏠", texto: "Inicio", titulo: "Bienvenido a la cocina", descripcion: "Tu punto de partida" },
-      { vista: "recetas", icono: "📖", texto: "Ver recetas", titulo: "Recetas", descripcion: "Explora el catálogo completo" },
+      { vista: "recetas", icono: "🔍", texto: "Buscar postres", titulo: "Buscar postres", descripcion: "Encuentra tu próximo postre" },
       { vista: "favoritos", icono: "❤️", texto: "Mis favoritos", titulo: "Mis favoritos", descripcion: "Tus recetas guardadas" },
       { vista: "generador", icono: "🥕", texto: "¿Qué puedo cocinar?", titulo: "¿Qué puedo cocinar?", descripcion: "Dinos qué ingredientes tienes" },
       { vista: "cocina", icono: "🔥", texto: "Modo cocina", titulo: "Modo cocina", descripcion: "Paso a paso, con las manos libres" },
@@ -50,7 +50,7 @@ const GRUPOS_MENU = [
 
 const TODOS_LOS_ITEMS = GRUPOS_MENU.flatMap((g) => g.items);
 
-// 🍩 NUEVO: pantallas donde aparece la dona asistente
+// 🍩 Pantallas donde aparece la dona asistente
 const VISTAS_CON_DONA = ["home", "generador", "cocina", "api", "fechas"];
 
 function App() {
@@ -61,6 +61,7 @@ function App() {
   const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
   const [menuAbierto, setMenuAbierto] = useState(false); // solo se usa en celular
   const [busquedaRecetas, setBusquedaRecetas] = useState("");
+  const [recetaParaCocinar, setRecetaParaCocinar] = useState("");
 
   // Cierra sesión sola tras un rato sin actividad (solo si hay sesión iniciada)
   useCierreSesionInactividad();
@@ -109,9 +110,12 @@ function App() {
     return () => window.removeEventListener("keydown", alPulsar);
   }, []);
 
-  const irA = (nuevaVista, busquedaInicial = "") => {
+  // "extra" cambia según la pantalla: en "recetas" es una búsqueda,
+  // en "cocina" es el id de la receta que se quiere cocinar
+  const irA = (nuevaVista, extra = "") => {
     setVista(nuevaVista);
-    setBusquedaRecetas(nuevaVista === "recetas" ? busquedaInicial : "");
+    setBusquedaRecetas(nuevaVista === "recetas" ? extra : "");
+    setRecetaParaCocinar(nuevaVista === "cocina" ? extra : "");
     setMenuAbierto(false); // en celular, al elegir una opción se cierra el menú
   };
 
@@ -137,6 +141,9 @@ function App() {
   // Lo que se muestra como identificación: el nombre si existe, si no, el correo, si no, "Invitado"
   const nombreParaMostrar = usuario ? nombreUsuario || usuario.email : "Invitado";
   const inicial = nombreParaMostrar.trim().charAt(0).toUpperCase() || "I";
+
+  // Nombre para que Charin salude (vacío si es invitado o solo hay correo)
+  const nombreParaChat = usuario && nombreUsuario ? nombreUsuario : "";
 
   const itemActual = TODOS_LOS_ITEMS.find((i) => i.vista === vista) || TODOS_LOS_ITEMS[0];
 
@@ -282,11 +289,17 @@ function App() {
           <main className="vista">
             <Suspense fallback={<p style={{ textAlign: "center" }}>Cargando...</p>}>
               {vista === "home" && <Home irA={irA} correoUsuario={nombreParaMostrar} />}
-              {vista === "recetas" && <Recetas busquedaInicial={busquedaRecetas} />}
+              {vista === "recetas" && <Recetas busquedaInicial={busquedaRecetas} irA={irA} />}
               {vista === "favoritos" && <Favoritos irA={irA} />}
-              {vista === "generador" && <GeneradorIngredientes />}
-              {vista === "cocina" && <ModoCocina />}
-              {vista === "chatbot" && <Chatbot />}
+              {vista === "generador" && <GeneradorIngredientes irA={irA} />}
+              {vista === "cocina" && (
+                <ModoCocina
+                  key={recetaParaCocinar || "selector"}
+                  nombreUsuario={nombreParaChat}
+                  recetaInicialId={recetaParaCocinar}
+                />
+              )}
+              {vista === "chatbot" && <Chatbot nombreUsuario={nombreParaChat} />}
               {vista === "compras" && <ListaCompras />}
               {vista === "fechas" && <RecetasPorFecha irA={irA} />}
               {vista === "api" && <RecetasAPI />}
@@ -297,7 +310,11 @@ function App() {
 
       {/* 🍩 Dona asistente con chat IA: Inicio, ¿Qué puedo cocinar?, Modo cocina, Más postres y Fechas */}
       <Suspense fallback={null}>
-        <AsistenteDona vista={vista} visible={VISTAS_CON_DONA.includes(vista)} />
+        <AsistenteDona
+          vista={vista}
+          visible={VISTAS_CON_DONA.includes(vista)}
+          nombreUsuario={nombreParaChat}
+        />
       </Suspense>
     </>
   );

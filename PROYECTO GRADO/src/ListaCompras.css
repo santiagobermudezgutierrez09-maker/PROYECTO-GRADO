@@ -200,3 +200,92 @@
     width: 100%;
   }
 }
+
+/* Buscador, agregar propio, detalle de cada ingrediente */
+.lc-buscar,
+.lc-agregar input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 248, 230, 0.18);
+  background: #ffffff;
+  color: #1a1a1a;
+  -webkit-text-fill-color: #1a1a1a;
+}
+
+.lc-buscar::placeholder,
+.lc-agregar input::placeholder {
+  color: #7a6470;
+  opacity: 1;
+}
+
+.lc-agregar {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.lc-agregar input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.tema-cocina .lc-agregar button {
+  width: auto;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--color-primary, #d4a03c);
+  border-color: var(--color-primary, #d4a03c);
+  color: #1a1408;
+}
+
+.tema-cocina .lc-agregar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lc-item-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lc-item-nombre {
+  line-height: 1.3;
+}
+
+.lc-item-uso {
+  font-size: 0.76rem;
+  color: #a89f8c;
+}
+
+.lc-listo {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(66, 184, 114, 0.16);
+  border: 1px solid rgba(66, 184, 114, 0.5);
+  color: #6fe0a0;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .lc-agregar {
+    flex-direction: column;
+  }
+
+  .tema-cocina .lc-agregar button {
+    width: 100%;
+  }
+}

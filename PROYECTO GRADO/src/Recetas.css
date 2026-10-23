@@ -238,3 +238,181 @@
     width: auto;
   }
 }
+
+/* ============================================================
+   TARJETAS COMPACTAS, DESTACADO SALUDABLE Y DETALLE
+   ============================================================ */
+
+.rec-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.tema-cocina .rec-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 248, 230, 0.12);
+  background: #161412;
+  color: #f0ebe0;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.tema-cocina .rec-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary, #d4a03c);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+.rec-card-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.rec-card-nombre {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.rec-card-meta {
+  font-size: 0.82rem;
+  color: #a89f8c;
+}
+
+.rec-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 22px;
+}
+
+.rec-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.rec-badge--verde {
+  background: rgba(66, 184, 114, 0.18);
+  color: #6fe0a0;
+  border: 1px solid rgba(66, 184, 114, 0.5);
+}
+
+.rec-badge--ambar {
+  background: rgba(232, 184, 78, 0.16);
+  color: #e8b84e;
+  border: 1px solid rgba(232, 184, 78, 0.5);
+}
+
+.rec-card-ver {
+  margin-top: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary, #d4a03c);
+}
+
+/* Destacado de postres saludables */
+.rec-destacado {
+  margin: 0 0 22px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(66, 184, 114, 0.4);
+  background: linear-gradient(135deg, rgba(66, 184, 114, 0.12), rgba(66, 184, 114, 0.03));
+}
+
+.rec-destacado-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rec-destacado-titulo h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #6fe0a0;
+}
+
+.tema-cocina .rec-destacado-titulo button {
+  width: auto;
+  margin: 0;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 999px;
+}
+
+.rec-destacado-sub {
+  margin: 4px 0 14px;
+  font-size: 0.9rem;
+  color: #a89f8c;
+}
+
+.tema-cocina .rec-chip-verde.activo {
+  background: rgba(66, 184, 114, 0.25);
+  border-color: #42b872;
+  color: #6fe0a0;
+}
+
+/* Detalle de la receta */
+.rec-detalle-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.rec-detalle-barra--pie {
+  justify-content: center;
+  margin: 4px 0 0;
+}
+
+.tema-cocina .rec-volver,
+.tema-cocina .rec-cocinar {
+  width: auto;
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tema-cocina .rec-cocinar {
+  background: var(--color-primary, #d4a03c);
+  border-color: var(--color-primary, #d4a03c);
+  color: #1a1408;
+}
+
+@media (max-width: 600px) {
+  .rec-lista {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .tema-cocina .rec-card {
+    padding: 12px;
+  }
+
+  .rec-card-nombre {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .rec-lista {
+    grid-template-columns: 1fr;
+  }
+}

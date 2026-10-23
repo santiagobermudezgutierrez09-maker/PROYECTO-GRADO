@@ -142,3 +142,52 @@
     flex-shrink: 0;
   }
 }
+
+/* Micrófono, voz y avisos del chat de la dona */
+.asistente-entrada {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.asistente-entrada input {
+  flex: 1;
+  min-width: 0;
+}
+
+.asistente-entrada .asistente-icono {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.asistente-entrada .asistente-icono--on {
+  border-color: #42b872;
+  background: rgba(66, 184, 114, 0.18);
+  box-shadow: 0 0 0 4px rgba(66, 184, 114, 0.22);
+}
+
+.asistente-parcial {
+  margin: 0 12px 8px;
+  font-size: 13px;
+  color: #e8b84e;
+}
+
+.asistente-error {
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(200, 56, 90, 0.14);
+  color: #f08aa0;
+  font-size: 13px;
+  line-height: 1.4;
+}

@@ -10,6 +10,13 @@ const CIRCUNFERENCIA = 2 * Math.PI * RADIO;
 
 /* ---------- Utilidades ---------- */
 
+const normalizar = (t = "") =>
+  t
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
 // Busca un tiempo dentro del texto del paso: "10 minutos", "1 hora", "10 a 15 min"
 function detectarTiempo(texto = "") {
   const m = texto.match(
@@ -61,6 +68,7 @@ function sonarAlarma() {
   if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
 }
 
+// Lee el progreso guardado, solo para ofrecer "Continuar" (ya no abre la receta sola)
 function leerProgreso() {
   try {
     const g = JSON.parse(localStorage.getItem(CLAVE));
@@ -73,13 +81,17 @@ function leerProgreso() {
   }
 }
 
+const CATEGORIAS = ["Todas", ...Array.from(new Set(recetas.map((r) => r.categoria).filter(Boolean)))];
+
 /* ---------- Componente ---------- */
 
-function ModoCocina() {
-  const inicial = useRef(leerProgreso()).current;
-  const [recetaId, setRecetaId] = useState(inicial.recetaId);
-  const [pasoActual, setPasoActual] = useState(inicial.paso);
+function ModoCocina({ nombreUsuario = "", recetaInicialId = "" }) {
+  // Siempre empieza en el selector, salvo que venga una receta ya elegida (botón "Cocinar paso a paso")
+  const [recetaId, setRecetaId] = useState(recetaInicialId ? String(recetaInicialId) : "");
+  const [pasoActual, setPasoActual] = useState(0);
+  const [guardado, setGuardado] = useState(leerProgreso);
   const [busqueda, setBusqueda] = useState("");
+  const [categoria, setCategoria] = useState("Todas");
   const [grande, setGrande] = useState(false);
   const [sinDistracciones, setSinDistracciones] = useState(false);
   const [pantallaCompleta, setPantallaCompleta] = useState(false);
@@ -99,8 +111,9 @@ function ModoCocina() {
   const receta = recetas.find((r) => r.id === Number(recetaId));
   const totalPasos = receta ? receta.pasos.length : 0;
 
-  /* Guardar progreso para no perderlo al recargar */
+  /* Guardar progreso (solo mientras hay una receta en curso) */
   useEffect(() => {
+    if (!recetaId) return;
     try {
       localStorage.setItem(CLAVE, JSON.stringify({ recetaId, paso: pasoActual }));
     } catch {
@@ -214,13 +227,28 @@ function ModoCocina() {
     setTimer((t) => ({ ...t, estado: "corriendo", fin: Date.now() + t.restante * 1000 }));
   const reiniciar = () => setTimer((t) => ({ ...t, estado: "idle", restante: 0, total: 0 }));
 
-  const elegirReceta = (id) => {
+  const elegirReceta = (id, paso = 0) => {
     setRecetaId(String(id));
+    setPasoActual(paso);
+    reiniciar();
+  };
+
+  // "← Recetas": vuelve al selector y recuerda dónde ibas para ofrecer "Continuar"
+  const volver = () => {
+    if (recetaId) setGuardado({ recetaId, paso: pasoActual });
+    setRecetaId("");
     setPasoActual(0);
     reiniciar();
   };
 
-  const volver = () => {
+  // "Terminar": la receta se acabó, ya no hay nada que continuar
+  const terminar = () => {
+    try {
+      localStorage.removeItem(CLAVE);
+    } catch {
+      /* ignorar */
+    }
+    setGuardado({ recetaId: "", paso: 0 });
     setRecetaId("");
     setPasoActual(0);
     reiniciar();
@@ -267,30 +295,61 @@ function ModoCocina() {
 
   /* ---------- Pantalla 1: elegir receta ---------- */
   if (!receta) {
-    const lista = recetas.filter((r) =>
-      r.nombre.toLowerCase().includes(busqueda.trim().toLowerCase())
+    const termino = normalizar(busqueda);
+    const lista = recetas.filter(
+      (r) =>
+        (categoria === "Todas" || r.categoria === categoria) &&
+        normalizar(r.nombre).includes(termino)
     );
+    const recetaGuardada = recetas.find((r) => r.id === Number(guardado.recetaId));
+
     return (
       <div className="mc-selector">
         <h3 className="mc-selector-titulo">¿Qué vamos a preparar?</h3>
-        <p className="mc-selector-sub">Elige una receta y te guío paso a paso.</p>
+        <p className="mc-selector-sub">Elige la receta que quieras y te guío paso a paso.</p>
 
-        {recetas.length > 6 && (
-          <input
-            className="mc-buscar"
-            type="search"
-            placeholder="Buscar receta…"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+        {recetaGuardada && (
+          <div className="mc-continuar">
+            <p>
+              Tenías pendiente <strong>{recetaGuardada.nombre}</strong> (paso {guardado.paso + 1} de{" "}
+              {recetaGuardada.pasos.length}).
+            </p>
+            <button type="button" onClick={() => elegirReceta(recetaGuardada.id, guardado.paso)}>
+              Continuar
+            </button>
+          </div>
         )}
+
+        <input
+          className="mc-buscar"
+          type="search"
+          placeholder="Buscar receta…"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        <div className="mc-categorias" role="group" aria-label="Filtrar por categoría">
+          {CATEGORIAS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`mc-cat ${categoria === c ? "mc-cat--on" : ""}`}
+              onClick={() => setCategoria(c)}
+              aria-pressed={categoria === c}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
 
         <div className="mc-grid">
           {lista.map((r) => (
             <button key={r.id} className="mc-tarjeta" onClick={() => elegirReceta(r.id)}>
               <span className="mc-tarjeta-emoji">{r.emoji || "🍩"}</span>
               <span className="mc-tarjeta-nombre">{r.nombre}</span>
-              <span className="mc-tarjeta-pasos">{r.pasos.length} pasos</span>
+              <span className="mc-tarjeta-pasos">
+                {r.pasos.length} pasos · {r.tiempo} min
+              </span>
             </button>
           ))}
         </div>
@@ -326,7 +385,7 @@ function ModoCocina() {
       <div className="mc-top">
         <div className="mc-titulo-wrap">
           <button className="mc-volver" onClick={volver}>
-            ← Recetas
+            ← Cambiar receta
           </button>
           <h3 className="mc-nombre">{receta.nombre}</h3>
         </div>
@@ -421,7 +480,7 @@ function ModoCocina() {
           ⬅ Atrás
         </button>
         {esUltimoPaso ? (
-          <button className="mc-siguiente" onClick={volver}>
+          <button className="mc-siguiente" onClick={terminar}>
             Terminar 🍽
           </button>
         ) : (
@@ -508,7 +567,7 @@ function ModoCocina() {
         )}
       </section>
 
-      <Chatbot recetaActiva={receta} pasoActualIndex={pasoActual} />
+      <Chatbot recetaActiva={receta} pasoActualIndex={pasoActual} nombreUsuario={nombreUsuario} />
     </div>
   );
 }
