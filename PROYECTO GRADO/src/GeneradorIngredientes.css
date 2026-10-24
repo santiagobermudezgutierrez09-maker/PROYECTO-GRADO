@@ -44,15 +44,25 @@
   padding: 7px 14px;
   font-size: 14px;
   border-radius: 999px;
+  background: #FFF8EC;
+  border: 1px solid #E8D5B5;
+  color: #4A3428;
   text-transform: capitalize;
   cursor: pointer;
 }
 
+.tema-cocina .gi-chip:not(.gi-chip--on):hover {
+  background: rgba(244, 169, 140, 0.25);
+  border-color: #E8D5B5;
+  color: #4A3428;
+}
+
 .tema-cocina .gi-chip--on {
-  background: rgba(212, 160, 60, 0.14);
-  border-color: var(--color-primary);
-  color: var(--color-yellow);
-  box-shadow: 0 0 10px rgba(212, 160, 60, 0.25);
+  background: #F4A98C;
+  border-color: #E8896A;
+  color: #4A3428;
+  font-weight: 700;
+  box-shadow: none;
 }
 
 /* Campo para escribir otro ingrediente */
@@ -80,7 +90,7 @@
   border-radius: 12px;
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -189,12 +199,12 @@
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-  background: rgba(232, 184, 78, 0.12);
+  background: rgba(244, 169, 140, 0.12);
   color: var(--color-yellow);
 }
 
 .gi-estado--lista {
-  background: rgba(66, 184, 114, 0.14);
+  background: rgba(191, 227, 200, 0.14);
   color: var(--color-teal);
 }
 
@@ -211,7 +221,7 @@
   height: 5px;
   margin: 14px 0 16px;
   border-radius: 999px;
-  background: rgba(255, 248, 230, 0.08);
+  background: rgba(244, 169, 140, 0.08);
   overflow: hidden;
 }
 
@@ -220,7 +230,7 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--color-primary), var(--color-yellow));
-  box-shadow: 0 0 10px rgba(212, 160, 60, 0.45);
+  box-shadow: 0 0 10px rgba(244, 169, 140, 0.45);
   transition: width 0.3s ease;
 }
 
@@ -240,23 +250,23 @@
   gap: 4px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(255, 248, 230, 0.04);
+  background: rgba(244, 169, 140, 0.04);
   border: 1px solid transparent;
 }
 
 .gi-lista li.gi-tengo {
-  border-color: rgba(66, 184, 114, 0.35);
-  background: rgba(66, 184, 114, 0.08);
+  border-color: rgba(191, 227, 200, 0.35);
+  background: rgba(191, 227, 200, 0.08);
 }
 
 .gi-lista li.gi-sustituido {
-  border-color: rgba(232, 184, 78, 0.40);
-  background: rgba(232, 184, 78, 0.09);
+  border-color: rgba(244, 169, 140, 0.40);
+  background: rgba(244, 169, 140, 0.09);
 }
 
 .gi-lista li.gi-falta {
-  border-color: rgba(200, 56, 90, 0.30);
-  background: rgba(200, 56, 90, 0.07);
+  border-color: rgba(247, 198, 199, 0.30);
+  background: rgba(247, 198, 199, 0.07);
 }
 
 .gi-sustituto {
@@ -293,9 +303,9 @@
   font-size: 0.95rem;
   border-radius: 14px;
   cursor: pointer;
-  border: 1px dashed var(--color-primary, #d4a03c);
-  background: rgba(212, 160, 60, 0.1);
-  color: var(--color-primary, #d4a03c);
+  border: 1px dashed var(--color-primary, var(--color-primary));
+  background: rgba(244, 169, 140, 0.1);
+  color: var(--color-primary, var(--text-primary));
 }
 
 .gi-ing-grupo {
@@ -305,7 +315,7 @@
 .gi-ing-titulo {
   margin: 0 0 8px;
   font-size: 0.95rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .gi-chips--grande .gi-chip {
@@ -326,7 +336,7 @@
 
 .gi-todo {
   margin: 8px 0;
-  color: #6fe0a0;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 0.92rem;
 }
@@ -347,7 +357,7 @@
 }
 
 .gi-faltan small {
-  color: #e8b84e;
+  color: var(--text-primary);
 }
 
 .gi-detalle {
@@ -357,7 +367,7 @@
 .gi-detalle summary {
   cursor: pointer;
   font-size: 0.88rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .gi-botones {
@@ -377,7 +387,7 @@
 }
 
 .tema-cocina .gi-botones .gi-boton-principal {
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
 }

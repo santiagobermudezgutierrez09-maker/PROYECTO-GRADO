@@ -4,6 +4,7 @@
 
 .home {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -15,9 +16,9 @@
 .home-hero.card {
   padding: 40px 36px;
   background:
-    radial-gradient(ellipse at 100% 0%, rgba(212, 160, 60, 0.16), transparent 60%),
+    radial-gradient(ellipse at 100% 0%, rgba(244, 169, 140, 0.16), transparent 60%),
     var(--color-lavender);
-  border: 1px solid rgba(212, 160, 60, 0.25);
+  border: 1px solid rgba(244, 169, 140, 0.25);
 }
 
 .home-hero h1 {
@@ -25,6 +26,7 @@
   font-size: clamp(1.7rem, 3.2vw, 2.4rem);
   line-height: 1.15;
   color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
 .home-hero p {
@@ -48,7 +50,7 @@
 }
 
 .home-grid--3 {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 }
 
 /* ---------- Tarjetas ---------- */
@@ -86,12 +88,14 @@
 }
 
 .home-tarjeta-cuerpo h3 {
+  overflow-wrap: anywhere;
   margin: 0 0 6px;
   font-size: 1.05rem;
   color: var(--text-primary);
 }
 
 .home-tarjeta-cuerpo p {
+  overflow-wrap: anywhere;
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.5;
@@ -152,7 +156,7 @@
   padding: 9px 18px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1a1408;
+  color: var(--text-primary);
   background: var(--color-primary);
   border-radius: 999px;
 }

@@ -11,7 +11,7 @@
 }
 .ra-sub {
   text-align: center;
-  color: #9a917c;
+  color: var(--text-secondary);
   margin: 0 0 18px;
   font-size: 14px;
 }
@@ -28,9 +28,9 @@
   width: 100%;
   box-sizing: border-box;
   height: 46px;
-  background: #1e1e1e;
-  color: #fff;
-  border: 1px solid #3a3a3a;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0 12px;
   font-size: 15px;
@@ -38,8 +38,8 @@
 }
 .ra-campo:focus {
   outline: none;
-  border-color: #d4a640;
-  box-shadow: 0 0 0 3px rgba(212, 166, 64, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.2);
 }
 
 /* ---------- Tarjetas ---------- */
@@ -56,8 +56,8 @@
   padding: 10px;
   text-align: left;
   font-family: inherit;
-  background: #141414;
-  border: 1px solid #2f2a1c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   cursor: pointer;
   overflow: hidden;
@@ -65,8 +65,8 @@
 }
 .ra-card:hover:not(:disabled) {
   transform: translateY(-4px);
-  border-color: #d4a640;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 24px rgba(74, 52, 40, 0.16);
 }
 .ra-card:disabled {
   opacity: 0.6;
@@ -80,7 +80,7 @@
   display: block;
 }
 .ra-card-nombre {
-  color: #f3e3b5;
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 15px;
   line-height: 1.3;
@@ -88,7 +88,7 @@
   min-height: 2.6em;
 }
 .ra-card-ver {
-  color: #d4a640;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 600;
   padding: 0 4px 4px;
@@ -107,7 +107,7 @@
 }
 .ra-skeleton-img,
 .ra-skeleton-linea {
-  background: linear-gradient(90deg, #1c1c1c 25%, #2a2a2a 50%, #1c1c1c 75%);
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-surface) 50%, var(--bg-surface) 75%);
   background-size: 200% 100%;
   animation: ra-brillo 1.3s infinite;
   border-radius: 10px;
@@ -128,15 +128,15 @@
 /* ---------- Estados (error / vacío) ---------- */
 .ra-estado {
   text-align: center;
-  background: #141414;
-  border: 1px dashed #3a3a3a;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-color);
   border-radius: 14px;
   padding: 28px 16px;
-  color: #bdb39a;
+  color: var(--text-secondary);
 }
 .ra-btn-principal {
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 10px;
   padding: 10px 20px;
@@ -144,7 +144,7 @@
   cursor: pointer;
 }
 .ra-error-chico {
-  color: #ffb36b;
+  color: var(--text-primary);
   font-size: 13px;
   margin: 8px 0 0;
 }
@@ -155,8 +155,8 @@
 /* ---------- Detalle ---------- */
 .ra-volver {
   background: transparent;
-  color: #f3e3b5;
-  border: 1px solid #d4a640;
+  color: var(--text-primary);
+  border: 1px solid var(--color-primary);
   border-radius: 999px;
   padding: 8px 18px;
   font-weight: 600;
@@ -164,7 +164,7 @@
   margin-bottom: 18px;
 }
 .ra-volver:hover {
-  background: #2a2212;
+  background: var(--bg-surface);
 }
 
 .ra-detalle {
@@ -179,8 +179,8 @@
   grid-template-columns: minmax(220px, 380px) 1fr;
   gap: 24px;
   align-items: center;
-  background: linear-gradient(135deg, #2a2110, #141414);
-  border: 1px solid #d4a640;
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-surface));
+  border: 1px solid var(--color-primary);
   border-radius: 18px;
   padding: 18px;
 }
@@ -193,7 +193,7 @@
 .ra-detalle-titulo {
   margin: 0 0 12px;
   font-size: 28px;
-  color: #f3e3b5;
+  color: var(--text-primary);
 }
 .ra-badges {
   display: flex;
@@ -202,9 +202,9 @@
   margin-bottom: 16px;
 }
 .ra-badge {
-  background: #232323;
-  border: 1px solid #d4a640;
-  color: #f3e3b5;
+  background: var(--bg-surface);
+  border: 1px solid var(--color-primary);
+  color: var(--text-primary);
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 13px;
@@ -214,8 +214,8 @@
   margin-bottom: 14px;
 }
 .ra-btn-charin {
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -228,25 +228,25 @@
 }
 .ra-segmentado {
   display: inline-flex;
-  border: 1px solid #d4a640;
+  border: 1px solid var(--color-primary);
   border-radius: 999px;
   overflow: hidden;
 }
 .ra-segmentado button {
   background: transparent;
-  color: #f3e3b5;
+  color: var(--text-primary);
   border: none;
   padding: 8px 16px;
   font-weight: 600;
   cursor: pointer;
 }
 .ra-segmentado button.activo {
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
 }
 
 .ra-link-yt {
-  color: #d4a640;
+  color: var(--text-primary);
   font-size: 14px;
   text-decoration: underline;
 }
@@ -258,14 +258,14 @@
   align-items: start;
 }
 .ra-bloque {
-  background: #141414;
-  border: 1px solid #2f2a1c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 18px 20px;
 }
 .ra-bloque h3 {
   margin: 0 0 12px;
-  color: #f3e3b5;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
@@ -281,7 +281,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #e6dcc3;
+  color: var(--text-primary);
   font-size: 15px;
 }
 .ra-ingredientes img {
@@ -304,7 +304,7 @@
   counter-increment: paso;
   position: relative;
   padding-left: 40px;
-  color: #e6dcc3;
+  color: var(--text-primary);
   line-height: 1.55;
   font-size: 15px;
 }
@@ -316,8 +316,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   font-weight: 700;
   font-size: 14px;
   display: flex;
@@ -331,7 +331,7 @@
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
-  background: #000;
+  background: var(--bg-page);
 }
 .ra-video iframe {
   position: absolute;

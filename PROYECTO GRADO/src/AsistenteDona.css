@@ -7,10 +7,10 @@
   max-height: min(62vh, 480px);
   display: flex;
   flex-direction: column;
-  background: #141414;
-  border: 1px solid #d4a640;
+  background: var(--bg-surface);
+  border: 1px solid var(--color-primary);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 40px rgba(74, 52, 40, 0.16);
   overflow: hidden;
   z-index: 45;
 }
@@ -25,16 +25,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  background: #1f1a10;
-  color: #f3e3b5;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 14px;
-  border-bottom: 1px solid #3a2f17;
+  border-bottom: 1px solid var(--border-color);
 }
 .asistente-cabecera button {
   background: none;
   border: none;
-  color: #f3e3b5;
+  color: var(--text-primary);
   font-size: 16px;
   cursor: pointer;
 }
@@ -59,14 +59,14 @@
 }
 .asist-msg.bot {
   align-self: flex-start;
-  background: #232323;
-  color: #f3e3b5;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   border-top-left-radius: 4px;
 }
 .asist-msg.user {
   align-self: flex-end;
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   border-top-right-radius: 4px;
 }
 .asist-msg.pensando {
@@ -82,36 +82,36 @@
 }
 .asistente-chips button {
   background: transparent;
-  color: #f3e3b5;
-  border: 1px solid #d4a640;
+  color: var(--text-primary);
+  border: 1px solid var(--color-primary);
   border-radius: 999px;
   padding: 5px 10px;
   font-size: 12px;
   cursor: pointer;
 }
 .asistente-chips button:hover {
-  background: #2a2212;
+  background: var(--bg-surface);
 }
 
 .asistente-entrada {
   display: flex;
   gap: 6px;
   padding: 10px;
-  border-top: 1px solid #3a2f17;
+  border-top: 1px solid var(--border-color);
 }
 .asistente-entrada input {
   flex: 1;
   min-width: 0;
-  background: #1e1e1e;
-  color: #fff;
-  border: 1px solid #3a3a3a;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 8px 10px;
   font-size: 14px;
 }
 .asistente-entrada button {
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 10px;
   padding: 8px 12px;
@@ -171,23 +171,23 @@
 }
 
 .asistente-entrada .asistente-icono--on {
-  border-color: #42b872;
-  background: rgba(66, 184, 114, 0.18);
-  box-shadow: 0 0 0 4px rgba(66, 184, 114, 0.22);
+  border-color: var(--color-teal);
+  background: rgba(191, 227, 200, 0.18);
+  box-shadow: 0 0 0 4px rgba(191, 227, 200, 0.22);
 }
 
 .asistente-parcial {
   margin: 0 12px 8px;
   font-size: 13px;
-  color: #e8b84e;
+  color: var(--text-primary);
 }
 
 .asistente-error {
   margin: 0 12px 8px;
   padding: 8px 12px;
   border-radius: 10px;
-  background: rgba(200, 56, 90, 0.14);
-  color: #f08aa0;
+  background: rgba(247, 198, 199, 0.14);
+  color: var(--text-primary);
   font-size: 13px;
   line-height: 1.4;
 }

@@ -5,7 +5,6 @@ import { auth } from "./firebaseAuth";
 import { useCierreSesionInactividad } from "./useCierreSesionInactividad";
 
 import Login from "./Login";
-const ShaderAnimation = lazy(() => import("./ShaderAnimation"));
 const Mascota = lazy(() => import("./Mascota"));
 const Register = lazy(() => import("./Register"));
 const Home = lazy(() => import("./Home"));
@@ -53,6 +52,27 @@ const TODOS_LOS_ITEMS = GRUPOS_MENU.flatMap((g) => g.items);
 // 🍩 Pantallas donde aparece la dona asistente
 const VISTAS_CON_DONA = ["home", "generador", "cocina", "api", "fechas"];
 
+const DonaO = ({ sidebar = false }) => (
+  <svg
+    viewBox="0 0 40 40"
+    width={sidebar ? "0.9em" : "0.8em"}
+    height={sidebar ? "0.9em" : "0.8em"}
+    style={{ display: "inline-block", verticalAlign: "-0.05em", margin: "0 1px" }}
+    aria-hidden="true"
+  >
+    <circle cx="20" cy="20" r="17" fill="#F4A98C" />
+    <circle cx="20" cy="20" r="14" fill="#F7C6C7" />
+    <circle cx="20" cy="20" r="5.5" fill="#FFF8EC" />
+    <g strokeLinecap="round" strokeWidth="2">
+      <line x1="10" y1="14" x2="13" y2="12" stroke="#BFE3C8" />
+      <line x1="28" y1="11" x2="31" y2="14" stroke="#FFF8EC" />
+      <line x1="9" y1="24" x2="12" y2="26" stroke="#F4A98C" />
+      <line x1="29" y1="27" x2="31" y2="24" stroke="#BFE3C8" />
+      <line x1="19" y1="31" x2="22" y2="32" stroke="#FFF8EC" />
+    </g>
+  </svg>
+);
+
 function App() {
   const [vista, setVista] = useState("login");
   const [usuario, setUsuario] = useState(null);
@@ -88,7 +108,7 @@ function App() {
           } else {
             setNombreUsuario(""); // si no encuentra nombre, usamos el correo como respaldo
           }
-        } catch (error) {
+        } catch {
           setNombreUsuario("");
         }
       } else {
@@ -154,38 +174,58 @@ function App() {
   if (!tieneAcceso) {
     return (
       <>
-        <Suspense fallback={null}>
-          <ShaderAnimation dispersion={0.01} speed={1} lineWidth={0.002} brightness={1} />
-        </Suspense>
+        <div className="fondo-login" aria-hidden="true" />
 
-        <div className="app-shell">
-          <div className="app-header">
-            <h1 className="app-titulo">🍳 CHARIN COOK</h1>
-            <div className="barra-sesion">No has iniciado sesión.</div>
-          </div>
+        <div className="app-shell auth-layout">
+          <section className="auth-brand" aria-label="Charin Cook">
+            <div className="auth-brand-lockup">
+              <h1 className="marca-titulo">
+                CHARIN <span className="marca-cook">C<DonaO sidebar />OK</span>
+              </h1>
+              <p className="marca-lema">Cocina con calma</p>
+            </div>
 
-          <nav className="nav">
-            <button onClick={() => setVista("login")}>Iniciar sesión</button>
-            <button onClick={() => setVista("register")}>Registrarme</button>
-            <button onClick={entrarComoInvitado}>Entrar como invitado</button>
-          </nav>
+            <div className="zona-formulario auth-mascota">
+              <Suspense fallback={null}>
+                <Mascota
+                  variante="en-formulario"
+                  mensaje={
+                    vista === "register"
+                      ? "¡Qué bueno que te unas a Charin Cook! 🎉"
+                      : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
+                  }
+                />
+              </Suspense>
+            </div>
+          </section>
 
-          {/* 🍩 La dona vive junto al formulario */}
-          <div className="zona-formulario">
-            <Suspense fallback={null}>
-              <Mascota
-                variante="en-formulario"
-                mensaje={
-                  vista === "register"
-                    ? "¡Qué bueno que te unas a Charin Cook! 🎉"
-                    : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
-                }
-              />
-            </Suspense>
-
+          <section className="auth-panel card">
+            <nav className="auth-tabs" aria-label="Acceso a la cuenta">
+              <button
+                type="button"
+                className={vista === "login" ? "activo" : ""}
+                onClick={() => setVista("login")}
+                aria-current={vista === "login" ? "page" : undefined}
+              >
+                Iniciar sesión
+              </button>
+              <button
+                type="button"
+                className={vista === "register" ? "activo" : ""}
+                onClick={() => setVista("register")}
+                aria-current={vista === "register" ? "page" : undefined}
+              >
+                Registrarme
+              </button>
+            </nav>
             {vista === "login" && <Login />}
             {vista === "register" && <Register />}
-          </div>
+
+            <div className="auth-divider"><span>o</span></div>
+            <button className="auth-guest" type="button" onClick={entrarComoInvitado}>
+              Entrar como invitado
+            </button>
+          </section>
         </div>
       </>
     );
@@ -208,10 +248,12 @@ function App() {
         {/* ---------- BARRA LATERAL ---------- */}
         <aside className={`sidebar ${menuAbierto ? "abierta" : ""}`} aria-label="Menú principal">
           <div className="sidebar-marca">
-            <span className="sidebar-logo">🍳</span>
+            <span className="sidebar-logo" aria-hidden="true">🍳</span>
             <div>
-              <div className="sidebar-nombre">CHARIN COOK</div>
-              <div className="sidebar-lema">Cocina con calma</div>
+              <div className="sidebar-nombre marca-titulo">
+                CHARIN <span className="marca-cook">C<DonaO />OK</span>
+              </div>
+              <div className="sidebar-lema marca-lema">Cocina con calma</div>
             </div>
           </div>
 

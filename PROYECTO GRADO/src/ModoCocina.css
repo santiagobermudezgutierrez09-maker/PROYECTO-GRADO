@@ -55,7 +55,7 @@
 .tema-cocina .mc-grid .mc-tarjeta:hover {
   transform: translateY(-3px);
   border-color: var(--color-primary);
-  box-shadow: 0 8px 24px rgba(212, 160, 60, 0.18);
+  box-shadow: 0 8px 24px rgba(244, 169, 140, 0.18);
 }
 
 .mc-tarjeta-emoji {
@@ -252,14 +252,14 @@ body.mc-sin-distracciones .vista {
 .tema-cocina .mc .mc-aa--on {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
 }
 
 /* ---------- Progreso ---------- */
 .mc-progreso {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 248, 230, 0.08);
+  background: rgba(244, 169, 140, 0.08);
   overflow: hidden;
 }
 
@@ -268,7 +268,7 @@ body.mc-sin-distracciones .vista {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--color-primary), var(--color-yellow));
-  box-shadow: 0 0 12px rgba(212, 160, 60, 0.5);
+  box-shadow: 0 0 12px rgba(244, 169, 140, 0.5);
   transition: width 0.3s ease;
 }
 
@@ -296,7 +296,7 @@ body.mc-sin-distracciones .vista {
 }
 
 .tema-cocina .mc .mc-punto--hecho {
-  background: rgba(212, 160, 60, 0.18);
+  background: rgba(244, 169, 140, 0.18);
   border-color: transparent;
   color: var(--color-yellow);
 }
@@ -304,7 +304,7 @@ body.mc-sin-distracciones .vista {
 .tema-cocina .mc .mc-punto--actual {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
   transform: scale(1.15);
 }
 
@@ -356,14 +356,14 @@ body.mc-sin-distracciones .vista {
   font-size: 17px;
   font-weight: 700;
   border-radius: 14px;
-  background: rgba(212, 160, 60, 0.14);
+  background: rgba(244, 169, 140, 0.14);
   border: 1px dashed var(--color-primary);
   color: var(--color-yellow);
   cursor: pointer;
 }
 
 .tema-cocina .mc .mc-auto:hover {
-  background: rgba(212, 160, 60, 0.26);
+  background: rgba(244, 169, 140, 0.26);
 }
 
 .mc-auto-icono {
@@ -403,7 +403,7 @@ body.mc-sin-distracciones .vista {
 .tema-cocina .mc .mc-nav .mc-siguiente {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -415,7 +415,7 @@ body.mc-sin-distracciones .vista {
 .mc-timer {
   padding: 18px;
   border-radius: 16px;
-  background: rgba(255, 248, 230, 0.04);
+  background: rgba(244, 169, 140, 0.04);
   border: 1px solid var(--border-color);
 }
 
@@ -469,7 +469,7 @@ body.mc-sin-distracciones .vista {
 .tema-cocina .mc .mc-controles .mc-iniciar {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -507,7 +507,7 @@ body.mc-sin-distracciones .vista {
   stroke: var(--color-yellow);
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s linear;
-  filter: drop-shadow(0 0 6px rgba(212, 160, 60, 0.5));
+  filter: drop-shadow(0 0 6px rgba(244, 169, 140, 0.5));
 }
 
 .mc-anillo-tiempo {
@@ -552,7 +552,7 @@ body.mc-sin-distracciones .vista {
 
 @keyframes mc-latido {
   50% {
-    box-shadow: 0 0 0 6px rgba(212, 160, 60, 0.25);
+    box-shadow: 0 0 0 6px rgba(244, 169, 140, 0.25);
   }
 }
 
@@ -640,8 +640,8 @@ body.mc-sin-distracciones .vista {
   margin: 0 auto 16px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(212, 160, 60, 0.45);
-  background: rgba(212, 160, 60, 0.1);
+  border: 1px solid rgba(244, 169, 140, 0.45);
+  background: rgba(244, 169, 140, 0.1);
   text-align: left;
 }
 
@@ -655,9 +655,9 @@ body.mc-sin-distracciones .vista {
   margin: 0;
   padding: 9px 18px;
   font-weight: 700;
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
 }
 
 .mc-categorias {
@@ -678,8 +678,8 @@ body.mc-sin-distracciones .vista {
 }
 
 .tema-cocina .mc-cat--on {
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
   font-weight: 700;
 }

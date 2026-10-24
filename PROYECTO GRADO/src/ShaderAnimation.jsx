@@ -42,8 +42,10 @@ export function ShaderAnimation({
           }
         }
         float mono = (color.r + color.g + color.b) / 3.0;
-        vec3 finalColor = mix(color, mono * uTint, uUseTint);
-        gl_FragColor = vec4(finalColor * uBrightness, 1.0);
+        vec3 tintColor = mix(uTint, vec3(247.0 / 255.0, 198.0 / 255.0, 199.0 / 255.0), smoothstep(-0.5, 0.5, uv.x));
+        vec3 finalColor = mix(color, mono * tintColor, uUseTint);
+        vec3 cream = vec3(255.0 / 255.0, 248.0 / 255.0, 236.0 / 255.0);
+        gl_FragColor = vec4(mix(cream, finalColor * uBrightness, 0.18), 1.0);
       }
     `;
 
@@ -58,8 +60,8 @@ export function ShaderAnimation({
       resolution: { value: new THREE.Vector2() },
       uLineWidth: { value: lineWidth },
       uDispersion: { value: dispersion },
-      uTint: { value: new THREE.Vector3(...(tint ?? [1, 1, 1])) },
-      uUseTint: { value: tint ? 1.0 : 0.0 },
+      uTint: { value: new THREE.Vector3(...(tint ?? [244 / 255, 169 / 255, 140 / 255])) },
+      uUseTint: { value: 1.0 },
       uBrightness: { value: brightness },
     };
 
@@ -99,7 +101,7 @@ export function ShaderAnimation({
     };
   }, [speed, lineWidth, dispersion, tint, brightness]);
 
-  return <div ref={containerRef} className={className} style={{ background: "#000", ...style }} />;
+  return <div ref={containerRef} className={className} style={{ background: "var(--bg-page)", ...style }} />;
 }
 
 export default ShaderAnimation;

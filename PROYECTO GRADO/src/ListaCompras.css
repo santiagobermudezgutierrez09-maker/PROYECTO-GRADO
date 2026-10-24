@@ -75,7 +75,7 @@
   padding-right: 4px;
   margin-bottom: 16px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(212, 160, 60, 0.4) transparent;
+  scrollbar-color: rgba(244, 169, 140, 0.4) transparent;
 }
 
 .lc-receta {
@@ -90,12 +90,12 @@
 }
 
 .lc-receta:hover {
-  background: rgba(255, 248, 230, 0.05);
+  background: rgba(244, 169, 140, 0.05);
 }
 
 .lc-receta--on {
-  background: rgba(212, 160, 60, 0.10);
-  border-color: rgba(212, 160, 60, 0.35);
+  background: rgba(244, 169, 140, 0.10);
+  border-color: rgba(244, 169, 140, 0.35);
   color: var(--color-yellow);
 }
 
@@ -117,7 +117,7 @@
 .tema-cocina .lc-acciones .lc-principal {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #1a1408;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -130,7 +130,7 @@
   margin: 14px 0 0;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(232, 184, 78, 0.12);
+  background: rgba(244, 169, 140, 0.12);
   color: var(--color-yellow);
   font-size: 14px;
 }
@@ -140,7 +140,7 @@
   height: 5px;
   margin-bottom: 16px;
   border-radius: 999px;
-  background: rgba(255, 248, 230, 0.08);
+  background: rgba(244, 169, 140, 0.08);
   overflow: hidden;
 }
 
@@ -148,7 +148,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--color-teal), #7ad9a1);
+  background: linear-gradient(90deg, var(--color-teal), var(--color-secondary));
   transition: width 0.3s ease;
 }
 
@@ -167,13 +167,13 @@
   gap: 12px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(255, 248, 230, 0.04);
+  background: rgba(244, 169, 140, 0.04);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .lc-item:hover {
-  background: rgba(255, 248, 230, 0.07);
+  background: rgba(244, 169, 140, 0.07);
 }
 
 .lc-item--hecho {
@@ -211,15 +211,15 @@
   font: inherit;
   font-size: 16px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 248, 230, 0.18);
-  background: #ffffff;
-  color: #1a1a1a;
-  -webkit-text-fill-color: #1a1a1a;
+  border: 1px solid rgba(244, 169, 140, 0.18);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
 }
 
 .lc-buscar::placeholder,
 .lc-agregar input::placeholder {
-  color: #7a6470;
+  color: var(--text-secondary);
   opacity: 1;
 }
 
@@ -243,9 +243,9 @@
   border-radius: 12px;
   font-weight: 700;
   white-space: nowrap;
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
 }
 
 .tema-cocina .lc-agregar button:disabled {
@@ -266,16 +266,16 @@
 
 .lc-item-uso {
   font-size: 0.76rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .lc-listo {
   margin: 8px 0;
   padding: 10px 14px;
   border-radius: 12px;
-  background: rgba(66, 184, 114, 0.16);
-  border: 1px solid rgba(66, 184, 114, 0.5);
-  color: #6fe0a0;
+  background: rgba(191, 227, 200, 0.16);
+  border: 1px solid rgba(191, 227, 200, 0.5);
+  color: var(--text-primary);
   font-weight: 700;
   text-align: center;
 }

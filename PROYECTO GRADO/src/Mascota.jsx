@@ -55,11 +55,11 @@ export default function Mascota({
     el.appendChild(renderer.domElement);
 
     // ---------- Luces ----------
-    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-    const sol = new THREE.DirectionalLight(0xffffff, 1.7);
+    scene.add(new THREE.AmbientLight(0xfff8ec, 1.0));
+    const sol = new THREE.DirectionalLight(0xfff8ec, 1.3);
     sol.position.set(2, 4, 6);
     scene.add(sol);
-    const dorada = new THREE.PointLight(0xd4a640, 14, 14);
+    const dorada = new THREE.PointLight(0xf4a98c, 4, 14);
     dorada.position.set(-3, 1, 4);
     scene.add(dorada);
 
@@ -75,21 +75,21 @@ export default function Mascota({
     personaje.add(
       new THREE.Mesh(
         new THREE.TorusGeometry(R, r, 32, 64),
-        mat(0xe3a857, { roughness: 0.8 })
+        mat(0xf4a98c, { roughness: 0.8 })
       )
     );
 
     // Glaseado
     const glaseado = new THREE.Mesh(
       new THREE.TorusGeometry(R, rg, 32, 64),
-      mat(0xff7eb6, { roughness: 0.25 })
+      mat(0xf29eaf, { roughness: 0.3 })
     );
     glaseado.scale.z = 0.9;
     glaseado.position.z = 0.1;
     personaje.add(glaseado);
 
     // Chispitas (solo arriba y a los lados, para no tapar la cara)
-    const coloresChispas = [0xffffff, 0xffe066, 0x6ee7b7, 0x7dd3fc, 0xc4b5fd, 0xff6b6b];
+    const coloresChispas = [0xbfe3c8, 0xf4a98c, 0xfff8ec, 0xf29eaf];
     const geoChispa = new THREE.CapsuleGeometry(0.022, 0.09, 4, 8);
     for (let i = 0; i < 38; i++) {
       const u = -0.3 + Math.random() * (Math.PI + 0.6);
@@ -117,7 +117,7 @@ export default function Mascota({
 
       const blanco = new THREE.Mesh(
         new THREE.SphereGeometry(0.16, 24, 24),
-        mat(0xffffff, { roughness: 0.2 })
+        mat(0xfff8ec, { roughness: 0.2 })
       );
       blanco.scale.set(1, 1.2, 0.6);
       ojo.add(blanco);
@@ -125,7 +125,7 @@ export default function Mascota({
       const mirada = new THREE.Group();
       const pupila = new THREE.Mesh(
         new THREE.SphereGeometry(0.1, 24, 24),
-        mat(0x1b1b1b, { roughness: 0.15 })
+        mat(0x4a3428, { roughness: 0.15 })
       );
       pupila.scale.set(1, 1.25, 0.5);
       pupila.position.z = 0.08;
@@ -133,7 +133,7 @@ export default function Mascota({
 
       const brillo = new THREE.Mesh(
         new THREE.SphereGeometry(0.035, 12, 12),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
+        new THREE.MeshBasicMaterial({ color: 0xfff8ec })
       );
       brillo.position.set(0.035, 0.06, 0.14);
       mirada.add(brillo);
@@ -148,7 +148,7 @@ export default function Mascota({
     [-1, 1].forEach((lado) => {
       const mejilla = new THREE.Mesh(
         new THREE.SphereGeometry(0.1, 16, 16),
-        mat(0xff5c8a, { roughness: 0.6 })
+        mat(0xf29eaf, { roughness: 0.6 })
       );
       mejilla.scale.set(1.2, 0.7, 0.3);
       mejilla.position.set(lado * 0.62, -1.0, 0.5);
@@ -160,12 +160,12 @@ export default function Mascota({
     boca.position.set(0, -0.98, 0.575);
     const bocaForma = new THREE.Mesh(
       new THREE.CircleGeometry(0.17, 24, Math.PI, Math.PI),
-      new THREE.MeshBasicMaterial({ color: 0x5a1a1a })
+      new THREE.MeshBasicMaterial({ color: 0x4a3428 })
     );
     boca.add(bocaForma);
     const lengua = new THREE.Mesh(
       new THREE.CircleGeometry(0.07, 16),
-      new THREE.MeshBasicMaterial({ color: 0xff6b8a })
+      new THREE.MeshBasicMaterial({ color: 0xf29eaf })
     );
     lengua.position.set(0, -0.12, 0.002);
     boca.add(lengua);
@@ -179,14 +179,14 @@ export default function Mascota({
 
       const brazo = new THREE.Mesh(
         new THREE.CapsuleGeometry(0.07, 0.4, 4, 8),
-        mat(0x4a2c1d)
+        mat(0x4a3428)
       );
       brazo.position.y = -0.28;
       hombro.add(brazo);
 
       const mano = new THREE.Mesh(
         new THREE.SphereGeometry(0.14, 20, 20),
-        mat(0xffffff, { roughness: 0.3 })
+        mat(0xfff8ec, { roughness: 0.3 })
       );
       mano.position.y = -0.64;
       hombro.add(mano);
@@ -200,7 +200,7 @@ export default function Mascota({
     [-1, 1].forEach((lado) => {
       const zapato = new THREE.Mesh(
         new THREE.SphereGeometry(0.2, 20, 20),
-        mat(0x4a2c1d)
+        mat(0x4a3428)
       );
       zapato.scale.set(1.2, 0.6, 1.5);
       zapato.position.set(lado * 0.45, -1.62, 0.15);

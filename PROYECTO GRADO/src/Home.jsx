@@ -30,6 +30,13 @@ function Tarjeta({ item, irA, variante = "normal" }) {
 }
 
 function Home({ irA, correoUsuario }) {
+  const nombrePresentacion = correoUsuario
+    ? correoUsuario.includes("@")
+      ? correoUsuario
+      : correoUsuario.charAt(0).toLocaleUpperCase("es") +
+        correoUsuario.slice(1).toLocaleLowerCase("es")
+    : "";
+
   const accionPrincipal = {
     vista: "generador",
     emoji: "🥕",
@@ -91,7 +98,7 @@ function Home({ irA, correoUsuario }) {
       {/* Bienvenida */}
       <section className="card home-hero">
         <h1>
-          {correoUsuario ? `Hola, ${correoUsuario} 👋` : "Bienvenido a Charin Cook 🍳"}
+          {correoUsuario ? `Hola, ${nombrePresentacion} 👋` : "Bienvenido a Charin Cook 🍳"}
         </h1>
         <p>¿Qué postre quieres preparar hoy?</p>
       </section>

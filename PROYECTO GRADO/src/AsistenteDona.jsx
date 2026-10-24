@@ -202,6 +202,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
       style={{ display: visible ? "block" : "none" }}
     >
       <Mascota
+        variante={vista === "home" ? "en-inicio" : ""}
         hablando={cargando || hablando}
         mensaje={abierto ? undefined : "¡Tócame y pregúntame de cocina! 🍩"}
         alClic={() => setAbierto((a) => !a)}

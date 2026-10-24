@@ -5,6 +5,7 @@
 .recetas {
   width: 100%;
   text-align: left;
+  scroll-margin-top: 104px;
 }
 
 /* ---------- Búsqueda + botón de filtros ---------- */
@@ -65,7 +66,7 @@
   place-items: center;
   font-size: 12px;
   font-weight: 700;
-  color: #1a1408;
+  color: var(--text-primary);
   background: var(--color-primary);
   border-radius: 999px;
 }
@@ -84,15 +85,23 @@
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 999px;
-  background-color: transparent;
+  background-color: #FFF8EC;
+  border: 1px solid #E8D5B5;
+  color: #4A3428;
 }
 
 .tema-cocina .recetas-chip.activo {
-  background-color: rgba(212, 160, 60, 0.14);
-  color: var(--color-yellow);
-  border-color: var(--color-primary);
-  font-weight: 600;
-  box-shadow: 0 0 14px rgba(212, 160, 60, 0.25);
+  background-color: rgba(244, 169, 140, 0.35);
+  color: #4A3428;
+  border-color: #E8896A;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.tema-cocina .recetas-chip:not(.activo):hover {
+  background-color: rgba(244, 169, 140, 0.25);
+  border-color: #E8D5B5;
+  color: #4A3428;
 }
 
 .tema-cocina .recetas-chip:focus-visible,
@@ -259,17 +268,17 @@
   padding: 16px;
   text-align: left;
   border-radius: 16px;
-  border: 1px solid rgba(255, 248, 230, 0.12);
-  background: #161412;
-  color: #f0ebe0;
+  border: 1px solid rgba(244, 169, 140, 0.12);
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
 .tema-cocina .rec-card:hover {
   transform: translateY(-3px);
-  border-color: var(--color-primary, #d4a03c);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  border-color: var(--color-primary, var(--color-primary));
+  box-shadow: 0 8px 22px rgba(74, 52, 40, 0.16);
 }
 
 .rec-card-emoji {
@@ -285,7 +294,7 @@
 
 .rec-card-meta {
   font-size: 0.82rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .rec-badges {
@@ -303,22 +312,30 @@
 }
 
 .rec-badge--verde {
-  background: rgba(66, 184, 114, 0.18);
-  color: #6fe0a0;
-  border: 1px solid rgba(66, 184, 114, 0.5);
+  background: rgba(191, 227, 200, 0.18);
+  color: var(--text-primary);
+  border: 1px solid rgba(191, 227, 200, 0.5);
 }
 
 .rec-badge--ambar {
-  background: rgba(232, 184, 78, 0.16);
-  color: #e8b84e;
-  border: 1px solid rgba(232, 184, 78, 0.5);
+  background: rgba(244, 169, 140, 0.16);
+  color: var(--text-primary);
+  border: 1px solid rgba(244, 169, 140, 0.5);
 }
 
 .rec-card-ver {
   margin-top: auto;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-primary, #d4a03c);
+  color: #4A3428;
+  text-decoration: underline;
+  text-decoration-color: #E8896A;
+  text-underline-offset: 3px;
+}
+
+.rec-card:hover .rec-card-ver,
+.rec-card:focus-visible .rec-card-ver {
+  color: #A95338;
 }
 
 /* Destacado de postres saludables */
@@ -326,8 +343,8 @@
   margin: 0 0 22px;
   padding: 18px;
   border-radius: 18px;
-  border: 1px solid rgba(66, 184, 114, 0.4);
-  background: linear-gradient(135deg, rgba(66, 184, 114, 0.12), rgba(66, 184, 114, 0.03));
+  border: 1px solid rgba(191, 227, 200, 0.4);
+  background: linear-gradient(135deg, rgba(191, 227, 200, 0.12), rgba(191, 227, 200, 0.03));
 }
 
 .rec-destacado-titulo {
@@ -341,7 +358,7 @@
 .rec-destacado-titulo h3 {
   margin: 0;
   font-size: 1.15rem;
-  color: #6fe0a0;
+  color: var(--text-primary);
 }
 
 .tema-cocina .rec-destacado-titulo button {
@@ -355,13 +372,13 @@
 .rec-destacado-sub {
   margin: 4px 0 14px;
   font-size: 0.9rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .tema-cocina .rec-chip-verde.activo {
-  background: rgba(66, 184, 114, 0.25);
-  border-color: #42b872;
-  color: #6fe0a0;
+  background: rgba(191, 227, 200, 0.25);
+  border-color: var(--color-teal);
+  color: var(--text-primary);
 }
 
 /* Detalle de la receta */
@@ -391,9 +408,9 @@
 }
 
 .tema-cocina .rec-cocinar {
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
 }
 
 @media (max-width: 600px) {

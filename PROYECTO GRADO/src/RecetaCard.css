@@ -1,12 +1,12 @@
 /* ====== RecetaCard ====== */
 .rc {
-  --rc-fresa: #c2415d;
-  --rc-fresa-oscuro: #9f2f47;
-  --rc-rosa-suave: #fbe9ee;
-  --rc-tinta: #3a2430;
-  --rc-tinta-suave: #7a6470;
-  --rc-linea: #ecdde2;
-  --rc-fondo: #ffffff;
+  --rc-fresa: var(--color-primary);
+  --rc-fresa-oscuro: var(--color-primary-hover);
+  --rc-rosa-suave: var(--color-secondary);
+  --rc-tinta: var(--text-primary);
+  --rc-tinta-suave: var(--text-secondary);
+  --rc-linea: var(--border-color);
+  --rc-fondo: var(--bg-surface);
 
   background: var(--rc-fondo);
   color: var(--rc-tinta);
@@ -15,7 +15,7 @@
   padding: 24px;
   margin-bottom: 20px;
   text-align: left;
-  box-shadow: 0 1px 2px rgba(58, 36, 48, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Encabezado */
@@ -47,7 +47,7 @@
   padding: 4px 12px;
   border-radius: 999px;
   background: var(--rc-fresa);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .rc-tag--soft {
@@ -144,7 +144,7 @@
   padding: 8px 14px;
   border-radius: 10px;
   border: 1px solid var(--rc-linea);
-  background: #fff;
+  background: var(--bg-page);
   color: var(--rc-tinta);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
@@ -171,7 +171,7 @@
 .rc-btn--primary {
   background: var(--rc-fresa);
   border-color: var(--rc-fresa);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .rc-btn--primary:hover {
@@ -206,13 +206,13 @@
   padding: 0 2px;
   font-size: 1.5rem;
   line-height: 1;
-  color: #cdb8c0;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
 .rc-star:hover,
 .rc-star--on {
-  color: #e8a317;
+  color: var(--text-primary);
 }
 
 /* Mensaje de aviso */
@@ -220,8 +220,8 @@
   margin: 14px 0 0;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #fff4dc;
-  color: #7a5200;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 0.9rem;
 }
 
@@ -287,7 +287,7 @@
   padding: 9px 12px;
   border-radius: 10px;
   border: 1px solid var(--rc-linea);
-  background: #fff;
+  background: var(--bg-page);
   color: var(--rc-tinta);
 }
 
@@ -325,26 +325,26 @@
    ============================================================ */
 
 .tema-cocina .rc {
-  --rc-fresa: #c8385a;
-  --rc-fresa-oscuro: #a82a49;
-  --rc-rosa-suave: rgba(200, 56, 90, 0.12);
-  --rc-tinta: #f0ebe0;
-  --rc-tinta-suave: #8a8070;
-  --rc-linea: rgba(255, 248, 230, 0.10);
-  --rc-fondo: #161412;
+  --rc-fresa: var(--color-primary);
+  --rc-fresa-oscuro: var(--color-primary-hover);
+  --rc-rosa-suave: var(--color-secondary);
+  --rc-tinta: var(--text-primary);
+  --rc-tinta-suave: var(--text-secondary);
+  --rc-linea: var(--border-color);
+  --rc-fondo: var(--bg-surface);
 
-  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.08), 0 4px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-sm);
 }
 
 .tema-cocina .rc-subtitle,
 .tema-cocina .rc-comentarios summary,
 .tema-cocina .rc-tag--soft,
 .tema-cocina .rc-btn--active {
-  color: #f08aa0;
+  color: var(--text-primary);
 }
 
 .tema-cocina .rc-stats > div {
-  background: rgba(255, 248, 230, 0.04);
+  background: rgba(244, 169, 140, 0.04);
 }
 
 .tema-cocina .rc-btn--active {
@@ -355,7 +355,7 @@
 .tema-cocina .rc-btn--primary {
   background: var(--rc-fresa);
   border-color: var(--rc-fresa);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .tema-cocina .rc-btn--primary:hover {
@@ -374,17 +374,17 @@
   margin: 0;
   padding: 0 2px;
   width: auto;
-  color: #5a544a;
+  color: var(--text-primary);
 }
 
 .tema-cocina .rc-star:hover,
 .tema-cocina .rc-star--on {
-  color: var(--color-yellow, #e8b84e);
+  color: var(--text-primary);
 }
 
 .tema-cocina .rc-mensaje {
-  background: rgba(232, 184, 78, 0.12);
-  color: #e8b84e;
+  background: var(--color-secondary);
+  color: var(--text-primary);
 }
 
 .tema-cocina .rc-form input {
@@ -433,24 +433,24 @@
 .tema-cocina .rc-form input,
 .rc-nota-texto,
 .tema-cocina .rc-nota-texto {
-  background: #ffffff !important;
-  color: #1a1a1a !important;
-  -webkit-text-fill-color: #1a1a1a;
-  caret-color: #1a1a1a;
-  border: 1px solid #cdb8c0;
+  background: var(--bg-page) !important;
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+  border: 1px solid var(--border-color);
   font-size: 16px;
 }
 
 .rc-form input::placeholder,
 .rc-nota-texto::placeholder {
-  color: #7a6470;
+  color: var(--text-secondary);
   opacity: 1;
 }
 
 .rc-form input:disabled {
-  background: #efe7ea !important;
-  color: #5a4a52 !important;
-  -webkit-text-fill-color: #5a4a52;
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary);
 }
 
 /* Texto del comentario publicado, siempre visible */
@@ -466,14 +466,14 @@
   font-size: 0.8rem;
   padding: 4px 10px;
   border-radius: 8px;
-  border: 1px solid #c8385a;
+  border: 1px solid var(--color-secondary);
   background: transparent;
-  color: #f08aa0;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .rc-eliminar:hover {
-  background: rgba(200, 56, 90, 0.18);
+  background: rgba(247, 198, 199, 0.18);
 }
 
 .tema-cocina .rc-eliminar {
@@ -521,7 +521,7 @@
 }
 
 .tema-cocina .rc-nota-caja summary {
-  color: #f08aa0;
+  color: var(--text-primary);
 }
 
 .rc-nota-ayuda {

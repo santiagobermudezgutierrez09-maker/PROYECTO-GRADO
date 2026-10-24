@@ -10,29 +10,29 @@
 .rf-titulo {
   margin: 0 0 12px;
   font-size: 20px;
-  color: #f3e3b5;
+  color: var(--text-primary);
 }
 
 /* ---------- Hoy ---------- */
 .rf-hoy {
-  background: linear-gradient(135deg, #2a2110, #171717);
-  border: 1px solid #d4a640;
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-surface));
+  border: 1px solid var(--color-primary);
   border-radius: 16px;
   padding: 18px 22px;
 }
 .rf-hoy-titulo {
   margin: 0 0 6px;
   font-size: 18px;
-  color: #f3e3b5;
+  color: var(--text-primary);
 }
 .rf-hoy-sub {
   margin: 0 0 10px;
-  color: #bdb39a;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 .rf-hoy-vacio {
   margin: 0;
-  color: #bdb39a;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 .rf-chips {
@@ -42,9 +42,9 @@
 }
 .tema-cocina .rf-chip {
   appearance: none;
-  background: #232323;
-  border: 1px solid #d4a640;
-  color: #f3e3b5;
+  background: var(--bg-surface);
+  border: 1px solid var(--color-primary);
+  color: var(--text-primary);
   border-radius: 999px;
   padding: 5px 12px;
   font-size: 13px;
@@ -57,12 +57,12 @@
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 .tema-cocina .rf-chip:hover {
-  background: #2a2212;
-  border-color: #f3d27a;
+  background: var(--bg-surface);
+  border-color: var(--color-primary);
   transform: translateY(-1px);
 }
 .tema-cocina .rf-chip:focus-visible {
-  outline: 2px solid #f3d27a;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -73,8 +73,8 @@
   gap: 14px;
 }
 .rf-fecha-card {
-  background: #171717;
-  border: 1px solid #2f2a1c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 16px 12px;
   display: flex;
@@ -86,31 +86,31 @@
 }
 .rf-fecha-card:hover {
   transform: translateY(-3px);
-  border-color: #d4a640;
+  border-color: var(--color-primary);
 }
 .rf-fecha-icono {
   font-size: 34px;
 }
 .rf-fecha-nombre {
   font-weight: 700;
-  color: #f3e3b5;
+  color: var(--text-primary);
 }
 .rf-fecha-dia {
   font-size: 12px;
-  color: #9a917c;
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 .rf-fecha-cuenta {
   margin: 6px 0 8px;
   font-size: 13px;
   font-weight: 700;
-  color: #d4a640;
+  color: var(--text-primary);
 }
 
 /* ---------- Formulario ---------- */
 .rf-tarjeta {
-  background: #141414;
-  border: 1px solid #2f2a1c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 22px;
 }
@@ -131,19 +131,19 @@
   width: 100%;
   box-sizing: border-box;
   height: 46px;
-  background: #1e1e1e;
-  color: #fff;
-  border: 1px solid #3a3a3a;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 0 12px;
   font-size: 15px;
   font-family: inherit;
-  color-scheme: dark; /* hace blanco el icono del calendario */
+  color-scheme: light;
 }
 .rf-campo:focus {
   outline: none;
-  border-color: #d4a640;
-  box-shadow: 0 0 0 3px rgba(212, 166, 64, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.2);
 }
 
 .rf-fila {
@@ -154,8 +154,8 @@
 
 .rf-btn-principal {
   height: 46px;
-  background: #d4a640;
-  color: #1a1a1a;
+  background: var(--color-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 10px;
   font-size: 15px;
@@ -170,8 +170,8 @@
 .rf-btn-secundario {
   margin-top: auto;
   background: transparent;
-  color: #f3e3b5;
-  border: 1px solid #d4a640;
+  color: var(--text-primary);
+  border: 1px solid var(--color-primary);
   border-radius: 999px;
   padding: 6px 16px;
   font-size: 13px;
@@ -179,7 +179,7 @@
   cursor: pointer;
 }
 .rf-btn-secundario:hover:not(:disabled) {
-  background: #2a2212;
+  background: var(--bg-surface);
 }
 .rf-btn-secundario:disabled {
   opacity: 0.45;
@@ -187,9 +187,9 @@
 }
 
 .rf-aviso {
-  background: #2a2212;
-  border: 1px dashed #d4a640;
-  color: #f3e3b5;
+  background: var(--bg-surface);
+  border: 1px dashed var(--color-primary);
+  color: var(--text-primary);
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
@@ -202,17 +202,17 @@
   font-size: 14px;
 }
 .rf-mensaje.ok {
-  color: #6ee7b7;
+  color: var(--text-primary);
 }
 .rf-mensaje.error {
-  color: #ffb36b;
+  color: var(--text-primary);
 }
 
 /* ---------- Mis eventos ---------- */
 .rf-vacio {
-  color: #9a917c;
-  background: #141414;
-  border: 1px dashed #3a3a3a;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-color);
   border-radius: 12px;
   padding: 18px;
   margin: 0;
@@ -233,23 +233,23 @@
   justify-content: space-between;
   align-items: center;
   gap: 14px;
-  background: #171717;
-  border: 1px solid #2f2a1c;
-  border-left: 4px solid #d4a640;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--color-primary);
   border-radius: 12px;
   padding: 12px 16px;
 }
 .rf-evento.pasado {
   opacity: 0.55;
-  border-left-color: #555;
+  border-left-color: var(--border-color);
 }
 .rf-evento-nombre {
   font-weight: 700;
-  color: #f3e3b5;
+  color: var(--text-primary);
 }
 .rf-evento-detalle {
   font-size: 13px;
-  color: #9a917c;
+  color: var(--text-secondary);
   margin-top: 3px;
   text-transform: none;
 }
@@ -263,12 +263,12 @@
 .rf-cuenta {
   font-size: 13px;
   font-weight: 700;
-  color: #d4a640;
+  color: var(--text-primary);
 }
 .rf-btn-borrar {
   background: none;
   border: none;
-  color: #ff8a8a;
+  color: var(--text-primary);
   font-size: 12px;
   cursor: pointer;
   text-decoration: underline;
@@ -305,8 +305,8 @@
   margin: 0 0 20px;
   padding: 20px;
   border-radius: 20px;
-  border: 1px solid rgba(212, 160, 60, 0.5);
-  background: linear-gradient(135deg, rgba(212, 160, 60, 0.16), rgba(200, 56, 90, 0.1));
+  border: 1px solid rgba(244, 169, 140, 0.5);
+  background: linear-gradient(135deg, rgba(244, 169, 140, 0.16), rgba(247, 198, 199, 0.1));
 }
 
 .rf-hero-cabecera {
@@ -332,19 +332,19 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .rf-hero-nombre {
   margin: 2px 0;
   font-size: 1.5rem;
-  color: var(--color-primary, #d4a03c);
+  color: var(--color-primary, var(--text-primary));
 }
 
 .rf-hero-fecha {
   margin: 0;
   text-transform: capitalize;
-  color: #d8d0bd;
+  color: var(--text-secondary);
 }
 
 .rf-hero-cuenta {
@@ -354,19 +354,19 @@
   min-width: 84px;
   padding: 10px 16px;
   border-radius: 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(244, 169, 140, 0.3);
 }
 
 .rf-hero-numero {
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--color-primary, #d4a03c);
+  color: var(--color-primary, var(--text-primary));
 }
 
 .rf-hero-unidad {
   font-size: 0.8rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 /* Tarjetas de postres sugeridos */
@@ -387,16 +387,16 @@
   padding: 12px;
   text-align: left;
   border-radius: 14px;
-  border: 1px solid rgba(255, 248, 230, 0.14);
-  background: #161412;
-  color: #f0ebe0;
+  border: 1px solid rgba(244, 169, 140, 0.14);
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
   transition: transform 0.15s, border-color 0.15s;
 }
 
 .tema-cocina .rf-postre:hover {
   transform: translateY(-2px);
-  border-color: var(--color-primary, #d4a03c);
+  border-color: var(--color-primary, var(--color-primary));
 }
 
 .rf-postre-emoji {
@@ -412,7 +412,7 @@
 
 .rf-postre-meta {
   font-size: 0.78rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 /* Calendario */
@@ -465,7 +465,7 @@
   text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .tema-cocina .rf-dia {
@@ -481,8 +481,8 @@
   padding: 4px 0;
   border-radius: 10px;
   border: 1px solid transparent;
-  background: rgba(255, 248, 230, 0.04);
-  color: #f0ebe0;
+  background: rgba(244, 169, 140, 0.04);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -492,19 +492,19 @@
 }
 
 .tema-cocina .rf-dia--especial {
-  background: rgba(212, 160, 60, 0.16);
-  border-color: rgba(212, 160, 60, 0.5);
+  background: rgba(244, 169, 140, 0.16);
+  border-color: rgba(244, 169, 140, 0.5);
 }
 
 .tema-cocina .rf-dia--hoy {
-  border-color: #6fe0a0;
+  border-color: var(--color-teal);
   font-weight: 800;
 }
 
 .tema-cocina .rf-dia--sel {
-  background: var(--color-primary, #d4a03c);
-  border-color: var(--color-primary, #d4a03c);
-  color: #1a1408;
+  background: var(--color-primary, var(--color-primary));
+  border-color: var(--color-primary, var(--color-primary));
+  color: var(--text-primary);
 }
 
 .rf-dia-num {
@@ -523,7 +523,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #c8385a;
+  background: var(--color-secondary);
 }
 
 .rf-dia-punto--leyenda {
@@ -537,15 +537,15 @@
   flex-wrap: wrap;
   margin: 10px 0 0;
   font-size: 0.8rem;
-  color: #a89f8c;
+  color: var(--text-secondary);
 }
 
 .rf-panel {
   margin-top: 16px;
   padding: 14px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 248, 230, 0.14);
-  background: rgba(255, 248, 230, 0.04);
+  border: 1px solid rgba(244, 169, 140, 0.14);
+  background: rgba(244, 169, 140, 0.04);
 }
 
 .rf-panel-titulo {
@@ -557,7 +557,7 @@
 .rf-panel-nombre {
   margin: 0;
   font-weight: 700;
-  color: var(--color-primary, #d4a03c);
+  color: var(--color-primary, var(--text-primary));
 }
 
 .rf-panel-evento {

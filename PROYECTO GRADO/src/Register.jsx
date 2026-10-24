@@ -10,6 +10,7 @@ function Register() {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState("error");
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -25,50 +26,73 @@ function Register() {
       });
 
       setMensaje("¡Cuenta creada con éxito!");
+      setTipoMensaje("success");
     } catch (error) {
       setMensaje(mensajeErrorAuth(error));
+      setTipoMensaje("error");
     }
   };
 
+  const limpiarMensaje = () => setMensaje("");
+
+  const handleCampoInvalido = () => {
+    setMensaje("Completa los campos obligatorios con datos válidos.");
+    setTipoMensaje("error");
+  };
+
   return (
-    <div className="card" style={{ maxWidth: "320px", margin: "40px auto" }}>
+    <div className="auth-form-content">
       <h2>Crear cuenta</h2>
-      <form onSubmit={handleRegister}>
-        <div style={{ marginBottom: "10px" }}>
+      <form
+        className="auth-form auth-register-form"
+        onSubmit={handleRegister}
+        onInvalid={handleCampoInvalido}
+      >
+        <div className="auth-field">
           <label>Nombre</label>
           <input
             type="text"
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => {
+              setNombre(e.target.value);
+              limpiarMensaje();
+            }}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
+        <div className="auth-field">
           <label>Correo</label>
           <input
             type="email"
             value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
+            onChange={(e) => {
+              setCorreo(e.target.value);
+              limpiarMensaje();
+            }}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
+        <div className="auth-field auth-field-password">
           <label>Contraseña</label>
           <input
             type="password"
             value={clave}
-            onChange={(e) => setClave(e.target.value)}
+            onChange={(e) => {
+              setClave(e.target.value);
+              limpiarMensaje();
+            }}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
         </div>
-        <button type="submit" style={{ padding: "8px 16px" }}>
+        {mensaje && (
+          <p className={`auth-message ${tipoMensaje}`} role="alert">
+            {mensaje}
+          </p>
+        )}
+        <button className="auth-submit" type="submit">
           Registrarme
         </button>
       </form>
-      {mensaje && <p>{mensaje}</p>}
     </div>
   );
 }

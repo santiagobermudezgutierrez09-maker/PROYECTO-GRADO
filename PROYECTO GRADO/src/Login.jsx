@@ -7,6 +7,7 @@ function Login() {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState("error");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,14 +15,24 @@ function Login() {
     try {
       await signInWithEmailAndPassword(auth, correo, clave);
       setMensaje("¡Sesión iniciada!");
+      setTipoMensaje("success");
     } catch (error) {
       setMensaje(mensajeErrorAuth(error));
+      setTipoMensaje("error");
     }
+  };
+
+  const limpiarMensaje = () => setMensaje("");
+
+  const handleCampoInvalido = () => {
+    setMensaje("Completa los campos obligatorios con datos válidos.");
+    setTipoMensaje("error");
   };
 
   // RF04 - Recuperación de contraseña
   const handleRecuperar = async () => {
     setMensaje("");
+    setTipoMensaje("error");
     if (!correo) {
       setMensaje("Escribe tu correo arriba primero, y luego dale clic a este enlace.");
       return;
@@ -29,59 +40,59 @@ function Login() {
     try {
       await sendPasswordResetEmail(auth, correo);
       setMensaje("Te enviamos un correo a " + correo + " con un enlace para restablecer tu contraseña.");
+      setTipoMensaje("success");
     } catch (error) {
       setMensaje(mensajeErrorAuth(error));
+      setTipoMensaje("error");
     }
   };
 
   return (
-    <div className="card" style={{ maxWidth: "320px", margin: "40px auto" }}>
+    <div className="auth-form-content">
       <h2>Iniciar sesión</h2>
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "10px" }}>
+      <form className="auth-form" onSubmit={handleLogin} onInvalid={handleCampoInvalido}>
+        <div className="auth-field">
           <label>Correo</label>
           <input
             type="email"
             value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
+            onChange={(e) => {
+              setCorreo(e.target.value);
+              limpiarMensaje();
+            }}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
         </div>
-        <div style={{ marginBottom: "10px" }}>
+        <div className="auth-field">
           <label>Contraseña</label>
           <input
             type="password"
             value={clave}
-            onChange={(e) => setClave(e.target.value)}
+            onChange={(e) => {
+              setClave(e.target.value);
+              limpiarMensaje();
+            }}
             required
-            style={{ width: "100%", padding: "8px" }}
           />
+          <p className="auth-forgot-wrap">
+            <button
+              type="button"
+              onClick={handleRecuperar}
+              className="auth-forgot"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </p>
         </div>
-        <button type="submit" style={{ padding: "8px 16px" }}>
+        {mensaje && (
+          <p className={`auth-message ${tipoMensaje}`} role="alert">
+            {mensaje}
+          </p>
+        )}
+        <button className="auth-submit" type="submit">
           Entrar
         </button>
       </form>
-
-      <p style={{ marginTop: "10px" }}>
-        <button
-          type="button"
-          onClick={handleRecuperar}
-          style={{
-            background: "none",
-            border: "none",
-            padding: 0,
-            textDecoration: "underline",
-            cursor: "pointer",
-            color: "var(--color-teal)",
-            fontSize: "0.85rem",
-          }}
-        >
-          ¿Olvidaste tu contraseña?
-        </button>
-      </p>
-
-      {mensaje && <p>{mensaje}</p>}
     </div>
   );
 }
