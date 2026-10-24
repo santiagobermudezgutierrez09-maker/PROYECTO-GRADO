@@ -106,7 +106,12 @@ function ChatDona({ nombreUsuario }) {
     } catch (errorGemini) {
       // Si la IA falla, responde el asistente local para no quedarse callada
       if (!errorGemini?.message?.includes("superó el límite")) {
-        setError(`${explicarErrorGemini(errorGemini)} Te doy una respuesta básica por ahora.`);
+        const mensajeError = explicarErrorGemini(errorGemini);
+        setError(
+          errorGemini?.message?.includes("Falta configurar")
+            ? mensajeError
+            : `${mensajeError} Te doy una respuesta básica por ahora.`
+        );
       }
       respuesta = generarRespuesta(pregunta, null, null);
     }
@@ -372,7 +377,12 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
     } catch (errorGemini) {
       // Si la IA falla, responde el motor de reglas para no quedarse callado
       if (!errorGemini?.message?.includes("superó el límite")) {
-        setError(`${explicarErrorGemini(errorGemini)} Te doy una respuesta básica por ahora.`);
+        const mensajeError = explicarErrorGemini(errorGemini);
+        setError(
+          errorGemini?.message?.includes("Falta configurar")
+            ? mensajeError
+            : `${mensajeError} Te doy una respuesta básica por ahora.`
+        );
       }
       respuesta = generarRespuesta(pregunta, receta, paso);
     }

@@ -3,6 +3,7 @@ import "./App.css";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebaseAuth";
 import { useCierreSesionInactividad } from "./useCierreSesionInactividad";
+import MascotaCarga from "./MascotaCarga";
 
 import Login from "./Login";
 const Mascota = lazy(() => import("./Mascota"));
@@ -351,7 +352,16 @@ function App() {
       </div>
 
       {/* 🍩 Dona asistente con chat IA: Inicio, ¿Qué puedo cocinar?, Modo cocina, Más postres y Fechas */}
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          VISTAS_CON_DONA.includes(vista) ? (
+            <MascotaCarga
+              variante={vista === "home" ? "en-inicio" : ""}
+              mensaje="¡Tócame y pregúntame de cocina! 🍩"
+            />
+          ) : null
+        }
+      >
         <AsistenteDona
           vista={vista}
           visible={VISTAS_CON_DONA.includes(vista)}

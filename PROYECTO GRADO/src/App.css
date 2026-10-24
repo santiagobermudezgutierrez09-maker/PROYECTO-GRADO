@@ -1239,3 +1239,32 @@ html {
     margin-bottom: 0;
   }
 }
+
+@media (max-width: 640px) {
+  .tema-cocina .contenido-principal > .topbar {
+    gap: 10px;
+    padding-right: calc(48px + 8px + 16px);
+  }
+
+  .tema-cocina .menu-btn {
+    flex: 0 0 44px;
+    width: 44px;
+    margin: 0;
+  }
+
+  .tema-cocina .topbar-textos {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .tema-cocina .topbar-titulo {
+    font-size: 18px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .tema-cocina .topbar-desc {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

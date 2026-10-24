@@ -26,6 +26,23 @@
   filter: drop-shadow(0 8px 10px rgba(74, 52, 40, 0.14));
 }
 
+.mascota-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 6px rgba(74, 52, 40, 0.18));
+  animation: mascota-cargando 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes mascota-cargando {
+  to {
+    transform: translateY(-3px) rotate(8deg);
+  }
+}
+
 /* Burbuja de texto debajo de la dona */
 .mascota-burbuja {
   position: absolute;
@@ -104,6 +121,17 @@
     width: 56px;
     height: 62px;
     z-index: 51;
+  }
+}
+
+@media (max-width: 640px) {
+  .mascota-wrap.en-inicio {
+    position: fixed;
+    top: 4px;
+    right: 8px;
+    width: 48px;
+    height: 54px;
+    aspect-ratio: auto;
   }
 }
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Mascota from "./Mascota";
+import MascotaCarga from "./MascotaCarga";
 import { generarRespuesta } from "./chatbotEngine";
 import {
   explicarErrorGemini,
@@ -42,6 +42,7 @@ const SUGERENCIAS = {
 };
 
 export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
+  const [Mascota3D, setMascota3D] = useState(null);
   const [abierto, setAbierto] = useState(false);
   const [mensajes, setMensajes] = useState([{ rol: "bot", saludo: true }]);
   const [texto, setTexto] = useState("");
@@ -63,6 +64,28 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
 
   const vistaSegura = SALUDOS[vista] ? vista : "home";
   const hayConversacion = mensajes.some((m) => m.rol === "user");
+
+  useEffect(() => {
+    if (!visible || Mascota3D) return undefined;
+
+    const cargarMascota = () => {
+      import("./Mascota")
+        .then(({ default: ComponenteMascota }) => {
+          setMascota3D(() => ComponenteMascota);
+        })
+        .catch((error) => {
+          console.warn("No se pudo cargar la mascota 3D.", error);
+        });
+    };
+
+    if (window.requestIdleCallback) {
+      const idleId = window.requestIdleCallback(cargarMascota, { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = window.setTimeout(cargarMascota, 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [visible, Mascota3D]);
 
   mensajesRef.current = mensajes;
   vozRef.current = vozActiva;
@@ -118,7 +141,12 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
     } catch (errorGemini) {
       // Si la IA falla, responde el motor de reglas para no quedarse callada
       if (!errorGemini?.message?.includes("superó el límite")) {
-        setError(`${explicarErrorGemini(errorGemini)} Te doy una respuesta básica por ahora.`);
+        const mensajeError = explicarErrorGemini(errorGemini);
+        setError(
+          errorGemini?.message?.includes("Falta configurar")
+            ? mensajeError
+            : `${mensajeError} Te doy una respuesta básica por ahora.`
+        );
       }
       respuesta = generarRespuesta(pregunta);
     }
@@ -201,12 +229,20 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
       className={abierto ? "asistente-abierto" : ""}
       style={{ display: visible ? "block" : "none" }}
     >
-      <Mascota
-        variante={vista === "home" ? "en-inicio" : ""}
-        hablando={cargando || hablando}
-        mensaje={abierto ? undefined : "¡Tócame y pregúntame de cocina! 🍩"}
-        alClic={() => setAbierto((a) => !a)}
-      />
+      {Mascota3D ? (
+        <Mascota3D
+          variante={vista === "home" ? "en-inicio" : ""}
+          hablando={cargando || hablando}
+          mensaje={abierto ? undefined : "¡Tócame y pregúntame de cocina! 🍩"}
+          alClic={() => setAbierto((a) => !a)}
+        />
+      ) : (
+        <MascotaCarga
+          variante={vista === "home" ? "en-inicio" : ""}
+          alClic={() => setAbierto((a) => !a)}
+          mensaje="¡Tócame y pregúntame de cocina! 🍩"
+        />
+      )}
 
       {abierto && (
         <div className="asistente-panel" role="dialog" aria-label="Chat con Charin">

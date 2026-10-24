@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { traducirReceta } from "./geminiService";
+import { explicarErrorGemini, traducirReceta } from "./geminiService";
 import "./RecetasAPI.css";
 
 const API = "https://www.themealdb.com/api/json/v1/1";
@@ -97,7 +97,10 @@ function dividirPasos(texto) {
 
 function mensajeErrorTraduccion(e) {
   const msg = e?.message || "";
-  if (msg.includes("VITE_GEMINI_KEY")) return "Falta configurar VITE_GEMINI_KEY en .env.local.";
+  if (msg.includes("Falta configurar")) {
+    explicarErrorGemini(e);
+    return "Charin no puede conectarse ahora. Inténtalo de nuevo.";
+  }
   if (msg.includes("429")) return "Muchas peticiones seguidas 😅 Espera un minutito e inténtalo de nuevo.";
   if (msg.toLowerCase().includes("failed to fetch")) return "Parece que no hay internet 📶";
   return "Charin no pudo traducir esta receta ahora mismo. Inténtalo de nuevo.";

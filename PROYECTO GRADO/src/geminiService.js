@@ -118,7 +118,10 @@ export async function preguntarChef(
 
 export function explicarErrorGemini(error) {
   const mensaje = error instanceof Error ? error.message : "";
-  if (mensaje.includes("Falta configurar")) return mensaje;
+  if (mensaje.includes("Falta configurar")) {
+    console.warn("Gemini API key is not configured.", error);
+    return "Charin no puede conectarse ahora, te doy una respuesta básica.";
+  }
   if (mensaje.includes("superó el límite")) {
     return "Gemini está tardando más de lo normal. Inténtalo otra vez en un momento.";
   }
