@@ -359,8 +359,14 @@
 }
 
 .home-icono svg {
-  width: 23px;
-  height: 23px;
+  width: 44px;
+  height: 44px;
+  overflow: visible;
+  transition: transform 180ms ease;
+}
+
+.home-tarjeta:hover .home-icono svg {
+  transform: translateY(-2px) scale(1.05);
 }
 
 .home-tarjeta-cuerpo {
@@ -465,7 +471,8 @@
   }
 
   .home-postre-card,
-  .home-tarjeta {
+  .home-tarjeta,
+  .home-icono svg {
     transition: none;
   }
 }
