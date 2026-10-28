@@ -28,6 +28,9 @@ function normalizar(texto) {
 const PALABRAS_IGNORADAS = [
   "de", "que", "el", "la", "los", "las", "un", "una", "y", "a", "con",
   "en", "por", "para", "es", "me", "mi", "lo", "se", "su", "al", "del",
+  "receta", "recetas", "postre", "postres", "tienen", "tiene", "llevan",
+  "lleva", "contienen", "contiene", "hay", "hacer", "preparar", "puedo",
+  "quiero", "busca", "buscar", "dime", "cuales", "cuáles", "usan", "usa",
 ];
 
 
@@ -68,6 +71,22 @@ function buscarRecetasPorIngrediente(mensajeNormalizado) {
   );
 }
 
+export function extraerConsultaIngrediente(mensajeOriginal) {
+  const mensaje = normalizar(mensajeOriginal);
+  if (detectarIntencion(mensaje)) return null;
+  if (recetas.some((r) => normalizar(r.nombre) === mensaje)) return null;
+
+  const palabras = palabrasUtiles(mensaje);
+  if (palabras.length === 0 || palabras.length > 4) return null;
+
+  const ingredientes = recetas.flatMap((r) => r.ingredientes);
+  const coincide = ingredientes.some((ingrediente) => {
+    const nombre = normalizar(ingrediente);
+    return palabras.every((palabra) => nombre.includes(palabra));
+  });
+  return coincide ? palabras.join(" ") : null;
+}
+
 const intenciones = [
   { nombre: "saludo", palabras: ["hola", "buenas", "hey", "buenos dias", "buenas tardes", "buenas noches", "que tal"] },
   { nombre: "ayuda", palabras: ["ayuda", "que puedes hacer", "opciones", "menu", "que sabes hacer", "como funciona"] },
@@ -103,6 +122,13 @@ function detectarIntencion(mensajeNormalizado) {
 }
 
 function buscarSustitutoEnMensaje(mensajeNormalizado, recetaContexto) {
+  const equivalenciaExplicita = [...equivalencias]
+    .sort((a, b) => normalizar(b.original).length - normalizar(a.original).length)
+    .find((eq) => mensajeNormalizado.includes(normalizar(eq.original)));
+  if (equivalenciaExplicita) {
+    return `Puedes sustituir "${equivalenciaExplicita.original}" por ${equivalenciaExplicita.sustituto}.`;
+  }
+
   if (recetaContexto) {
     const ingredienteEnReceta = recetaContexto.ingredientes.find((ing) =>
       mensajeNormalizado.includes(normalizar(ing))
@@ -116,13 +142,6 @@ function buscarSustitutoEnMensaje(mensajeNormalizado, recetaContexto) {
       }
       return `Tengo registrado "${ingredienteEnReceta}" en esta receta, pero no tengo un sustituto guardado para él todavía.`;
     }
-  }
-
-  const equivalenciaGeneral = equivalencias.find((eq) =>
-    mensajeNormalizado.includes(normalizar(eq.original))
-  );
-  if (equivalenciaGeneral) {
-    return `Puedes sustituir "${equivalenciaGeneral.original}" por "${equivalenciaGeneral.sustituto}".`;
   }
 
   return null;
@@ -146,10 +165,14 @@ function resumenReceta(receta) {
 
 
 
-export function generarRespuesta(mensajeOriginal, recetaActiva = null, pasoActualIndex = null) {
+export function generarRespuesta(
+  mensajeOriginal,
+  recetaActiva = null,
+  pasoActualIndex = null,
+  recetasExternas = []
+) {
   const mensaje = normalizar(mensajeOriginal);
   const intencion = detectarIntencion(mensaje);
-
 
   const recetasPorNombre = buscarRecetasPorNombre(mensaje);
   const recetaMencionada = recetasPorNombre.length === 1 ? recetasPorNombre[0] : null;
@@ -232,8 +255,20 @@ export function generarRespuesta(mensajeOriginal, recetaActiva = null, pasoActua
     }
   }
 
-
-
+  const consultaIngrediente = extraerConsultaIngrediente(mensaje);
+  if (consultaIngrediente) {
+    const coincidencias = buscarRecetasPorIngrediente(mensaje);
+    const nombres = [
+      ...new Set([
+        ...coincidencias.map((r) => r.nombre),
+        ...recetasExternas.filter((nombre) => typeof nombre === "string" && nombre.trim()),
+      ]),
+    ];
+    if (nombres.length > 0) {
+      const ideas = nombres.slice(0, 3);
+      return `Con "${consultaIngrediente}" podrías preparar:\n${ideas.map((nombre) => `• ${nombre}`).join("\n")}`;
+    }
+  }
 
   if (recetasPorNombre.length === 1) {
     return resumenReceta(recetasPorNombre[0]);
@@ -248,14 +283,37 @@ export function generarRespuesta(mensajeOriginal, recetaActiva = null, pasoActua
 
   const recetasPorIngrediente = buscarRecetasPorIngrediente(mensaje);
   if (recetasPorIngrediente.length > 0) {
-    const nombres = recetasPorIngrediente.slice(0, 6).map((r) => r.nombre).join(", ");
-    return `Ese ingrediente se usa en estas recetas: ${nombres}. ¿Sobre cuál quieres saber más?`;
+    const nombres = recetasPorIngrediente.map((r) => r.nombre);
+    return `Ese ingrediente se usa en estas recetas:\n${nombres.map((nombre) => `• ${nombre}`).join("\n")}`;
   }
 
 
   return receta
     ? `No entendí bien esa pregunta sobre "${receta.nombre}". Puedes preguntarme por tiempo, ingredientes, pasos, sustitutos, dificultad, calorías o dieta.`
     : "No encontré ninguna receta ni ingrediente relacionado con eso. Intenta con otro nombre, o escribe 'ayuda' para ver qué puedo hacer.";
+}
+
+const INTENCIONES_PRIORITARIAS = new Set([
+  "sustituto",
+  "ingredientes",
+  "pasos",
+  "paso_especifico",
+  "siguiente_paso",
+  "tiempo",
+  "sugerencia",
+]);
+
+export function responderConReglasPrioritarias(
+  mensaje,
+  recetaActiva = null,
+  pasoActualIndex = null,
+  recetasExternas = []
+) {
+  const normalizado = normalizar(mensaje);
+  if (INTENCIONES_PRIORITARIAS.has(detectarIntencion(normalizado)) || extraerConsultaIngrediente(normalizado)) {
+    return generarRespuesta(mensaje, recetaActiva, pasoActualIndex, recetasExternas);
+  }
+  return null;
 }
 
 export default generarRespuesta;

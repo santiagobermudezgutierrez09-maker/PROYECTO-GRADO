@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/aut
 import { auth } from "./firebaseAuth";
 import { mensajeErrorAuth } from "./mensajesAuth";
 
-function Login() {
+function Login({ onLoginStart }) {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -12,6 +12,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setMensaje("");
+    onLoginStart?.();
     try {
       await signInWithEmailAndPassword(auth, correo, clave);
       setMensaje("¡Sesión iniciada!");

@@ -10,6 +10,10 @@ const FRASES = [
   "¡Cocinar con calma es lo mejor! ✨",
 ];
 
+const MODO_CAPTURA = import.meta.env.DEV &&
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).has("capturarDona");
+
 const mat = (color, extra = {}) =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.5, ...extra });
 
@@ -21,6 +25,7 @@ export default function Mascota({
   variante = "",
 }) {
   const mountRef = useRef(null);
+  const rendererRef = useRef(null);
   const saltoRef = useRef(0);
   const saludoRef = useRef(0);
   const hablandoRef = useRef(hablando);
@@ -49,7 +54,12 @@ export default function Mascota({
     const camera = new THREE.PerspectiveCamera(40, w0 / h0, 0.1, 100);
     camera.position.set(0, 0, 7.4);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      preserveDrawingBuffer: MODO_CAPTURA,
+    });
+    rendererRef.current = renderer;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w0, h0);
     el.appendChild(renderer.domElement);
@@ -306,6 +316,7 @@ export default function Mascota({
         if (obj.material) obj.material.dispose();
       });
       renderer.dispose();
+      rendererRef.current = null;
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
   }, []);
@@ -317,6 +328,27 @@ export default function Mascota({
     alClic?.(); // avisa al asistente para abrir/cerrar el chat
   };
 
+  const descargarCaptura = () => {
+    const frame = rendererRef.current?.domElement.toDataURL("image/png");
+    if (!frame) return;
+    const imagen = new Image();
+    imagen.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 96;
+      canvas.height = 96;
+      const contexto = canvas.getContext("2d");
+      if (!contexto) return;
+      contexto.imageSmoothingEnabled = true;
+      contexto.imageSmoothingQuality = "high";
+      contexto.drawImage(imagen, 0, 0, 96, 96);
+      const enlace = document.createElement("a");
+      enlace.download = "logo-dona.png";
+      enlace.href = canvas.toDataURL("image/png");
+      enlace.click();
+    };
+    imagen.src = frame;
+  };
+
   return (
     // 🍩 NUEVO: se agrega la variante como clase extra
     <div className={`mascota-wrap ${variante}`}>
@@ -324,6 +356,11 @@ export default function Mascota({
       <div className={`mascota-burbuja ${verBurbuja ? "" : "oculta"}`}>
         {textoBurbuja}
       </div>
+      {MODO_CAPTURA && (
+        <button type="button" className="mascota-captura" onClick={descargarCaptura}>
+          Descargar PNG 96×96
+        </button>
+      )}
     </div>
   );
 }

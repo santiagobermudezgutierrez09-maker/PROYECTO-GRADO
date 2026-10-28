@@ -1,35 +1,57 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth } from "./firebaseAuth";
 import { db } from "./firebase";
 import { mensajeErrorAuth } from "./mensajesAuth";
 
-function Register() {
+function Register({
+  onRegistrationStart,
+  onRegistrationEnd,
+  onRegistrationCreated,
+  onGoToLogin,
+}) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState("error");
+  const [registroCorrecto, setRegistroCorrecto] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setMensaje("");
+    setRegistroCorrecto(false);
+    onRegistrationStart?.();
+    let usuarioCreado = null;
     try {
       const resultado = await createUserWithEmailAndPassword(auth, correo, clave);
       const usuario = resultado.user;
-
+      usuarioCreado = usuario;
 
       await setDoc(doc(db, "usuarios", usuario.uid), {
         nombre: nombre,
         correo: correo,
       });
 
-      setMensaje("¡Cuenta creada con éxito!");
-      setTipoMensaje("success");
+      onRegistrationCreated?.(usuario.uid);
+      await signOut(auth);
+      setRegistroCorrecto(true);
     } catch (error) {
+      if (usuarioCreado && auth.currentUser?.uid === usuarioCreado.uid) {
+        try {
+          await signOut(auth);
+        } catch (errorCierre) {
+          console.error("No se pudo cerrar la sesión temporal tras el registro.", errorCierre);
+          setMensaje("La cuenta se creó, pero no pudimos cerrar la sesión automáticamente. Vuelve a iniciar sesión para continuar.");
+          setTipoMensaje("error");
+          return;
+        }
+      }
       setMensaje(mensajeErrorAuth(error));
       setTipoMensaje("error");
+    } finally {
+      onRegistrationEnd?.();
     }
   };
 
@@ -39,6 +61,18 @@ function Register() {
     setMensaje("Completa los campos obligatorios con datos válidos.");
     setTipoMensaje("error");
   };
+
+  if (registroCorrecto) {
+    return (
+      <div className="auth-form-content auth-register-success">
+        <h2>Usuario creado correctamente</h2>
+        <p>Tu cuenta está lista. Ahora puedes iniciar sesión con tu correo y contraseña.</p>
+        <button className="auth-submit" type="button" onClick={onGoToLogin}>
+          Ir a iniciar sesión
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-form-content">

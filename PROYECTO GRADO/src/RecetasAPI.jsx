@@ -1,29 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { explicarErrorGemini, traducirReceta } from "./geminiService";
+import { traducirReceta } from "./geminiService";
+import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
 import "./RecetasAPI.css";
-
-const API = "https://www.themealdb.com/api/json/v1/1";
-const TIMEOUT_MS = 10_000;
-
-async function obtenerJsonConTimeout(url) {
-  const controller = new AbortController();
-  let agotado = false;
-  const timeoutId = setTimeout(() => {
-    agotado = true;
-    controller.abort();
-  }, TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    if (agotado) throw new Error("La solicitud tardó más de 10 segundos.");
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
 
 // Nombres de países en español (si falta alguno, se muestra el original)
 const PAISES = {
@@ -77,15 +55,31 @@ function idYoutube(url) {
 }
 
 function obtenerIngredientes(receta) {
-  const lista = [];
+  const ingredientes = new Map();
   for (let i = 1; i <= 20; i++) {
     const nombre = receta[`strIngredient${i}`];
     const medida = receta[`strMeasure${i}`];
     if (nombre && nombre.trim()) {
-      lista.push({ nombre: nombre.trim(), medida: medida ? medida.trim() : "" });
+      const limpio = nombre.trim().replace(/\s+/g, " ");
+      const clave = limpio.toLocaleLowerCase("es").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const cantidad = (medida || "").trim().replace(/\s+/g, " ");
+      const ingrediente = ingredientes.get(clave) || { nombre: limpio, medidas: new Map() };
+      if (cantidad) {
+        const claveCantidad = cantidad
+          .toLocaleLowerCase("es")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        if (!ingrediente.medidas.has(claveCantidad)) {
+          ingrediente.medidas.set(claveCantidad, cantidad);
+        }
+      }
+      ingredientes.set(clave, ingrediente);
     }
   }
-  return lista;
+  return [...ingredientes.values()].map(({ nombre, medidas }) => ({
+    nombre,
+    medida: [...medidas.values()].join(" + "),
+  }));
 }
 
 function dividirPasos(texto) {
@@ -95,18 +89,7 @@ function dividirPasos(texto) {
     .filter((l) => l && !/^step\s*\d+$/i.test(l));
 }
 
-function mensajeErrorTraduccion(e) {
-  const msg = e?.message || "";
-  if (msg.includes("Falta configurar")) {
-    explicarErrorGemini(e);
-    return "Charin no puede conectarse ahora. Inténtalo de nuevo.";
-  }
-  if (msg.includes("429")) return "Muchas peticiones seguidas 😅 Espera un minutito e inténtalo de nuevo.";
-  if (msg.toLowerCase().includes("failed to fetch")) return "Parece que no hay internet 📶";
-  return "Charin no pudo traducir esta receta ahora mismo. Inténtalo de nuevo.";
-}
-
-function RecetasAPI() {
+function RecetasAPI({ postreInicialId = "" }) {
   const [lista, setLista] = useState([]);
   const [cargandoLista, setCargandoLista] = useState(true);
   const [error, setError] = useState("");
@@ -118,7 +101,7 @@ function RecetasAPI() {
   const [errorDetalle, setErrorDetalle] = useState("");
   const [idDetalleFallido, setIdDetalleFallido] = useState(null);
 
-  const [traducciones, setTraducciones] = useState({}); // guardadas por idMeal
+  const [traducciones, setTraducciones] = useState({});
   const [traduciendo, setTraduciendo] = useState(false);
   const [errorTraduccion, setErrorTraduccion] = useState("");
   const [idioma, setIdioma] = useState("original"); // "original" | "es"
@@ -130,13 +113,12 @@ function RecetasAPI() {
     setCargandoLista(true);
     setError("");
     try {
-      const d = await obtenerJsonConTimeout(`${API}/filter.php?c=Dessert`);
-      setLista(d.meals || []);
-    } catch (e) {
+      setLista(await obtenerPostres());
+    } catch (errorCarga) {
       setError(
-        e.message?.includes("10 segundos")
-          ? "La búsqueda de postres tardó más de 10 segundos."
-          : "No se pudo conectar con los postres. Revisa tu conexión a internet."
+        errorCarga.message.includes("8 segundos")
+          ? "La conexión está tardando más de lo esperado. Vuelve a intentarlo en un momento."
+          : "No pudimos cargar los postres del mundo. Revisa tu conexión y vuelve a intentarlo."
       );
     } finally {
       setCargandoLista(false);
@@ -150,7 +132,7 @@ function RecetasAPI() {
   /* ---------- Subir al inicio al abrir un postre ---------- */
   useEffect(() => {
     if (receta) topRef.current?.scrollIntoView({ block: "start" });
-  }, [receta?.idMeal]);
+  }, [receta]);
 
   /* ---------- Buscador ---------- */
   const visibles = useMemo(() => {
@@ -165,16 +147,14 @@ function RecetasAPI() {
     setErrorDetalle("");
     setIdDetalleFallido(null);
     try {
-      const d = await obtenerJsonConTimeout(`${API}/lookup.php?i=${id}`);
-      if (!d.meals?.[0]) throw new Error();
-      setReceta(d.meals[0]);
+      setReceta(await obtenerDetallePostre(id));
       setIdioma(traducciones[id] ? "es" : "original");
       setErrorTraduccion("");
-    } catch (e) {
+    } catch (errorCarga) {
       setIdDetalleFallido(id);
       setErrorDetalle(
-        e.message?.includes("10 segundos")
-          ? "La receta tardó más de 10 segundos en cargar."
+        errorCarga.message.includes("8 segundos")
+          ? "La conexión está tardando más de lo esperado. Reintenta cargar este postre."
           : "No se pudo cargar el detalle de este postre. Inténtalo de nuevo."
       );
     } finally {
@@ -182,19 +162,41 @@ function RecetasAPI() {
     }
   };
 
+  useEffect(() => {
+    if (!postreInicialId) return undefined;
+    let activo = true;
+    obtenerDetallePostre(postreInicialId)
+      .then((detalle) => {
+        if (!activo) return;
+        setReceta(detalle);
+        setIdioma(traduccionesCache.has(postreInicialId) ? "es" : "original");
+        setErrorTraduccion("");
+      })
+      .catch((errorCarga) => {
+        if (!activo) return;
+        setIdDetalleFallido(postreInicialId);
+        setErrorDetalle(
+          errorCarga.message.includes("8 segundos")
+            ? "La conexión está tardando más de lo esperado. Reintenta cargar este postre."
+            : "No se pudo cargar el detalle de este postre. Inténtalo de nuevo."
+        );
+      })
+      .finally(() => {
+        if (activo) setCargandoDetalle(false);
+      });
+    return () => { activo = false; };
+  }, [postreInicialId]);
+
   /* ---------- Traducir con Charin ---------- */
   const traducir = async () => {
     if (!receta) return;
     const id = receta.idMeal;
-    if (traducciones[id]) {
-      setIdioma("es");
-      return;
-    }
     setTraduciendo(true);
     setErrorTraduccion("");
     try {
       const ing = obtenerIngredientes(receta).map((i) => `${i.medida} ${i.nombre}`.trim());
       const t = await traducirReceta({
+        id,
         nombre: receta.strMeal,
         ingredientes: ing,
         instrucciones: receta.strInstructions || "",
@@ -202,7 +204,12 @@ function RecetasAPI() {
       setTraducciones((prev) => ({ ...prev, [id]: t }));
       setIdioma("es");
     } catch (e) {
-      setErrorTraduccion(mensajeErrorTraduccion(e));
+      console.error("No se pudo traducir la receta.", e);
+      setErrorTraduccion(
+        e?.message?.includes("Falta configurar")
+          ? "La traducción no está configurada en este sitio. Añade VITE_GEMINI_KEY en Vercel → Settings → Environment Variables y vuelve a desplegar."
+          : "Ahora mismo no puedo traducirla, pero puedes consultar la receta original e intentarlo de nuevo."
+      );
     } finally {
       setTraduciendo(false);
     }
@@ -216,6 +223,13 @@ function RecetasAPI() {
     const pasos = mostrarES ? t.pasos : dividirPasos(receta.strInstructions);
     const titulo = mostrarES && t.nombre ? t.nombre : receta.strMeal;
     const idVideo = idYoutube(receta.strYoutube);
+    const tiempoEstimado = Math.max(20, pasos.length * 4);
+    const dificultadEstimada =
+      ingredientes.length > 10 || pasos.length > 9
+        ? "Avanzada"
+        : ingredientes.length > 6 || pasos.length > 5
+          ? "Intermedia"
+          : "Sencilla";
 
     return (
       <div className="ra-contenedor" ref={topRef}>
@@ -232,6 +246,8 @@ function RecetasAPI() {
               <div className="ra-badges">
                 {receta.strCategory && <span className="ra-badge">🍰 {receta.strCategory}</span>}
                 {receta.strArea && <span className="ra-badge">🌎 {nombrePais(receta.strArea)}</span>}
+                <span className="ra-badge">≈ {tiempoEstimado} min</span>
+                <span className="ra-badge">Dificultad {dificultadEstimada}</span>
                 {idVideo && <span className="ra-badge">🎥 Con video</span>}
               </div>
 
@@ -255,6 +271,11 @@ function RecetasAPI() {
                   </button>
                 )}
                 {errorTraduccion && <p className="ra-error-chico">{errorTraduccion}</p>}
+                {errorTraduccion && (
+                  <button className="ra-btn-charin ra-btn-reintentar" onClick={traducir} disabled={traduciendo}>
+                    Reintentar traducción
+                  </button>
+                )}
               </div>
 
               {receta.strYoutube && (
@@ -327,7 +348,7 @@ function RecetasAPI() {
   /* ============================ LISTA ============================ */
   return (
     <div className="ra-contenedor" ref={topRef}>
-      <h2 className="ra-titulo">Explorar más postres</h2>
+      <h2 className="ra-titulo">Postres del mundo</h2>
       <p className="ra-sub">
         {cargandoLista
           ? "Buscando postres deliciosos…"

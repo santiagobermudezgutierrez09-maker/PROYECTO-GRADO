@@ -344,7 +344,7 @@
 }
 
 .tema-cocina .rc-stats > div {
-  background: rgba(244, 169, 140, 0.04);
+  background: color-mix(in srgb, var(--color-primary) 4%, transparent);
 }
 
 .tema-cocina .rc-btn--active {
@@ -489,7 +489,7 @@
 }
 
 .rc-eliminar:hover {
-  background: rgba(247, 198, 199, 0.18);
+  background: color-mix(in srgb, var(--color-secondary) 18%, transparent);
 }
 
 .tema-cocina .rc-eliminar {

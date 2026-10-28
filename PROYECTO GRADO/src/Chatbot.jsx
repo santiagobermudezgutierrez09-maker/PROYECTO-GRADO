@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
-import { generarRespuesta } from "./chatbotEngine";
 import {
-  explicarErrorGemini,
+  extraerConsultaIngrediente,
+  generarRespuesta,
+  responderConReglasPrioritarias,
+} from "./chatbotEngine";
+import { buscarPostresPorIngrediente } from "./mealDbService";
+import {
   limpiarRespuestaChef,
   preguntarChef,
   saludoPorHora,
@@ -28,7 +32,7 @@ const SUGERENCIAS = [
 const ETIQUETAS = {
   reposo: "Toca a Charin o el micrófono para hablar, o escribe abajo",
   escuchando: "Te escucho… habla ahora",
-  pensando: "Charin está pensando…",
+  pensando: "Charin está escribiendo…",
   hablando: "Charin está hablando…",
 };
 
@@ -44,6 +48,7 @@ function ChatDona({ nombreUsuario }) {
   const [vozActiva, setVozActiva] = useState(true);
   const [error, setError] = useState("");
   const [transcripcionParcial, setTranscripcionParcial] = useState("");
+  const [respuestaParcial, setRespuestaParcial] = useState("");
 
   const mensajesRef = useRef(mensajes);
   const estadoRef = useRef("reposo");
@@ -90,6 +95,7 @@ function ChatDona({ nombreUsuario }) {
 
     window.speechSynthesis?.cancel();
     setError("");
+    setRespuestaParcial("");
 
     // El saludo y los errores no se mandan a la IA
     const historial = mensajesRef.current.filter((m) => !m.saludo && !m.error);
@@ -98,25 +104,45 @@ function ChatDona({ nombreUsuario }) {
     setEntrada("");
     cambiarEstado("pensando");
 
-    let respuesta;
-    try {
-      respuesta = limpiarRespuestaChef(
-        await preguntarChef(historial, pregunta, "home", "", nombreUsuario)
-      );
-    } catch (errorGemini) {
-      // Si la IA falla, responde el asistente local para no quedarse callada
-      if (!errorGemini?.message?.includes("superó el límite")) {
-        const mensajeError = explicarErrorGemini(errorGemini);
-        setError(
-          errorGemini?.message?.includes("Falta configurar")
-            ? mensajeError
-            : `${mensajeError} Te doy una respuesta básica por ahora.`
+    let recetasExternas = [];
+    let respuestaLocal = responderConReglasPrioritarias(
+      pregunta,
+      null,
+      null,
+      recetasExternas
+    );
+    const consultaIngrediente = extraerConsultaIngrediente(pregunta);
+    if (respuestaLocal === null && consultaIngrediente) {
+      try {
+        recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
+        respuestaLocal = responderConReglasPrioritarias(
+          pregunta,
+          null,
+          null,
+          recetasExternas
         );
+      } catch {
+        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
       }
-      respuesta = generarRespuesta(pregunta, null, null);
+    }
+
+    let respuesta;
+    if (respuestaLocal !== null) {
+      respuesta = respuestaLocal;
+    } else {
+      try {
+        respuesta = limpiarRespuestaChef(
+          await preguntarChef(historial, pregunta, "home", "", nombreUsuario, setRespuestaParcial)
+        );
+      } catch (errorGemini) {
+        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
+        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
+      }
     }
 
     setTranscripcionParcial("");
+    setRespuestaParcial("");
     setMensajes((m) => [...m, { rol: "bot", texto: respuesta }]);
     hablar(respuesta);
   };
@@ -205,6 +231,9 @@ function ChatDona({ nombreUsuario }) {
             {m.texto}
           </p>
         ))}
+        {estado === "pensando" && (
+          <p className="cb-msg cb-msg--bot">{respuestaParcial || "Charin está escribiendo…"}</p>
+        )}
         <div ref={finRef} />
       </div>
 
@@ -308,6 +337,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
   const [vozActiva, setVozActiva] = useState(true);
   const [error, setError] = useState("");
   const [transcripcionParcial, setTranscripcionParcial] = useState("");
+  const [respuestaParcial, setRespuestaParcial] = useState("");
 
   const finRef = useRef(null);
   const recRef = useRef(null);
@@ -348,6 +378,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
     window.speechSynthesis?.cancel();
     setHablando(false);
     setError("");
+    setRespuestaParcial("");
 
     // El saludo (primer mensaje) no se manda a la IA
     const historial = mensajesRef.current.slice(1).map((m) => ({
@@ -363,31 +394,52 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
     const receta = recetaRef.current;
     const paso = pasoRef.current;
 
-    let respuesta;
-    try {
-      respuesta = limpiarRespuestaChef(
-        await preguntarChef(
-          historial,
+    let recetasExternas = [];
+    let respuestaLocal = responderConReglasPrioritarias(
+      pregunta,
+      receta,
+      paso,
+      recetasExternas
+    );
+    const consultaIngrediente = extraerConsultaIngrediente(pregunta);
+    if (respuestaLocal === null && consultaIngrediente) {
+      try {
+        recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
+        respuestaLocal = responderConReglasPrioritarias(
           pregunta,
-          "cocina",
-          contextoReceta(receta, paso),
-          nombreUsuario
-        )
-      );
-    } catch (errorGemini) {
-      // Si la IA falla, responde el motor de reglas para no quedarse callado
-      if (!errorGemini?.message?.includes("superó el límite")) {
-        const mensajeError = explicarErrorGemini(errorGemini);
-        setError(
-          errorGemini?.message?.includes("Falta configurar")
-            ? mensajeError
-            : `${mensajeError} Te doy una respuesta básica por ahora.`
+          receta,
+          paso,
+          recetasExternas
         );
+      } catch {
+        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
       }
-      respuesta = generarRespuesta(pregunta, receta, paso);
+    }
+
+    let respuesta;
+    if (respuestaLocal !== null) {
+      respuesta = respuestaLocal;
+    } else {
+      try {
+        respuesta = limpiarRespuestaChef(
+          await preguntarChef(
+            historial,
+            pregunta,
+            "cocina",
+            contextoReceta(receta, paso),
+            nombreUsuario,
+            setRespuestaParcial
+          )
+        );
+      } catch (errorGemini) {
+        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
+        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        respuesta = generarRespuesta(pregunta, receta, paso, recetasExternas);
+      }
     }
 
     setTranscripcionParcial("");
+    setRespuestaParcial("");
     setMensajes((m) => [...m, { autor: "bot", texto: respuesta }]);
     pensandoRef.current = false;
     setPensando(false);
@@ -470,7 +522,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
             {m.texto}
           </div>
         ))}
-        {pensando && <div className="cbc-msg cbc-msg--bot">Charin está pensando…</div>}
+        {pensando && <div className="cbc-msg cbc-msg--bot">{respuestaParcial || "Charin está escribiendo…"}</div>}
         <div ref={finRef} />
       </div>
 

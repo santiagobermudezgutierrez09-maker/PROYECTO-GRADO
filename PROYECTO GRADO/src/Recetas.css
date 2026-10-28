@@ -28,9 +28,10 @@
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 15px;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-accent);
   pointer-events: none;
-  opacity: 0.7;
 }
 
 .tema-cocina .recetas-busqueda input {
@@ -55,7 +56,7 @@
 
 .tema-cocina .recetas-btn-filtros.abierto {
   border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--text-on-primary);
 }
 
 .recetas-badge {
@@ -85,23 +86,23 @@
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 999px;
-  background-color: #FFF8EC;
-  border: 1px solid #E8D5B5;
-  color: #4A3428;
+  background-color: var(--bg-page);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .tema-cocina .recetas-chip.activo {
-  background-color: rgba(244, 169, 140, 0.35);
-  color: #4A3428;
-  border-color: #E8896A;
+  background-color: var(--color-primary-soft);
+  color: var(--text-primary);
+  border-color: var(--color-accent);
   font-weight: 700;
   box-shadow: none;
 }
 
 .tema-cocina .recetas-chip:not(.activo):hover {
-  background-color: rgba(244, 169, 140, 0.25);
-  border-color: #E8D5B5;
-  color: #4A3428;
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-accent);
+  color: var(--text-primary);
 }
 
 .tema-cocina .recetas-chip:focus-visible,
@@ -268,7 +269,7 @@
   padding: 16px;
   text-align: left;
   border-radius: 16px;
-  border: 1px solid rgba(244, 169, 140, 0.12);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   background: var(--bg-surface);
   color: var(--text-primary);
   cursor: pointer;
@@ -278,7 +279,7 @@
 .tema-cocina .rec-card:hover {
   transform: translateY(-3px);
   border-color: var(--color-primary, var(--color-primary));
-  box-shadow: 0 8px 22px rgba(74, 52, 40, 0.16);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--bg-dark) 16%, transparent);
 }
 
 .rec-card-emoji {
@@ -312,30 +313,30 @@
 }
 
 .rec-badge--verde {
-  background: rgba(191, 227, 200, 0.18);
+  background: color-mix(in srgb, var(--color-teal) 18%, transparent);
   color: var(--text-primary);
-  border: 1px solid rgba(191, 227, 200, 0.5);
+  border: 1px solid color-mix(in srgb, var(--color-teal) 50%, transparent);
 }
 
 .rec-badge--ambar {
-  background: rgba(244, 169, 140, 0.16);
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
   color: var(--text-primary);
-  border: 1px solid rgba(244, 169, 140, 0.5);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
 }
 
 .rec-card-ver {
   margin-top: auto;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #4A3428;
+  color: var(--text-primary);
   text-decoration: underline;
-  text-decoration-color: #E8896A;
+  text-decoration-color: var(--color-text-accent);
   text-underline-offset: 3px;
 }
 
 .rec-card:hover .rec-card-ver,
 .rec-card:focus-visible .rec-card-ver {
-  color: #A95338;
+  color: var(--color-text-accent);
 }
 
 /* Destacado de postres saludables */
@@ -343,8 +344,8 @@
   margin: 0 0 22px;
   padding: 18px;
   border-radius: 18px;
-  border: 1px solid rgba(191, 227, 200, 0.4);
-  background: linear-gradient(135deg, rgba(191, 227, 200, 0.12), rgba(191, 227, 200, 0.03));
+  border: 1px solid color-mix(in srgb, var(--color-teal) 40%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-teal) 12%, transparent), color-mix(in srgb, var(--color-teal) 3%, transparent));
 }
 
 .rec-destacado-titulo {
@@ -376,7 +377,7 @@
 }
 
 .tema-cocina .rec-chip-verde.activo {
-  background: rgba(191, 227, 200, 0.25);
+  background: color-mix(in srgb, var(--color-teal) 25%, transparent);
   border-color: var(--color-teal);
   color: var(--text-primary);
 }
@@ -431,5 +432,307 @@
 @media (max-width: 380px) {
   .rec-lista {
     grid-template-columns: 1fr;
+  }
+}
+
+.rapidos-hero {
+  margin-bottom: clamp(26px, 4vw, 42px);
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 32%, var(--border-color));
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 92% 10%, color-mix(in srgb, var(--color-secondary) 28%, transparent), transparent 44%),
+    linear-gradient(125deg, var(--bg-surface), color-mix(in srgb, var(--bg-surface) 86%, var(--color-secondary)));
+  box-shadow: var(--shadow-md);
+}
+
+.rec-etiqueta {
+  color: var(--color-text-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.rapidos-hero h2,
+.rec-mundo-heading h2,
+.rec-catalogo-heading h2 {
+  margin: 8px 0 6px;
+  color: var(--text-primary);
+  font-size: clamp(1.7rem, 3vw, 2.45rem);
+  letter-spacing: -0.035em;
+}
+
+.rapidos-hero > p,
+.rec-mundo-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.rapidos-hero .recetas-busqueda {
+  display: block;
+  width: min(100%, 720px);
+  margin-top: 22px;
+}
+
+.tema-cocina .rapidos-hero .recetas-busqueda input {
+  min-height: 58px;
+  padding-left: 52px;
+  border-radius: 16px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 1.05rem;
+}
+
+.rapidos-hero .recetas-categorias {
+  margin: 16px 0 0;
+}
+
+.rec-mundo {
+  margin-bottom: clamp(34px, 5vw, 56px);
+  padding: clamp(18px, 3vw, 32px);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--border-color));
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--color-secondary) 20%, transparent), transparent 40%),
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-surface) 92%, var(--color-secondary)), var(--bg-surface) 60%);
+  box-shadow: var(--shadow-md);
+}
+
+.rec-mundo-heading,
+.rec-catalogo-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.rec-mundo-heading h2,
+.rec-catalogo-heading h2 {
+  margin-top: 7px;
+}
+
+.rec-mundo-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: auto;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 10px 0 10px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-accent);
+  font-weight: 700;
+}
+
+.rec-mundo-enlace:hover {
+  transform: translateX(2px);
+  background: transparent;
+  box-shadow: none;
+}
+
+.rec-mundo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.tema-cocina .rec-mundo-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.tema-cocina .rec-mundo-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md-hover);
+}
+
+.rec-mundo-card img {
+  width: 100%;
+  aspect-ratio: 1.35;
+  object-fit: cover;
+  background: var(--border-color);
+}
+
+.rec-mundo-card-info {
+  display: grid;
+  gap: 10px;
+  min-height: 90px;
+  padding: 15px;
+}
+
+.rec-mundo-card-info strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.rec-mundo-card-info > span {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.rec-mundo-card:focus-visible,
+.tema-cocina .rec-card:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.rec-mundo-error {
+  color: var(--text-secondary);
+}
+
+.rec-mundo-error button {
+  width: auto;
+  margin: 0 0 0 10px;
+  padding: 6px 12px;
+}
+
+.rec-mundo-skeleton {
+  aspect-ratio: 0.9;
+  border-radius: 18px;
+  background: linear-gradient(110deg, var(--bg-surface) 25%, var(--border-color) 45%, var(--bg-surface) 65%);
+  background-size: 220% 100%;
+  animation: rec-brillo 1.3s linear infinite;
+}
+
+@keyframes rec-brillo {
+  to { background-position: -220% 0; }
+}
+
+.rec-catalogo-heading {
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.rec-catalogo-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.tema-cocina .rec-card {
+  min-height: 240px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.rec-card-imagen {
+  display: grid;
+  width: 100%;
+  min-height: 126px;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--color-secondary) 58%, transparent), transparent 45%),
+    linear-gradient(145deg, color-mix(in srgb, var(--color-primary) 16%, var(--bg-surface)), var(--bg-page));
+}
+
+.rec-card-imagen span {
+  font-size: 3.2rem;
+  filter: drop-shadow(0 5px 5px color-mix(in srgb, var(--bg-dark) 18%, transparent));
+  transition: transform 180ms ease;
+}
+
+.rec-card:hover .rec-card-imagen span {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.rec-card-contenido {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  align-content: start;
+  padding: 14px 16px 16px;
+}
+
+.rec-card-meta {
+  margin-bottom: 4px;
+}
+
+.rec-card-ver {
+  margin-top: auto;
+  padding-top: 6px;
+  text-decoration: none;
+}
+
+.recetas-vacio > span {
+  font-size: 2.8rem;
+}
+
+.recetas-vacio button {
+  width: auto;
+}
+
+@media (max-width: 900px) {
+  .rec-mundo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .rapidos-hero {
+    padding: 22px 18px;
+  }
+
+  .rec-mundo-heading,
+  .rec-catalogo-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rec-mundo-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rec-mundo-card {
+    display: grid !important;
+    grid-template-columns: 38% minmax(0, 1fr);
+  }
+
+  .rec-mundo-card img {
+    height: 100%;
+    min-height: 132px;
+    aspect-ratio: auto;
+  }
+
+  .rec-mundo-card-info {
+    min-height: 0;
+    align-content: center;
+    padding: 12px;
+  }
+
+  .rec-mundo-enlace {
+    padding: 8px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-mundo-skeleton {
+    animation: none;
+  }
+  .tema-cocina .rec-mundo-card,
+  .rec-card-imagen span {
+    transition: none;
   }
 }

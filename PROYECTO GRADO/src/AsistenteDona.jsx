@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import MascotaCarga from "./MascotaCarga";
-import { generarRespuesta } from "./chatbotEngine";
 import {
-  explicarErrorGemini,
+  extraerConsultaIngrediente,
+  generarRespuesta,
+  responderConReglasPrioritarias,
+} from "./chatbotEngine";
+import { buscarPostresPorIngrediente } from "./mealDbService";
+import {
   limpiarRespuestaChef,
   preguntarChef,
   saludoPorHora,
@@ -52,6 +56,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
   const [vozActiva, setVozActiva] = useState(true);
   const [error, setError] = useState("");
   const [parcial, setParcial] = useState("");
+  const [respuestaParcial, setRespuestaParcial] = useState("");
 
   const finRef = useRef(null);
   const recRef = useRef(null);
@@ -124,6 +129,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
     window.speechSynthesis?.cancel();
     setHablando(false);
     setError("");
+    setRespuestaParcial("");
 
     // El saludo y los errores no se mandan a la IA
     const historial = mensajesRef.current.filter((m) => !m.saludo && !m.error);
@@ -133,25 +139,45 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
     cargandoRef.current = true;
     setCargando(true);
 
-    let respuesta;
-    try {
-      respuesta = limpiarRespuestaChef(
-        await preguntarChef(historial, pregunta, vistaRef.current, "", nombreUsuario)
-      );
-    } catch (errorGemini) {
-      // Si la IA falla, responde el motor de reglas para no quedarse callada
-      if (!errorGemini?.message?.includes("superó el límite")) {
-        const mensajeError = explicarErrorGemini(errorGemini);
-        setError(
-          errorGemini?.message?.includes("Falta configurar")
-            ? mensajeError
-            : `${mensajeError} Te doy una respuesta básica por ahora.`
+    let recetasExternas = [];
+    let respuestaLocal = responderConReglasPrioritarias(
+      pregunta,
+      null,
+      null,
+      recetasExternas
+    );
+    const consultaIngrediente = extraerConsultaIngrediente(pregunta);
+    if (respuestaLocal === null && consultaIngrediente) {
+      try {
+        recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
+        respuestaLocal = responderConReglasPrioritarias(
+          pregunta,
+          null,
+          null,
+          recetasExternas
         );
+      } catch {
+        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
       }
-      respuesta = generarRespuesta(pregunta);
+    }
+
+    let respuesta;
+    if (respuestaLocal !== null) {
+      respuesta = respuestaLocal;
+    } else {
+      try {
+        respuesta = limpiarRespuestaChef(
+          await preguntarChef(historial, pregunta, vistaRef.current, "", nombreUsuario, setRespuestaParcial)
+        );
+      } catch (errorGemini) {
+        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
+        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
+      }
     }
 
     setParcial("");
+    setRespuestaParcial("");
     setMensajes((m) => [...m, { rol: "bot", texto: respuesta }]);
     cargandoRef.current = false;
     setCargando(false);
@@ -261,7 +287,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
                   : m.texto}
               </div>
             ))}
-            {cargando && <div className="asist-msg bot pensando">Charin está pensando…</div>}
+            {cargando && <div className="asist-msg bot pensando">{respuestaParcial || "Charin está escribiendo…"}</div>}
             <div ref={finRef} />
           </div>
 

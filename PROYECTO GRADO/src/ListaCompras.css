@@ -75,7 +75,7 @@
   padding-right: 4px;
   margin-bottom: 16px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 169, 140, 0.4) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary) 40%, transparent) transparent;
 }
 
 .lc-receta {
@@ -90,12 +90,12 @@
 }
 
 .lc-receta:hover {
-  background: rgba(244, 169, 140, 0.05);
+  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
 }
 
 .lc-receta--on {
-  background: rgba(244, 169, 140, 0.10);
-  border-color: rgba(244, 169, 140, 0.35);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
   color: var(--color-yellow);
 }
 
@@ -130,7 +130,7 @@
   margin: 14px 0 0;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(244, 169, 140, 0.12);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
   color: var(--color-yellow);
   font-size: 14px;
 }
@@ -140,7 +140,7 @@
   height: 5px;
   margin-bottom: 16px;
   border-radius: 999px;
-  background: rgba(244, 169, 140, 0.08);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
   overflow: hidden;
 }
 
@@ -167,13 +167,13 @@
   gap: 12px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(244, 169, 140, 0.04);
+  background: color-mix(in srgb, var(--color-primary) 4%, transparent);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .lc-item:hover {
-  background: rgba(244, 169, 140, 0.07);
+  background: color-mix(in srgb, var(--color-primary) 7%, transparent);
 }
 
 .lc-item--hecho {
@@ -211,7 +211,7 @@
   font: inherit;
   font-size: 16px;
   border-radius: 12px;
-  border: 1px solid rgba(244, 169, 140, 0.18);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
   background: var(--bg-page);
   color: var(--text-primary);
   -webkit-text-fill-color: var(--text-primary);
@@ -273,8 +273,8 @@
   margin: 8px 0;
   padding: 10px 14px;
   border-radius: 12px;
-  background: rgba(191, 227, 200, 0.16);
-  border: 1px solid rgba(191, 227, 200, 0.5);
+  background: color-mix(in srgb, var(--color-teal) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-teal) 50%, transparent);
   color: var(--text-primary);
   font-weight: 700;
   text-align: center;

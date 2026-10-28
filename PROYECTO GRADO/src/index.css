@@ -1,30 +1,21 @@
-/* ============================================================
-   PALETA "CREMA Y PASTEL"
-   Fondo principal ........ #FFF8EC  (crema vainilla)
-   Fondo de tarjetas ...... #FBEFD9  (beige claro)
-   Bordes y detalles ...... #E8D5B5  (beige arena)
-   Color principal ........ #F4A98C  (durazno suave)
-   Hover del principal .... #E8896A  (durazno oscuro)
-   Acento secundario ...... #F7C6C7  (rosa pastel)
-   Acento saludable ....... #BFE3C8  (verde menta suave)
-   Texto principal ........ #4A3428  (café chocolate)
-   Texto secundario ....... #8A6F5C  (café claro)
-   ============================================================ */
-
 :root {
-  --bg-page:    #FFF8EC;
-  --bg-surface: #FBEFD9;
-  --bg-dark:    #4A3428;
+  --bg-page: #f3eee6;
+  --bg-surface: #fffdf8;
+  --bg-dark: #211d19;
 
-  --color-primary:       #F4A98C;
-  --color-primary-hover: #E8896A;
-  --color-secondary:     #F7C6C7;
-  --color-teal:          #BFE3C8;
-  --color-yellow:        #E8896A;
-  --color-pink:          #F7C6C7;
-  --color-lavender:      #F7C6C7;
+  --color-primary: #E8A583;
+  --color-primary-hover: #DE946F;
+  --color-primary-soft: #F4CDB4;
+  --color-accent: #C97B57;
+  --color-text-accent: #A5593B;
+  --text-on-primary: #2A2018;
+  --color-secondary: #c5923b;
+  --color-teal: #3d6652;
+  --color-yellow: #bd8426;
+  --color-pink: var(--color-primary);
+  --color-lavender: #e6d9c7;
 
-  --border-color: #E8D5B5;
+  --border-color: #d7cabb;
   --border-width: 1px;
   --border: var(--border-width) solid var(--border-color);
 
@@ -33,15 +24,15 @@
   --radius-lg: 14px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 2px 10px rgba(74, 52, 40, 0.08);
-  --shadow-md: 0 4px 18px rgba(74, 52, 40, 0.10);
-  --shadow-lg: 0 12px 36px rgba(74, 52, 40, 0.16);
-  --shadow-md-hover: 0 10px 30px rgba(74, 52, 40, 0.16);
+  --shadow-sm: 0 2px 10px rgba(33, 29, 25, 0.08);
+  --shadow-md: 0 4px 18px rgba(33, 29, 25, 0.10);
+  --shadow-lg: 0 12px 36px rgba(33, 29, 25, 0.16);
+  --shadow-md-hover: 0 10px 30px rgba(33, 29, 25, 0.16);
 
   --font: 'DM Sans', sans-serif;
 
-  --text-primary:   #4A3428;
-  --text-secondary: #8A6F5C;
+  --text-primary: #29231e;
+  --text-secondary: #71665b;
 }
 
 * {
@@ -84,12 +75,12 @@ a {
   color: var(--text-primary);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: var(--color-primary-hover);
+  text-decoration-color: var(--color-text-accent);
   text-underline-offset: 3px;
 }
 
 a:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-text-accent);
 }
 
 button {
@@ -97,7 +88,7 @@ button {
   font-weight: 700;
   font-size: 0.95rem;
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-md);
   box-shadow: none;
@@ -112,7 +103,7 @@ button:hover {
   transform: translateY(-1px);
   background-color: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: 0 4px 14px rgba(232, 137, 106, 0.35);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-accent) 24%, transparent);
 }
 
 button:active {
@@ -148,8 +139,8 @@ input::placeholder {
 }
 
 input:focus, select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.35);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 24%, transparent);
 }
 
 select option {
@@ -187,4 +178,26 @@ select option {
   width: 100vw;
   height: 100vh;
   z-index: -1;
+}
+.app-error-boundary {
+  max-width: 620px;
+  margin: 12vh auto;
+  padding: 32px;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 12px 36px rgb(42 32 24 / 10%);
+  text-align: center;
+}
+
+.app-error-boundary button {
+  padding: 10px 18px;
+  color: var(--text-on-primary);
+  background: var(--color-primary);
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }

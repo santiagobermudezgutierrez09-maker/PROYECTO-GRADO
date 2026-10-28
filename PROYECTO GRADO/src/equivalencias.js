@@ -3,12 +3,13 @@
 
 
 const equivalencias = [
-  { original: "mantequilla", sustituto: "aceite de coco" },
-  { original: "leche", sustituto: "bebida de avena" },
-  { original: "huevo", sustituto: "puré de banano" },
-  { original: "huevos", sustituto: "puré de banano" },
-  { original: "azúcar", sustituto: "panela o miel" },
-  { original: "harina", sustituto: "harina de avena" },
+  { original: "azúcar superfino", sustituto: "azúcar granulada común; procésala unos segundos para que quede más fina" },
+  { original: "mantequilla", sustituto: "margarina sin sal en la misma cantidad (o aceite de coco; puede cambiar la textura)" },
+  { original: "leche", sustituto: "bebida de avena o de soya en la misma cantidad" },
+  { original: "huevo", sustituto: "1 cucharada de linaza molida con 3 cucharadas de agua (reposa 5 minutos); para tortas también sirve ¼ taza de puré de banano" },
+  { original: "huevos", sustituto: "1 cucharada de linaza molida con 3 cucharadas de agua por huevo (reposa 5 minutos); para tortas también sirve ¼ taza de puré de banano por huevo" },
+  { original: "azúcar", sustituto: "azúcar granulada común en la misma cantidad; la panela también funciona, pero cambia el sabor y el color" },
+  { original: "harina", sustituto: "harina de avena en la misma cantidad para tortas y pancakes; puede quedar más densa" },
   { original: "crema de leche", sustituto: "yogur griego" },
   { original: "chocolate para cubrir", sustituto: "cacao en polvo con azúcar" },
   { original: "chocolate", sustituto: "cacao en polvo con azúcar" },

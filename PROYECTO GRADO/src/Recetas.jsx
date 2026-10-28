@@ -1,330 +1,247 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import recetas from "./recetasData";
 import RecetaCard from "./RecetaCard";
+import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
 import "./Recetas.css";
 
-const nombresCategorias = {
-  tradicional: "Postres Tradicionales",
-  fitness: "Postres Fitness",
-  especial: "Postres para Fechas Especiales",
-};
-
-// Botones de categoría
-const botonesCategoria = [
-  { valor: "todas", texto: "Todas" },
-  { valor: "tradicional", texto: "Tradicionales" },
-  { valor: "fitness", texto: "Fitness" },
-  { valor: "especial", texto: "Fechas especiales" },
+const FILTROS = [
+  { id: "menos30", texto: "Menos de 30 min" },
+  { id: "sinHorno", texto: "Sin horno" },
+  { id: "fitness", texto: "Fitness" },
+  { id: "faciles", texto: "Fáciles" },
+  { id: "chocolate", texto: "Con chocolate" },
 ];
 
-const normalizar = (t = "") =>
-  t
+const CATEGORIAS = [
+  ["tradicional", "Postres tradicionales"],
+  ["fitness", "Postres fitness"],
+  ["especial", "Para fechas especiales"],
+];
+
+const normalizar = (texto = "") =>
+  texto
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-// Un postre es "saludable" si es fitness, liviano o su dieta lo dice
-const esSaludable = (r) =>
-  r.categoria === "fitness" ||
-  r.calorias <= 200 ||
-  /vegan|saludable|sin azucar|light/.test(normalizar(r.dieta || ""));
+function tiempoPostre(postre) {
+  const pasos = (postre.strInstructions || "").split(/[.!?\n]+/).filter(Boolean);
+  return Math.max(15, Math.ceil(pasos.length * 3));
+}
 
-const esBajaEnCalorias = (r) => r.calorias <= 200;
+function dificultadPostre(postre) {
+  const ingredientes = Array.from({ length: 20 }, (_, i) => postre[`strIngredient${i + 1}`])
+    .filter((nombre) => nombre?.trim()).length;
+  const pasos = (postre.strInstructions || "").split(/[.!?\n]+/).filter(Boolean).length;
+  return ingredientes > 10 || pasos > 9 ? "Avanzada" : ingredientes > 6 || pasos > 5 ? "Intermedia" : "Fácil";
+}
 
-function TarjetaCompacta({ receta, alAbrir }) {
+function TarjetaCatalogo({ receta, alAbrir }) {
   return (
     <button type="button" className="rec-card" onClick={() => alAbrir(receta.id)}>
-      <span className="rec-card-emoji" aria-hidden="true">
-        {receta.emoji || "🍩"}
+      <span className="rec-card-imagen" aria-hidden="true">
+        <span>{receta.emoji || "🍰"}</span>
       </span>
-      <span className="rec-card-nombre">{receta.nombre}</span>
-      <span className="rec-card-meta">
-        ⏱ {receta.tiempo} min · 🔥 {receta.calorias} kcal · {receta.dificultad}
+      <span className="rec-card-contenido">
+        <span className="rec-card-nombre">{receta.nombre}</span>
+        <span className="rec-card-meta">{receta.tiempo} min · Dificultad {receta.dificultad}</span>
+        <span className="rec-card-ver">Ver receta <span aria-hidden="true">→</span></span>
       </span>
-      <span className="rec-badges">
-        {esSaludable(receta) && <span className="rec-badge rec-badge--verde">🌿 Saludable</span>}
-        {esBajaEnCalorias(receta) && (
-          <span className="rec-badge rec-badge--ambar">🔥 Baja en calorías</span>
-        )}
-      </span>
-      <span className="rec-card-ver">Ver cómo se hace →</span>
     </button>
   );
 }
 
 function Recetas({ busquedaInicial = "", irA }) {
-  // Si llegan con el nombre exacto de un postre (por ejemplo desde Fechas), se abre directo
   const coincidenciaInicial = busquedaInicial
     ? recetas.find((r) => normalizar(r.nombre) === normalizar(busquedaInicial))
     : null;
-
   const [busqueda, setBusqueda] = useState(busquedaInicial);
-  const [categoriaActiva, setCategoriaActiva] = useState("todas");
-  const [soloSaludables, setSoloSaludables] = useState(false);
+  const [filtroActivo, setFiltroActivo] = useState("");
   const [recetaAbiertaId, setRecetaAbiertaId] = useState(coincidenciaInicial?.id ?? null);
-
-  const [tiempoMax, setTiempoMax] = useState("todos");
-  const [dificultad, setDificultad] = useState("todas");
-  const [dieta, setDieta] = useState("todas");
-  const [caloriasMax, setCaloriasMax] = useState("todas");
-  const [mostrarFiltros, setMostrarFiltros] = useState(false);
-
+  const [postresMundo, setPostresMundo] = useState([]);
+  const [cargandoMundo, setCargandoMundo] = useState(true);
+  const [errorMundo, setErrorMundo] = useState("");
+  const [intento, setIntento] = useState(0);
   const inicioRef = useRef(null);
 
-  // Al abrir o cerrar una receta, vuelve arriba para verla desde el principio
   useEffect(() => {
     inicioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [recetaAbiertaId]);
 
-  const recetaAbierta = recetas.find((r) => r.id === recetaAbiertaId);
+  useEffect(() => {
+    let activo = true;
+    async function cargarDestacados() {
+      setCargandoMundo(true);
+      setErrorMundo("");
+      try {
+        const lista = await obtenerPostres();
+        const respuestas = await Promise.allSettled(
+          lista.slice(0, 6).map((postre) => obtenerDetallePostre(postre.idMeal))
+        );
+        if (!activo) return;
+        const cargados = respuestas
+          .filter((r) => r.status === "fulfilled")
+          .map((r) => r.value);
+        setPostresMundo(cargados);
+        if (!cargados.length) setErrorMundo("No pudimos cargar los postres del mundo ahora mismo.");
+        else if (cargados.length < respuestas.length) setErrorMundo("Algunos postres no están disponibles por ahora.");
+      } catch {
+        if (activo) setErrorMundo("No pudimos conectar con los postres del mundo. Inténtalo otra vez.");
+      } finally {
+        if (activo) setCargandoMundo(false);
+      }
+    }
+    cargarDestacados();
+    return () => { activo = false; };
+  }, [intento]);
 
-  /* ---------- Vista de detalle: cómo se hace ---------- */
+  const recetaAbierta = recetas.find((r) => r.id === recetaAbiertaId);
+  const termino = normalizar(busqueda);
+  const postresVisibles = useMemo(
+    () => postresMundo.filter((p) => {
+      if (!termino) return true;
+      const ingredientes = Array.from({ length: 20 }, (_, i) => p[`strIngredient${i + 1}`] || "").join(" ");
+      return normalizar(`${p.strMeal} ${ingredientes}`).includes(termino);
+    }),
+    [postresMundo, termino]
+  );
+
+  const recetasVisibles = useMemo(() => recetas.filter((receta) => {
+    const coincideBusqueda = !termino ||
+      normalizar(receta.nombre).includes(termino) ||
+      receta.ingredientes.some((ing) => normalizar(ing).includes(termino));
+    if (!coincideBusqueda) return false;
+    if (filtroActivo === "menos30") return receta.tiempo < 30;
+    if (filtroActivo === "sinHorno") return !receta.pasos.some((paso) => /horno|hornea|hornear/i.test(paso));
+    if (filtroActivo === "fitness") return receta.categoria === "fitness";
+    if (filtroActivo === "faciles") return receta.dificultad === "fácil";
+    if (filtroActivo === "chocolate") return /chocolate|cacao/i.test(`${receta.nombre} ${receta.ingredientes.join(" ")}`);
+    return true;
+  }), [termino, filtroActivo]);
+
   if (recetaAbierta) {
     return (
       <div className="recetas" ref={inicioRef}>
         <div className="rec-detalle-barra">
           <button type="button" className="rec-volver" onClick={() => setRecetaAbiertaId(null)}>
-            ← Volver a buscar postres
+            ← Volver a Postres rápidos
           </button>
-          {irA && (
-            <button
-              type="button"
-              className="rec-cocinar"
-              onClick={() => irA("cocina", String(recetaAbierta.id))}
-            >
-              🔥 Cocinar paso a paso
-            </button>
-          )}
+          <button type="button" className="rec-cocinar" onClick={() => irA?.("cocina", String(recetaAbierta.id))}>
+            Cocinar ahora
+          </button>
         </div>
-
         <RecetaCard receta={recetaAbierta} />
-
-        {irA && (
-          <div className="rec-detalle-barra rec-detalle-barra--pie">
-            <button
-              type="button"
-              className="rec-cocinar"
-              onClick={() => irA("cocina", String(recetaAbierta.id))}
-            >
-              🔥 Cocinar paso a paso
-            </button>
-          </div>
-        )}
       </div>
     );
   }
 
-  /* ---------- Lista ---------- */
-  const termino = normalizar(busqueda);
-
-  let resultado = recetas.filter(
-    (r) =>
-      normalizar(r.nombre).includes(termino) ||
-      (termino.length > 2 && r.ingredientes.some((ing) => normalizar(ing).includes(termino)))
-  );
-
-  if (categoriaActiva !== "todas") {
-    resultado = resultado.filter((r) => r.categoria === categoriaActiva);
-  }
-  if (soloSaludables) {
-    resultado = resultado.filter(esSaludable);
-  }
-  if (tiempoMax !== "todos") {
-    resultado = resultado.filter((r) => r.tiempo <= Number(tiempoMax));
-  }
-  if (dificultad !== "todas") {
-    resultado = resultado.filter((r) => r.dificultad === dificultad);
-  }
-  if (dieta !== "todas") {
-    resultado = resultado.filter((r) => r.dieta === dieta);
-  }
-  if (caloriasMax !== "todas") {
-    resultado = resultado.filter((r) => r.calorias <= Number(caloriasMax));
-  }
-
-  const categorias = ["tradicional", "fitness", "especial"];
-
-  const limpiarFiltros = () => {
-    setBusqueda("");
-    setCategoriaActiva("todas");
-    setSoloSaludables(false);
-    setTiempoMax("todos");
-    setDificultad("todas");
-    setDieta("todas");
-    setCaloriasMax("todas");
-  };
-
-  // Cuántos filtros avanzados están puestos (para el aviso en el botón)
-  const filtrosAvanzadosActivos = [
-    tiempoMax !== "todos",
-    dificultad !== "todas",
-    dieta !== "todas",
-    caloriasMax !== "todas",
-  ].filter(Boolean).length;
-
-  const sinFiltros =
-    !busqueda.trim() &&
-    categoriaActiva === "todas" &&
-    !soloSaludables &&
-    filtrosAvanzadosActivos === 0;
-
-  const destacadas = recetas.filter(esSaludable).slice(0, 6);
-
   return (
     <div className="recetas" ref={inicioRef}>
-      {/* Barra de búsqueda y botón de filtros */}
-      <div className="recetas-barra">
-        <div className="recetas-busqueda">
-          <span className="recetas-busqueda-icono" aria-hidden="true">🔍</span>
+      <section className="rapidos-hero">
+        <span className="rec-etiqueta">Inspiración para cualquier antojo</span>
+        <h2>Postres rápidos</h2>
+        <p>Busca una idea y encuentra algo rico para preparar sin complicarte.</p>
+        <label className="recetas-busqueda">
+          <svg className="recetas-busqueda-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="10.5" cy="10" r="6.5" />
+            <path d="m15.5 15 5 5M8.2 10h4.6M8.7 12.2h3.6M9 8.6c.4-.7 1.7-.7 2 0" />
+          </svg>
           <input
-            type="text"
-            placeholder="Buscar postre o ingrediente..."
-            aria-label="Buscar postre"
+            type="search"
+            placeholder="Buscar por postre o ingrediente..."
+            aria-label="Buscar postre o ingrediente"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
-        </div>
-
-        <button
-          className={`recetas-btn-filtros ${mostrarFiltros ? "abierto" : ""}`}
-          onClick={() => setMostrarFiltros((v) => !v)}
-          aria-expanded={mostrarFiltros}
-        >
-          {mostrarFiltros ? "Ocultar filtros avanzados ▲" : "Filtros avanzados ▾"}
-          {filtrosAvanzadosActivos > 0 && (
-            <span className="recetas-badge">{filtrosAvanzadosActivos}</span>
-          )}
-        </button>
-      </div>
-
-      {/* Categorías */}
-      <div className="recetas-categorias" role="group" aria-label="Categorías">
-        {botonesCategoria.map((b) => (
-          <button
-            key={b.valor}
-            className={`recetas-chip ${categoriaActiva === b.valor ? "activo" : ""}`}
-            onClick={() => setCategoriaActiva(b.valor)}
-            aria-pressed={categoriaActiva === b.valor}
-          >
-            {b.texto}
-          </button>
-        ))}
-        <button
-          className={`recetas-chip rec-chip-verde ${soloSaludables ? "activo" : ""}`}
-          onClick={() => setSoloSaludables((v) => !v)}
-          aria-pressed={soloSaludables}
-        >
-          🌿 Saludables
-        </button>
-      </div>
-
-      {/* Filtros avanzados */}
-      {mostrarFiltros && (
-        <div className="card recetas-filtros">
-          <div className="recetas-campo">
-            <label htmlFor="f-tiempo">Tiempo máximo</label>
-            <select id="f-tiempo" value={tiempoMax} onChange={(e) => setTiempoMax(e.target.value)}>
-              <option value="todos">Todos</option>
-              <option value="20">Hasta 20 min</option>
-              <option value="40">Hasta 40 min</option>
-              <option value="60">Hasta 60 min</option>
-              <option value="90">Hasta 90 min</option>
-            </select>
-          </div>
-
-          <div className="recetas-campo">
-            <label htmlFor="f-dificultad">Dificultad</label>
-            <select id="f-dificultad" value={dificultad} onChange={(e) => setDificultad(e.target.value)}>
-              <option value="todas">Todas</option>
-              <option value="fácil">Fácil</option>
-              <option value="media">Media</option>
-              <option value="difícil">Difícil</option>
-            </select>
-          </div>
-
-          <div className="recetas-campo">
-            <label htmlFor="f-dieta">Tipo de dieta</label>
-            <select id="f-dieta" value={dieta} onChange={(e) => setDieta(e.target.value)}>
-              <option value="todas">Todas</option>
-              <option value="vegetariana">Vegetariana</option>
-              <option value="alta en proteína">Alta en proteína</option>
-              <option value="estándar">Estándar</option>
-            </select>
-          </div>
-
-          <div className="recetas-campo">
-            <label htmlFor="f-calorias">Calorías máximas</label>
-            <select id="f-calorias" value={caloriasMax} onChange={(e) => setCaloriasMax(e.target.value)}>
-              <option value="todas">Todas</option>
-              <option value="200">Hasta 200 kcal</option>
-              <option value="300">Hasta 300 kcal</option>
-              <option value="400">Hasta 400 kcal</option>
-              <option value="500">Hasta 500 kcal</option>
-            </select>
-          </div>
-
-          <div className="recetas-campo recetas-campo-boton">
-            <button onClick={limpiarFiltros}>Limpiar filtros</button>
-          </div>
-        </div>
-      )}
-
-      {/* Destacado: postres saludables */}
-      {sinFiltros && destacadas.length > 0 && (
-        <section className="rec-destacado">
-          <div className="rec-destacado-titulo">
-            <h3>🌿 Postres saludables y livianos</h3>
-            <button type="button" onClick={() => setSoloSaludables(true)}>
-              Ver todos
+        </label>
+        <div className="recetas-categorias" role="group" aria-label="Filtros de postres rápidos">
+          {FILTROS.map((filtro) => (
+            <button
+              type="button"
+              key={filtro.id}
+              className={`recetas-chip ${filtroActivo === filtro.id ? "activo" : ""}`}
+              aria-pressed={filtroActivo === filtro.id}
+              onClick={() => setFiltroActivo((actual) => actual === filtro.id ? "" : filtro.id)}
+            >
+              {filtro.texto}
             </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="rec-mundo" aria-labelledby="rec-mundo-titulo">
+        <div className="rec-mundo-heading">
+          <div>
+            <span className="rec-etiqueta">Selección internacional · TheMealDB</span>
+            <h2 id="rec-mundo-titulo">Postres del mundo</h2>
+            <p>Ideas con fotos, sabores y recetas de distintos rincones del mundo.</p>
           </div>
-          <p className="rec-destacado-sub">
-            Opciones con pocas calorías, sin tanto azúcar y muy ricas.
+          <button type="button" className="rec-mundo-enlace" onClick={() => irA?.("api")}>
+            Explorar colección completa <span aria-hidden="true">→</span>
+          </button>
+        </div>
+        {errorMundo && (
+          <p className="rec-mundo-error" role="status">
+            {errorMundo}
+            {!postresMundo.length && <button type="button" onClick={() => setIntento((n) => n + 1)}>Reintentar</button>}
           </p>
-          <div className="rec-lista">
-            {destacadas.map((r) => (
-              <TarjetaCompacta key={r.id} receta={r} alAbrir={setRecetaAbiertaId} />
+        )}
+        {cargandoMundo ? (
+          <div className="rec-mundo-grid" aria-label="Cargando postres del mundo">
+            {Array.from({ length: 4 }, (_, i) => <div className="rec-mundo-skeleton" key={i} />)}
+          </div>
+        ) : postresVisibles.length > 0 ? (
+          <div className="rec-mundo-grid">
+            {postresVisibles.map((postre) => (
+              <button
+                type="button"
+                className="rec-mundo-card"
+                key={postre.idMeal}
+                onClick={() => irA?.("api", postre.idMeal)}
+              >
+                <img src={postre.strMealThumb} alt="" loading="lazy" />
+                <span className="rec-mundo-card-info">
+                  <strong>{postre.strMeal}</strong>
+                  <span>{`≈ ${tiempoPostre(postre)} min · Dificultad ${dificultadPostre(postre).toLowerCase()}`}</span>
+                </span>
+              </button>
             ))}
           </div>
-        </section>
-      )}
+        ) : !errorMundo ? (
+          <p className="rec-mundo-error">No encontramos postres del mundo con esa búsqueda.</p>
+        ) : null}
+      </section>
 
-      {/* Cantidad de resultados */}
-      <p className="recetas-conteo">
-        {resultado.length === 1 ? "1 receta" : `${resultado.length} recetas`}
-      </p>
-
-      {/* Sin resultados */}
-      {resultado.length === 0 && (
-        <div className="card recetas-vacio">
-          <p>No se encontraron recetas con esos filtros.</p>
-          <button onClick={limpiarFiltros}>Limpiar filtros</button>
+      <section className="rec-catalogo">
+        <div className="rec-catalogo-heading">
+          <div>
+            <span className="rec-etiqueta">Recetas de Charin Cook</span>
+            <h2>Nuestro catálogo</h2>
+          </div>
+          <p>{recetasVisibles.length} {recetasVisibles.length === 1 ? "receta" : "recetas"}</p>
         </div>
-      )}
-
-      {/* Recetas agrupadas por categoría */}
-      {categorias
-        .filter((cat) => categoriaActiva === "todas" || categoriaActiva === cat)
-        .map((cat) => {
-          const recetasDeCategoria = resultado.filter((r) => r.categoria === cat);
-          if (recetasDeCategoria.length === 0) return null;
-
-          return (
-            <section key={cat} className="recetas-seccion">
-              <div className="recetas-seccion-titulo">
-                <h3>{nombresCategorias[cat]}</h3>
-                <span>{recetasDeCategoria.length}</span>
-              </div>
-
-              <div className="rec-lista">
-                {recetasDeCategoria.map((receta) => (
-                  <TarjetaCompacta key={receta.id} receta={receta} alAbrir={setRecetaAbiertaId} />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+        {recetasVisibles.length === 0 ? (
+          <div className="card recetas-vacio">
+            <span aria-hidden="true">🍮</span>
+            <p>No encontramos recetas con ese filtro.</p>
+            <button type="button" onClick={() => { setBusqueda(""); setFiltroActivo(""); }}>Ver todos los postres</button>
+          </div>
+        ) : (
+          CATEGORIAS.map(([categoria, nombre]) => {
+            const grupo = recetasVisibles.filter((receta) => receta.categoria === categoria);
+            if (!grupo.length) return null;
+            return (
+              <section key={categoria} className="recetas-seccion">
+                <div className="recetas-seccion-titulo"><h3>{nombre}</h3><span>{grupo.length}</span></div>
+                <div className="recetas-grid">
+                  {grupo.map((receta) => <TarjetaCatalogo key={receta.id} receta={receta} alAbrir={setRecetaAbiertaId} />)}
+                </div>
+              </section>
+            );
+          })
+        )}
+      </section>
     </div>
   );
 }

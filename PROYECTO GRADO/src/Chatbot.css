@@ -63,23 +63,23 @@
   position: absolute;
   inset: 6%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(244, 169, 140, 0.28), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 28%, transparent), transparent 70%);
   z-index: -1;
   transition: background 0.3s ease;
 }
 
 .cb-escuchando .cb-muneco::before {
-  background: radial-gradient(circle, rgba(191, 227, 200, 0.45), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-teal) 45%, transparent), transparent 70%);
   animation: cb-halo 1.4s ease-in-out infinite;
 }
 
 .cb-pensando .cb-muneco::before {
-  background: radial-gradient(circle, rgba(244, 169, 140, 0.45), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 45%, transparent), transparent 70%);
   animation: cb-halo 1s ease-in-out infinite;
 }
 
 .cb-hablando .cb-muneco::before {
-  background: radial-gradient(circle, rgba(247, 198, 199, 0.42), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-secondary) 42%, transparent), transparent 70%);
   animation: cb-halo 0.7s ease-in-out infinite;
 }
 
@@ -111,7 +111,7 @@
   gap: 8px;
   padding: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 169, 140, 0.4) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary) 40%, transparent) transparent;
 }
 
 .cb-msg {
@@ -134,8 +134,8 @@
 
 .cb-msg--user {
   align-self: flex-end;
-  background: rgba(244, 169, 140, 0.16);
-  border: 1px solid rgba(244, 169, 140, 0.35);
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
   color: var(--color-yellow);
   border-bottom-right-radius: 4px;
 }
@@ -160,7 +160,7 @@
   margin: 0;
   padding: 8px 14px;
   border-radius: 10px;
-  background: rgba(247, 198, 199, 0.12);
+  background: color-mix(in srgb, var(--color-secondary) 12%, transparent);
   color: var(--text-primary);
   font-size: 14px;
 }
@@ -179,7 +179,7 @@
 }
 
 .tema-cocina .cb-controles {
-  background: linear-gradient(180deg, rgba(255, 248, 236, 0), rgba(255, 248, 236, 0.96) 35%);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-page) 96%, transparent) 35%);
 }
 
 .cb-form {
@@ -230,9 +230,9 @@
 }
 
 .tema-cocina .cb-mic--on {
-  background: rgba(191, 227, 200, 0.18);
+  background: color-mix(in srgb, var(--color-teal) 18%, transparent);
   border-color: var(--color-teal);
-  box-shadow: 0 0 0 6px rgba(191, 227, 200, 0.14);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-teal) 14%, transparent);
 }
 
 .tema-cocina .cb-voz {
@@ -327,7 +327,7 @@
   margin-bottom: 12px;
   padding: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 169, 140, 0.4) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary) 40%, transparent) transparent;
 }
 
 .cbc-msg {
@@ -347,8 +347,8 @@
 
 .cbc-msg--usuario {
   align-self: flex-end;
-  background: rgba(244, 169, 140, 0.16);
-  border: 1px solid rgba(244, 169, 140, 0.35);
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
   color: var(--color-yellow);
 }
 
@@ -393,9 +393,9 @@
   color: inherit;
 }
 .tema-cocina .cbc-form .cbc-icono--on {
-  background: rgba(191, 227, 200, 0.18);
+  background: color-mix(in srgb, var(--color-teal) 18%, transparent);
   border-color: var(--color-teal);
-  box-shadow: 0 0 0 5px rgba(191, 227, 200, 0.14);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-teal) 14%, transparent);
 }
 .tema-cocina .cbc-form button:disabled {
   opacity: 0.5;

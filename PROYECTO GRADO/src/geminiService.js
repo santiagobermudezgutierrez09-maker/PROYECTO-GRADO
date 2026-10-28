@@ -1,14 +1,41 @@
 const KEY = import.meta.env.VITE_GEMINI_KEY;
 const MODEL = "gemini-3.5-flash-lite";
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 20_000;
+const CHAT_TIMEOUT_MS = 6_000;
+const TRADUCCION_CACHE_PREFIX = "charinCook:traduccion:v1:";
+const TRADUCCION_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const traduccionesCache = new Map();
+const traduccionesPendientes = new Map();
 
-async function obtenerRespuestaGemini(url, body) {
+class ErrorGemini extends Error {
+  constructor(status, responseBody, message) {
+    super(message);
+    this.name = "ErrorGemini";
+    this.status = status;
+    this.responseBody = responseBody;
+  }
+}
+
+function registrarErrorGemini(error) {
+  console.error("Fallo en la solicitud a Gemini.", {
+    status: error?.status ?? null,
+    responseBody: error?.responseBody || error?.message || "Sin cuerpo de respuesta HTTP.",
+  });
+}
+
+function extraerTexto(data) {
+  return data.candidates?.[0]?.content?.parts
+    ?.map((parte) => parte.text || "")
+    .join("") || "";
+}
+
+async function solicitarGemini(url, body, timeoutMs, { streaming = false, onChunk } = {}) {
   const controller = new AbortController();
   let agotado = false;
-  const timeoutId = setTimeout(() => {
+  const timeoutId = globalThis.setTimeout(() => {
     agotado = true;
     controller.abort();
-  }, TIMEOUT_MS);
+  }, timeoutMs);
 
   try {
     const res = await fetch(url, {
@@ -17,20 +44,220 @@ async function obtenerRespuestaGemini(url, body) {
       body: JSON.stringify(body),
       signal: controller.signal,
     });
-    if (!res.ok) throw new Error("Error " + res.status);
-    return await res.json();
+    if (!res.ok) {
+      const responseBody = await res.text();
+      throw new ErrorGemini(
+        res.status,
+        responseBody,
+        `Gemini HTTP ${res.status}: ${responseBody || res.statusText}`
+      );
+    }
+
+    if (!streaming) return await res.json();
+    if (!res.body?.getReader) {
+      const data = await res.json();
+      const text = extraerTexto(data);
+      if (!text) throw new ErrorGemini(res.status, "", "Gemini respondió sin texto.");
+      onChunk?.(text);
+      return text;
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let respuesta = "";
+    let falloParseo;
+
+    const procesarEventos = (bloque, ultimo = false) => {
+      const eventos = bloque.split(/\r?\n\r?\n/);
+      buffer = ultimo ? "" : eventos.pop() || "";
+      for (const evento of eventos) {
+        const datos = evento
+          .split(/\r?\n/)
+          .filter((linea) => linea.startsWith("data:"))
+          .map((linea) => linea.slice(5).trim())
+          .join("\n");
+        if (!datos || datos === "[DONE]") continue;
+        try {
+          const objeto = JSON.parse(datos);
+          const fragmento = extraerTexto(objeto);
+          if (fragmento) {
+            respuesta += fragmento;
+            onChunk?.(respuesta);
+          }
+        } catch (error) {
+          falloParseo = error;
+        }
+      }
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      procesarEventos(buffer);
+    }
+    buffer += decoder.decode();
+    if (buffer.trim()) procesarEventos(`${buffer}\n\n`, true);
+    if (falloParseo) throw new ErrorGemini(res.status, "", "La respuesta de Gemini llegó con formato inválido.");
+    if (!respuesta.trim()) throw new ErrorGemini(res.status, "", "Gemini respondió sin texto.");
+    return respuesta;
   } catch (error) {
-    if (agotado) throw new Error("La solicitud a Gemini superó el límite de 10 segundos.");
-    throw error;
+    const fallo = agotado
+      ? new ErrorGemini(null, "", `Gemini no respondió dentro de ${timeoutMs / 1000} segundos.`)
+      : error instanceof ErrorGemini
+        ? error
+        : new ErrorGemini(null, "", error?.message || "Error de red al conectar con Gemini.");
+    registrarErrorGemini(fallo);
+    throw fallo;
   } finally {
-    clearTimeout(timeoutId);
+    globalThis.clearTimeout(timeoutId);
   }
 }
 
-const BASE = `Eres Charin, una dona chef amable, alegre y paciente que vive en la app "Charin Cook".
-Ayudas con recetas, ingredientes, sustituciones, técnicas y tiempos, incluidos platos colombianos.
-Contesta primero la pregunta concreta, con calidez y sin saludos o frases repetidas. Para dudas sencillas usa 2-4 frases; amplía si piden detalle. Habla con frases naturales y fáciles de escuchar. Interpreta errores pequeños del dictado usando el contexto; si no puedes saber qué quiso decir, pregunta en vez de adivinar.
-Si piden una receta, ofrece ingredientes y pasos breves. No uses títulos ni formato recargado. Puedes usar un emoji ocasional. Mantén el foco en cocina; si no sabes algo o la pregunta es ajena, dilo con amabilidad.`;
+function traduccionValida(resultado) {
+  return (
+    resultado &&
+    typeof resultado.nombre === "string" &&
+    Array.isArray(resultado.ingredientes) &&
+    resultado.ingredientes.every((item) => typeof item === "string") &&
+    Array.isArray(resultado.pasos) &&
+    resultado.pasos.every((item) => typeof item === "string")
+  );
+}
+
+function leerTraduccionCache(id) {
+  if (!id) return null;
+  const cacheada = traduccionesCache.get(id);
+  if (cacheada) return cacheada;
+
+  try {
+    const bruto = globalThis.localStorage?.getItem(`${TRADUCCION_CACHE_PREFIX}${id}`);
+    if (!bruto) return null;
+    const guardada = JSON.parse(bruto);
+    if (
+      !Number.isFinite(guardada.timestamp) ||
+      Date.now() - guardada.timestamp > TRADUCCION_CACHE_TTL_MS ||
+      !traduccionValida(guardada.traduccion)
+    ) {
+      globalThis.localStorage.removeItem(`${TRADUCCION_CACHE_PREFIX}${id}`);
+      return null;
+    }
+    traduccionesCache.set(id, guardada.traduccion);
+    return guardada.traduccion;
+  } catch (error) {
+    console.warn("No se pudo leer la caché local de traducciones.", error);
+    return null;
+  }
+}
+
+function guardarTraduccionCache(id, traduccion) {
+  if (!id) return;
+  traduccionesCache.set(id, traduccion);
+  try {
+    globalThis.localStorage?.setItem(
+      `${TRADUCCION_CACHE_PREFIX}${id}`,
+      JSON.stringify({ timestamp: Date.now(), traduccion })
+    );
+  } catch (error) {
+    console.warn("No se pudo guardar la caché local de traducciones.", error);
+  }
+}
+
+function analizarTraduccion(texto) {
+  const limpio = texto.replace(/```(?:json)?/gi, "").trim();
+  const inicio = limpio.indexOf("{");
+  const final = limpio.lastIndexOf("}");
+  if (inicio < 0 || final <= inicio) throw new Error("Gemini devolvió una traducción sin formato JSON.");
+
+  let resultado;
+  try {
+    resultado = JSON.parse(limpio.slice(inicio, final + 1));
+  } catch {
+    throw new Error("Gemini devolvió una traducción con formato JSON inválido.");
+  }
+  if (!traduccionValida(resultado)) {
+    throw new Error("Gemini devolvió una traducción incompleta.");
+  }
+  return resultado;
+}
+
+function esReintentable(error) {
+  return error.status == null || error.status === 429 || error.status >= 500;
+}
+
+function contenidoAlternado(historial, mensaje) {
+  const contenidos = [];
+  for (const item of historial) {
+    if (!item || typeof item.texto !== "string" || !item.texto.trim()) continue;
+    const role = item.rol === "bot" || item.rol === "model" ? "model" : "user";
+    if (role === "model" && contenidos.length === 0) continue;
+    const ultimo = contenidos[contenidos.length - 1];
+    if (ultimo?.role === role) {
+      ultimo.parts[0].text += `\n${item.texto.trim()}`;
+    } else {
+      contenidos.push({ role, parts: [{ text: item.texto.trim() }] });
+    }
+  }
+
+  const ultimo = contenidos[contenidos.length - 1];
+  if (ultimo?.role === "user") {
+    ultimo.parts[0].text += `\n${mensaje}`;
+  } else {
+    contenidos.push({ role: "user", parts: [{ text: mensaje }] });
+  }
+  return contenidos;
+}
+
+function minimoContents(contents, systemText) {
+  const resultado = contents.map((item) => ({
+    role: item.role,
+    parts: item.parts.map((parte) => ({ ...parte })),
+  }));
+  if (!resultado.length || resultado[0].role !== "user") {
+    throw new Error("El historial no inicia con un mensaje de usuario.");
+  }
+  if (systemText) {
+    resultado[0].parts[0].text = `${systemText}\n\n${resultado[0].parts[0].text}`;
+  }
+  return resultado;
+}
+
+async function conReintentoMinimo({
+  url,
+  body,
+  contents,
+  systemText,
+  timeoutMs,
+  streaming = false,
+  onChunk,
+}) {
+  const deadline = Date.now() + timeoutMs;
+  try {
+    return await solicitarGemini(url, body, Math.max(1, deadline - Date.now()), {
+      streaming,
+      onChunk,
+    });
+  } catch (error) {
+    if (error.status !== 400 && error.status !== 404) throw error;
+
+    const restantes = deadline - Date.now();
+    if (restantes <= 0) throw error;
+
+    const contenidoMinimo = minimoContents(contents, systemText);
+    const urlMinima = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+    const data = await solicitarGemini(urlMinima, { contents: contenidoMinimo }, restantes);
+    const texto = extraerTexto(data);
+    if (!texto) throw new ErrorGemini(null, "", "Gemini respondió sin texto tras reintentar.");
+    onChunk?.(texto);
+    return texto;
+  }
+}
+
+const BASE = `Eres Charin, un chef amable y conversacional, como cualquier asistente de IA. Responde en español, natural, breve y cálido.
+Si el usuario escribe una palabra suelta (por ejemplo "maduro"), no pidas más datos: sugiere 3 ideas de postres con ese ingrediente, usando las recetas del catálogo cuando existan.
+Si pregunta algo de cocina, respóndelo de forma general y útil. Detecta primero si pregunta por sustituciones, ingredientes, pasos o tiempo; responde a esa intención antes de buscar una receta por nombre.
+Usa el contexto de la receta actual y el paso indicado. No inventes datos; si no sabes, dilo con honestidad.`;
 
 const CONTEXTO = {
   home: "El usuario está en la pantalla de inicio. Ayúdale a decidir qué preparar hoy.",
@@ -69,61 +296,55 @@ export async function preguntarChef(
   mensaje,
   vista = "home",
   contextoExtra = "",
-  nombreUsuario = ""
+  nombreUsuario = "",
+  onChunk
 ) {
   if (!KEY) {
-    throw new Error("Falta configurar VITE_GEMINI_KEY en el archivo .env.local.");
+    const error = new ErrorGemini(
+      null,
+      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local.",
+      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local."
+    );
+    registrarErrorGemini(error);
+    throw error;
   }
 
-  // Un par de turnos bastan para mantener el contexto sin alargar la solicitud.
   const reciente = historial
-    .filter((m) => m && typeof m.texto === "string" && m.texto.trim())
-    .slice(-4);
-  // Gemini exige que la conversación empiece con un mensaje del usuario
-  while (reciente.length > 0 && reciente[0].rol === "bot") reciente.shift();
-
-  const contents = [
-    ...reciente.map((m) => ({
-      role: m.rol === "bot" ? "model" : "user",
-      parts: [{ text: m.texto }],
-    })),
-    { role: "user", parts: [{ text: mensaje }] },
-  ];
+    .filter((item) => item && typeof item.texto === "string" && item.texto.trim())
+    .slice(-6);
+  const contents = contenidoAlternado(reciente, mensaje);
 
   const datosUsuario =
     nombreUsuario && !nombreUsuario.includes("@")
       ? `\nEl usuario se llama ${nombreUsuario}.`
       : "";
 
-  const data = await obtenerRespuestaGemini(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
-      systemInstruction: {
-        parts: [
-          {
-            text: `${BASE}\n\nCONTEXTO ACTUAL: ${CONTEXTO[vista] || CONTEXTO.home}\nEs de ${momentoDelDia()} en Colombia.${datosUsuario}${
-              contextoExtra ? `\n\n${contextoExtra}` : ""
-            }`,
-          },
-        ],
-      },
+  const systemText = `${BASE}\n\nCONTEXTO ACTUAL: ${CONTEXTO[vista] || CONTEXTO.home}\nEs de ${momentoDelDia()} en Colombia.${datosUsuario}${
+    contextoExtra ? `\n\n${contextoExtra}` : ""
+  }`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse`;
+  return conReintentoMinimo({
+    url,
+    body: {
+      systemInstruction: { parts: [{ text: systemText }] },
       contents,
-      generationConfig: { temperature: 0.8, maxOutputTokens: 350 },
-    }
-  );
-  const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!texto) throw new Error("Sin respuesta");
-  return texto;
+      generationConfig: { temperature: 0.7, maxOutputTokens: 300 },
+    },
+    contents,
+    systemText,
+    timeoutMs: CHAT_TIMEOUT_MS,
+    streaming: true,
+    onChunk,
+  });
 }
 
 export function explicarErrorGemini(error) {
   const mensaje = error instanceof Error ? error.message : "";
   if (mensaje.includes("Falta configurar")) {
-    console.warn("Gemini API key is not configured.", error);
-    return "Charin no puede conectarse ahora, te doy una respuesta básica.";
+    return "La traducción no está disponible ahora; puedes consultar la receta original.";
   }
-  if (mensaje.includes("superó el límite")) {
-    return "Gemini está tardando más de lo normal. Inténtalo otra vez en un momento.";
+  if (mensaje.includes("superó el límite") || mensaje.includes("6 segundos")) {
+    return "Gemini está tardando más de lo normal.";
   }
   if (mensaje.includes("Error 429")) {
     return "Gemini está ocupado. Espera un momento e inténtalo de nuevo.";
@@ -144,15 +365,38 @@ export function explicarErrorGemini(error) {
 }
 
 // Traduce una receta de TheMealDB (inglés) al español
-export async function traducirReceta({ nombre, ingredientes, instrucciones }) {
+export async function traducirReceta({ id, nombre, ingredientes, instrucciones }) {
+  const cacheada = leerTraduccionCache(id);
+  if (cacheada) return cacheada;
+  if (id && traduccionesPendientes.has(id)) return traduccionesPendientes.get(id);
+
   if (!KEY) {
-    throw new Error("Falta configurar VITE_GEMINI_KEY en el archivo .env.local.");
+    const error = new ErrorGemini(
+      null,
+      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local.",
+      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local."
+    );
+    registrarErrorGemini(error);
+    throw error;
   }
 
+  const solicitud = traducirRecetaSinCache({ id, nombre, ingredientes, instrucciones });
+  if (id) traduccionesPendientes.set(id, solicitud);
+  try {
+    const resultado = await solicitud;
+    guardarTraduccionCache(id, resultado);
+    return resultado;
+  } finally {
+    if (id) traduccionesPendientes.delete(id);
+  }
+}
+
+async function traducirRecetaSinCache({ nombre, ingredientes, instrucciones }) {
   const prompt = `Traduce al español natural y claro esta receta de postre.
-Convierte las instrucciones en pasos cortos (sin numerarlos en el texto).
-Mantén el mismo orden y la misma cantidad de ingredientes.
+Conserva todos los ingredientes, cantidades y pasos, en el mismo orden; no omitas ni combines pasos.
+Convierte las instrucciones en pasos claros (sin numerarlos en el texto).
 Pasa las medidas a español (cup = taza, tbsp = cucharada, tsp = cucharadita, etc.) sin cambiar las cantidades.
+Conserva sin traducir los nombres propios, marcas y nombres de lugares. El nombre propio "Charin Cook" debe conservarse exactamente así.
 Responde SOLO con JSON con esta forma exacta:
 {"nombre": "...", "ingredientes": ["..."], "pasos": ["..."]}
 
@@ -162,23 +406,32 @@ ${ingredientes.map((i) => "- " + i).join("\n")}
 INSTRUCCIONES:
 ${String(instrucciones).slice(0, 6000)}`;
 
-  const data = await obtenerRespuestaGemini(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 2500,
-        responseMimeType: "application/json",
-      },
+  const contents = [{ role: "user", parts: [{ text: prompt }] }];
+  let ultimoError;
+  for (let intento = 0; intento < 2; intento++) {
+    try {
+      const respuesta = await conReintentoMinimo({
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+        body: {
+          contents,
+          generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+        },
+        contents,
+        systemText: "",
+        timeoutMs: TIMEOUT_MS,
+      });
+      const texto = typeof respuesta === "string" ? respuesta : extraerTexto(respuesta);
+      if (!texto) throw new Error("Gemini respondió sin texto.");
+      const resultado = analizarTraduccion(texto);
+      return {
+        ...resultado,
+        nombre: nombre.includes("Charin Cook") ? nombre : resultado.nombre || nombre,
+      };
+    } catch (error) {
+      ultimoError = error;
+      if (intento === 1 || !esReintentable(error)) throw error;
+      await new Promise((resolve) => globalThis.setTimeout(resolve, 600));
     }
-  );
-  const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!texto) throw new Error("Sin respuesta");
-
-  const resultado = JSON.parse(texto.replace(/```json|```/g, "").trim());
-  if (!Array.isArray(resultado.pasos) || !Array.isArray(resultado.ingredientes)) {
-    throw new Error("Formato inválido");
   }
-  return resultado;
+  throw ultimoError;
 }

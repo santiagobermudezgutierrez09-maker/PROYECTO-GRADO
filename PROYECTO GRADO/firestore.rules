@@ -43,6 +43,14 @@ service cloud.firestore {
       allow read, write: if esPropietario(uid);
     }
 
+    match /notas/{documentId} {
+      allow read: if idPerteneceAlUsuario(documentId);
+      allow create, update: if idPerteneceAlUsuario(documentId)
+        && request.resource.data.usuarioId == request.auth.uid;
+      allow delete: if idPerteneceAlUsuario(documentId)
+        && resource.data.usuarioId == request.auth.uid;
+    }
+
     match /eventos/{eventoId} {
       allow read: if autenticado()
         && resource.data.usuarioId == request.auth.uid;

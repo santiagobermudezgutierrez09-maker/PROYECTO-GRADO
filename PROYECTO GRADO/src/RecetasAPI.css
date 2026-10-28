@@ -39,7 +39,7 @@
 .ra-campo:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 /* ---------- Tarjetas ---------- */
@@ -63,10 +63,16 @@
   overflow: hidden;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.tema-cocina .ra-card {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
 .ra-card:hover:not(:disabled) {
   transform: translateY(-4px);
   border-color: var(--color-primary);
-  box-shadow: 0 10px 24px rgba(74, 52, 40, 0.16);
+  background: var(--bg-surface);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--bg-dark) 16%, transparent);
 }
 .ra-card:disabled {
   opacity: 0.6;
@@ -136,7 +142,7 @@
 }
 .ra-btn-principal {
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   padding: 10px 20px;
@@ -163,7 +169,12 @@
   cursor: pointer;
   margin-bottom: 18px;
 }
-.ra-volver:hover {
+.tema-cocina .ra-volver {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.tema-cocina .ra-volver:hover {
   background: var(--bg-surface);
 }
 
@@ -215,7 +226,7 @@
 }
 .ra-btn-charin {
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -225,6 +236,9 @@
 .ra-btn-charin:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+.ra-btn-reintentar {
+  margin-top: 8px;
 }
 .ra-segmentado {
   display: inline-flex;
@@ -241,8 +255,8 @@
   cursor: pointer;
 }
 .ra-segmentado button.activo {
-  background: var(--color-primary);
-  color: var(--text-primary);
+  background: var(--color-primary-soft);
+  color: var(--text-on-primary);
 }
 
 .ra-link-yt {

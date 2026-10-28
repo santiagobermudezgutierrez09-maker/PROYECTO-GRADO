@@ -1,193 +1,462 @@
-/* ============================================================
-   HOME — se ve bien con la barra lateral y el tema oscuro dorado
-   ============================================================ */
-
 .home {
-  width: 100%;
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: clamp(30px, 5vw, 54px);
+  width: 100%;
+  min-width: 0;
   text-align: left;
 }
 
-/* ---------- Bienvenida ---------- */
-
-.home-hero.card {
-  padding: 40px 36px;
+.home-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 330px;
+  overflow: hidden;
+  padding: clamp(30px, 6vw, 66px);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 32%, transparent);
+  border-radius: 26px;
   background:
-    radial-gradient(ellipse at 100% 0%, rgba(244, 169, 140, 0.16), transparent 60%),
-    var(--color-lavender);
-  border: 1px solid rgba(244, 169, 140, 0.25);
+    radial-gradient(ellipse at 86% 50%, color-mix(in srgb, var(--color-secondary) 25%, transparent), transparent 46%),
+    linear-gradient(115deg, var(--bg-surface), color-mix(in srgb, var(--bg-surface) 86%, var(--color-secondary)));
+  box-shadow: var(--shadow-md);
+}
+
+.home-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 58%;
+}
+
+.home-eyebrow,
+.home-etiqueta {
+  color: var(--color-text-accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .home-hero h1 {
-  margin: 0 0 8px;
-  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
-  line-height: 1.15;
+  margin: 14px 0 12px;
   color: var(--text-primary);
-  overflow-wrap: anywhere;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  letter-spacing: -0.045em;
+  line-height: 0.98;
 }
 
 .home-hero p {
+  max-width: 44ch;
   margin: 0;
-  font-size: 1.1rem;
   color: var(--text-secondary);
+  font-size: 1.05rem;
 }
 
-/* ---------- Secciones ---------- */
+.tema-cocina .home-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin: 24px 0 0;
+  padding: 14px 20px;
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
 
-.home-seccion h2 {
-  margin: 0 0 14px;
-  font-size: 1.15rem;
-  text-align: left;
+.tema-cocina .home-cta:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.home-hero-visual {
+  position: absolute;
+  inset: 0 2% 0 auto;
+  width: min(44%, 470px);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.home-hero-halo {
+  position: absolute;
+  z-index: -1;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-secondary) 42%, transparent) 0%, color-mix(in srgb, var(--color-primary) 22%, transparent) 38%, transparent 72%);
+  filter: blur(7px);
+}
+
+.home-hero-visual::before,
+.home-hero-visual::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  opacity: 0.55;
+}
+
+.home-hero-visual::before {
+  top: 24%;
+  left: 17%;
+  width: 7px;
+  height: 7px;
+}
+
+.home-hero-visual::after {
+  right: 12%;
+  bottom: 23%;
+  width: 5px;
+  height: 5px;
+  background: var(--color-primary);
+}
+
+.home-confeti {
+  position: absolute;
+  z-index: -1;
+  width: 6px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  opacity: 0.42;
+  transform: rotate(38deg);
+}
+
+.home-confeti--uno {
+  top: 19%;
+  right: 22%;
+}
+
+.home-confeti--dos {
+  bottom: 18%;
+  left: 18%;
+  height: 11px;
+  background: var(--color-secondary);
+  transform: rotate(-35deg);
+}
+
+.home-confeti--tres {
+  top: 39%;
+  right: 7%;
+  width: 5px;
+  height: 5px;
+  background: var(--color-secondary);
+}
+
+.home-seccion {
+  min-width: 0;
+}
+
+.home-seccion-mundo {
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, var(--border-color));
+  border-radius: 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--bg-surface) 96%, var(--color-secondary)), var(--bg-surface) 55%);
+  box-shadow: var(--shadow-md);
+}
+
+.home-seccion-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.home-seccion-heading h2 {
+  margin: 6px 0 0;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  letter-spacing: -0.025em;
+}
+
+.home-seccion-heading p {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+}
+
+.tema-cocina .home-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 8px 0 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-accent);
+  white-space: nowrap;
+}
+
+.tema-cocina .home-enlace:hover {
+  transform: translateX(2px);
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-postres-grid,
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-postre-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
   color: var(--text-primary);
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.tema-cocina .home-postre-card {
+  margin: 0;
+  background: var(--bg-surface);
+}
+
+.tema-cocina .home-postre-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md-hover);
+}
+
+.home-postre-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.45;
+  object-fit: cover;
+  background: var(--border-color);
+}
+
+.home-postre-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 106px;
+  padding: 15px;
+}
+
+.home-postre-info strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.97rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home-postre-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.home-postre-meta span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-secondary) 38%, var(--bg-surface));
+}
+
+.home-postre-skeleton {
+  aspect-ratio: 0.82;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  background: linear-gradient(110deg, var(--bg-surface) 25%, var(--border-color) 45%, var(--bg-surface) 65%);
+  background-size: 220% 100%;
+  animation: home-brillo 1.3s linear infinite;
+}
+
+.home-api-error {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.home-api-error button {
+  margin-left: 8px;
+}
+
+@keyframes home-brillo {
+  to { background-position: -220% 0; }
 }
 
 .home-grid {
-  display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.home-grid--3 {
-  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+.home-tarjeta {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+  min-height: 150px;
+  padding: 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
-
-/* ---------- Tarjetas ---------- */
 
 .tema-cocina .home-tarjeta {
-  display: flex;
-  gap: 16px;
-  padding: 22px;
-  text-align: left;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  margin: 0;
+  background: var(--bg-surface);
 }
 
 .tema-cocina .home-tarjeta:hover {
-  border-color: color-mix(in srgb, var(--acento) 55%, transparent);
+  background: var(--bg-surface);
 }
 
-.tema-cocina .home-tarjeta:focus-visible {
-  outline: 2px solid var(--color-primary);
+.home-tarjeta:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-primary) 60%, var(--border-color));
+  box-shadow: var(--shadow-md-hover);
+}
+
+.home-tarjeta:focus-visible,
+.home-postre-card:focus-visible {
+  outline: 3px solid var(--color-primary);
   outline-offset: 3px;
 }
 
-/* El color de cada sección se usa solo en el icono */
 .home-icono {
-  width: 52px;
-  height: 52px;
   display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
   place-items: center;
-  flex-shrink: 0;
-  font-size: 26px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--acento) 20%, transparent);
-  border: 1px solid color-mix(in srgb, var(--acento) 55%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-secondary) 35%, var(--bg-surface));
+  color: var(--color-text-accent);
+}
+
+.home-icono svg {
+  width: 23px;
+  height: 23px;
+}
+
+.home-tarjeta-cuerpo {
+  min-width: 0;
+  padding-right: 14px;
 }
 
 .home-tarjeta-cuerpo h3 {
-  overflow-wrap: anywhere;
-  margin: 0 0 6px;
-  font-size: 1.05rem;
-  color: var(--text-primary);
+  margin: 2px 0 7px;
+  font-size: 1rem;
 }
 
 .home-tarjeta-cuerpo p {
-  overflow-wrap: anywhere;
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   line-height: 1.5;
-  color: var(--text-secondary);
 }
 
-/* Normal: icono arriba, texto debajo */
-.home-tarjeta--normal {
-  flex-direction: column;
-  gap: 14px;
+.home-flecha {
+  position: absolute;
+  top: 20px;
+  right: 18px;
+  color: var(--color-text-accent);
 }
 
-/* Compacta: icono a la izquierda y texto a la derecha */
-.home-tarjeta--compacta {
-  align-items: flex-start;
-  padding: 18px;
-}
-
-.home-tarjeta--compacta .home-icono {
-  width: 44px;
-  height: 44px;
-  font-size: 21px;
-  border-radius: 12px;
-}
-
-/* Destacada: la más grande, con brillo de su color */
-.tema-cocina .home-tarjeta--destacada {
-  align-items: center;
-  gap: 24px;
-  padding: 32px;
-  background:
-    radial-gradient(ellipse at 0% 50%, color-mix(in srgb, var(--acento) 16%, transparent), transparent 55%),
-    var(--bg-surface);
-  border-color: color-mix(in srgb, var(--acento) 40%, transparent);
-  box-shadow: var(--shadow-md), 0 0 40px color-mix(in srgb, var(--acento) 12%, transparent);
-}
-
-.home-tarjeta--destacada .home-icono {
-  width: 80px;
-  height: 80px;
-  font-size: 40px;
-  border-radius: 20px;
-}
-
-.home-tarjeta--destacada h3 {
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-}
-
-.home-tarjeta--destacada p {
-  font-size: 1rem;
-  max-width: 56ch;
-}
-
-.home-cta {
-  display: inline-block;
-  margin-top: 16px;
-  padding: 9px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--color-primary);
-  border-radius: 999px;
-}
-
-/* ---------- Celular ---------- */
-
-@media (max-width: 600px) {
-  .home {
-    gap: 24px;
+@media (max-width: 900px) {
+  .home-postres-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .home-hero.card {
-    padding: 28px 20px;
-  }
-
-  .tema-cocina .home-tarjeta--destacada {
+@media (max-width: 720px) {
+  .home-hero {
+    min-height: 310px;
     flex-direction: column;
-    align-items: flex-start;
-    padding: 24px 20px;
-    gap: 16px;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
   }
 
-  .home-tarjeta--destacada .home-icono {
-    width: 64px;
-    height: 64px;
-    font-size: 32px;
+  .home-hero-visual {
+    position: relative;
+    inset: auto;
+    order: -1;
+    width: 100%;
+    height: 185px;
+    margin: -20px 0 4px;
+  }
+
+  .home-hero-copy {
+    max-width: 100%;
+  }
+
+  .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .home-hero {
+    min-height: 340px;
+    padding: 26px 22px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2.2rem, 12vw, 3.2rem);
+  }
+
+  .home-hero-visual {
+    height: 150px;
+  }
+
+  .home-seccion-mundo {
+    padding: 16px;
+  }
+
+  .home-postres-grid {
+    gap: 10px;
+  }
+
+  .home-postre-info {
+    min-height: 112px;
+    padding: 11px;
+  }
+
+  .home-postre-meta {
+    font-size: 0.72rem;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-tarjeta {
+    min-height: 120px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tema-cocina .home-tarjeta {
+  .home-postre-skeleton {
+    animation: none;
+  }
+
+  .home-postre-card,
+  .home-tarjeta {
     transition: none;
   }
 }

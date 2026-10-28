@@ -1,17 +1,4 @@
 /* ============================================================
-   PALETA "CREMA Y PASTEL" (referencia)
-   Fondo principal ........ #FFF8EC  (crema vainilla)
-   Fondo de tarjetas ...... #FBEFD9  (beige claro)
-   Bordes y detalles ...... #E8D5B5  (beige arena)
-   Color principal ........ #F4A98C  (durazno suave)
-   Hover del principal .... #E8896A  (durazno oscuro)
-   Acento secundario ...... #F7C6C7  (rosa pastel)
-   Acento saludable ....... #BFE3C8  (verde menta suave)
-   Texto principal ........ #4A3428  (café chocolate)
-   Texto secundario ....... #8A6F5C  (café claro)
-   ============================================================ */
-
-/* ============================================================
    1) PANTALLAS SIN SESIÓN (login / registro)
    Contenedor centrado sobre el fondo animado
    ============================================================ */
@@ -56,17 +43,17 @@
 
 .marca-titulo {
   margin: 0;
-  color: #4A3428;
+  color: var(--text-primary);
   font-family: 'Fredoka', sans-serif;
   font-size: clamp(2.4rem, 5vw, 3.6rem);
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
-  text-shadow: 3px 3px 0 #F7C6C7;
+  text-shadow: 3px 3px 0 var(--color-secondary);
 }
 
 .marca-titulo .marca-cook {
-  color: #E8896A;
+  color: var(--color-text-accent);
   background: transparent;
   padding: 0;
   border-radius: 0;
@@ -75,7 +62,7 @@
 
 .marca-lema {
   margin-top: 6px;
-  color: #8A6F5C;
+  color: var(--text-secondary);
   font-family: 'Pacifico', cursive;
   font-size: 1.15rem;
 }
@@ -172,22 +159,32 @@
 .auth-tabs button:hover {
   transform: none;
   border-color: var(--border-color);
-  background: rgba(244, 169, 140, 0.14);
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
   color: var(--text-primary);
   box-shadow: none;
 }
 
 .auth-tabs button.activo,
 .auth-tabs button.activo:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: var(--text-primary);
+  border-color: var(--color-accent);
+  background: var(--color-primary-soft);
+  color: var(--text-on-primary);
   box-shadow: none;
 }
 
 .auth-form-content h2 {
   margin: 0 0 20px;
   font-size: 1.6rem;
+}
+
+.auth-register-success p {
+  margin: 0 0 20px;
+}
+
+.auth-register-success .auth-submit {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
 }
 
 .auth-form {
@@ -221,7 +218,7 @@
 
 .auth-field input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
 .auth-forgot-wrap {
@@ -250,7 +247,7 @@
   transform: none;
   border: 0;
   background: transparent;
-  color: var(--color-primary-hover);
+  color: var(--color-text-accent);
   box-shadow: none;
 }
 
@@ -260,7 +257,7 @@
   margin: 2px 0 0;
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
 }
 
 .auth-divider {
@@ -293,7 +290,7 @@
 .auth-guest:hover {
   transform: none;
   border-color: var(--color-primary);
-  background: rgba(244, 169, 140, 0.12);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
   color: var(--text-primary);
   box-shadow: none;
 }
@@ -335,12 +332,12 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-color: #FFF8EC;
+  background-color: var(--bg-page);
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(247, 198, 199, 0.55), transparent 42%),
-    radial-gradient(circle at 88% 12%, rgba(244, 169, 140, 0.40), transparent 45%),
-    radial-gradient(circle at 80% 88%, rgba(247, 198, 199, 0.50), transparent 45%),
-    radial-gradient(circle at 15% 85%, rgba(191, 227, 200, 0.40), transparent 40%);
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--color-secondary) 55%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--color-primary) 40%, transparent), transparent 45%),
+    radial-gradient(circle at 80% 88%, color-mix(in srgb, var(--color-secondary) 50%, transparent), transparent 45%),
+    radial-gradient(circle at 15% 85%, color-mix(in srgb, var(--color-teal) 40%, transparent), transparent 40%);
   background-size: 140% 140%;
   animation: fondo-flota 18s ease-in-out infinite alternate;
 }
@@ -363,7 +360,7 @@
   text-align: left;
   padding-top: 0;
   margin: 0;
-  color: #4a3428;
+  color: var(--text-primary);
   text-shadow: none;
 }
 
@@ -405,14 +402,14 @@
 
 .nav button:hover {
   border-color: var(--border-color);
-  background-color: rgba(244, 169, 140, 0.22);
+  background-color: color-mix(in srgb, var(--color-primary) 22%, transparent);
   transform: none;
 }
 
 /* Botón de categoría seleccionado (en el catálogo de recetas) */
 .filtro-activo {
   background-color: var(--color-yellow) !important;
-  color: #4a3428 !important;
+  color: var(--text-primary) !important;
 }
 
 .card {
@@ -425,27 +422,7 @@
    ============================================================ */
 
 .tema-cocina {
-  --bg-page:     #fff8ec; /* crema vainilla */
-  --bg-surface:  #fbefd9; /* beige claro: tarjetas y paneles */
-  --bg-elevada:  #fff8ec; /* campos de texto y tarjeta de usuario */
-
-  --color-primary:       #f4a98c; /* durazno suave - color principal */
-  --color-primary-hover: #e8896a; /* durazno oscuro - hover y estados activos */
-  --color-secondary:     #f7c6c7; /* rosa pastel - acento secundario */
-  --color-teal:          #bfe3c8; /* menta suave - ingredientes / saludable */
-  --color-yellow:        #e8896a; /* estados activos (durazno oscuro) */
-  --color-pink:          #f7c6c7; /* rosa pastel - acento cálido */
-  --color-lavender:      #f7c6c7; /* panel de bienvenida y logo */
-
-  --border-color: #e8d5b5; /* beige arena */
-  --shadow-sm: 0 2px 10px rgba(74, 52, 40, 0.08);
-  --shadow-md: 0 4px 18px rgba(74, 52, 40, 0.10);
-  --shadow-lg: 0 12px 36px rgba(74, 52, 40, 0.16);
-  --shadow-md-hover: 0 10px 30px rgba(74, 52, 40, 0.16);
-
-  --text-primary:   #4a3428; /* café chocolate */
-  --text-secondary: #8a6f5c; /* café claro */
-
+  --bg-elevada: var(--bg-page);
   --sidebar-ancho: 272px;
 }
 
@@ -453,7 +430,7 @@
 .tema-cocina button {
   border: 1px solid var(--color-primary);
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   box-shadow: none;
 }
 
@@ -461,7 +438,7 @@
   transform: translateY(-1px);
   border-color: var(--color-primary-hover);
   background-color: var(--color-primary-hover);
-  box-shadow: 0 4px 14px rgba(232, 137, 106, 0.35);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary-hover) 35%, transparent);
 }
 
 .tema-cocina button:active {
@@ -477,15 +454,15 @@
   box-shadow: none;
 }
 
-/* Botón "activo" (categoría elegida): durazno oscuro con halo suave */
+/* Botón activo de categoría: durazno suave con halo cálido */
 .tema-cocina .filtro-activo {
-  background-color: var(--color-primary-hover) !important;
-  color: var(--text-primary) !important;
-  border: 1px solid var(--color-primary-hover) !important;
+  background-color: var(--color-primary-soft) !important;
+  color: var(--text-on-primary) !important;
+  border: 1px solid var(--color-accent) !important;
   font-weight: 600;
   box-shadow:
-    0 0 0 3px rgba(244, 169, 140, 0.35),
-    0 4px 12px rgba(232, 137, 106, 0.30) !important;
+    0 0 0 3px color-mix(in srgb, var(--color-primary) 35%, transparent),
+    0 4px 12px color-mix(in srgb, var(--color-primary-hover) 30%, transparent) !important;
 }
 
 /* Tarjetas: beige claro con borde arena y sombra cálida */
@@ -520,7 +497,7 @@
 .tema-cocina input:focus,
 .tema-cocina select:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.35);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 35%, transparent);
   transform: none;
 }
 
@@ -552,15 +529,15 @@
   display: flex;
   flex-direction: column;
   padding: 24px 16px 20px;
-  background: linear-gradient(180deg, rgba(251, 239, 217, 0.96), rgba(255, 248, 236, 0.98));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-surface) 96%, transparent), color-mix(in srgb, var(--bg-page) 98%, transparent));
   backdrop-filter: blur(10px);
   border-right: 1px solid var(--border-color);
-  box-shadow: 4px 0 24px rgba(74, 52, 40, 0.08);
+  box-shadow: 4px 0 24px color-mix(in srgb, var(--bg-dark) 8%, transparent);
   overflow-y: auto;
   text-align: left;
   z-index: 200;
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 169, 140, 0.6) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary) 60%, transparent) transparent;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -568,7 +545,7 @@
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(244, 169, 140, 0.6);
+  background: color-mix(in srgb, var(--color-primary) 60%, transparent);
   border-radius: 3px;
 }
 
@@ -585,13 +562,11 @@
 .sidebar-logo {
   width: 44px;
   height: 44px;
-  display: grid;
-  place-items: center;
-  font-size: 22px;
+  display: block;
   border-radius: 12px;
-  background: var(--color-lavender);
-  border: 1px solid var(--color-primary);
-  box-shadow: 0 4px 14px rgba(244, 169, 140, 0.40);
+  object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 60%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-primary) 40%, transparent);
   flex-shrink: 0;
 }
 
@@ -667,14 +642,25 @@
   transform: none;
   box-shadow: none;
   border-color: transparent;
-  background-color: rgba(244, 169, 140, 0.20);
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .side-icono {
+  display: grid;
+  place-items: center;
   width: 28px;
-  text-align: center;
-  font-size: 17px;
+  height: 28px;
+  color: var(--color-text-accent);
   flex-shrink: 0;
+}
+
+.side-icono svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tema-cocina .side-item.activo .side-icono {
+  color: var(--color-text-accent);
 }
 
 .side-texto {
@@ -684,9 +670,9 @@
 
 /* Opción activa: fondo durazno suave + barra a la izquierda */
 .tema-cocina .side-item.activo {
-  background-color: rgba(244, 169, 140, 0.35);
+  background-color: var(--color-primary-soft);
   color: var(--text-primary);
-  border-color: rgba(232, 137, 106, 0.55);
+  border-color: var(--color-accent);
   font-weight: 600;
 }
 
@@ -698,8 +684,8 @@
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--color-primary-hover);
-  box-shadow: 0 0 8px rgba(232, 137, 106, 0.55);
+  background: var(--color-accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 55%, transparent);
 }
 
 /* Foco visible con teclado */
@@ -783,10 +769,26 @@
   align-items: center;
   gap: 14px;
   padding: 18px 36px;
-  background: rgba(255, 248, 236, 0.85);
+  background: color-mix(in srgb, var(--bg-page) 85%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
   text-align: left;
+}
+
+.sesion-aviso {
+  position: fixed;
+  top: 76px;
+  right: 24px;
+  z-index: 80;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 11px 16px;
+  border: 1px solid color-mix(in srgb, var(--color-teal) 45%, transparent);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-teal);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .topbar-titulo {
@@ -841,7 +843,7 @@
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background-color: #fff8ec;
+  background-color: var(--bg-page);
   overflow: hidden;
 }
 
@@ -858,8 +860,8 @@
   filter: blur(60px);
   background: radial-gradient(
     ellipse at center bottom,
-    rgba(244, 169, 140, 0.35) 0%,
-    rgba(247, 198, 199, 0.30) 35%,
+    color-mix(in srgb, var(--color-primary) 35%, transparent) 0%,
+    color-mix(in srgb, var(--color-secondary) 30%, transparent) 35%,
     transparent 70%
   );
   animation: orb-breathe 8s ease-in-out infinite alternate;
@@ -930,7 +932,7 @@ body.modo-lujo::before {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(74, 52, 40, 0.45);
+    background: color-mix(in srgb, var(--bg-dark) 45%, transparent);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -1043,27 +1045,27 @@ body.modo-lujo::before {
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 169, 140, 0.6) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-primary) 60%, transparent) transparent;
 }
 
 /* ---------- Barra lateral ---------- */
 
 .sidebar {
   background:
-    radial-gradient(120% 55% at 0% 0%, rgba(247, 198, 199, 0.45), transparent 60%),
-    linear-gradient(180deg, rgba(251, 239, 217, 0.97), rgba(255, 248, 236, 0.99));
+    radial-gradient(120% 55% at 0% 0%, color-mix(in srgb, var(--color-secondary) 45%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface) 97%, transparent), color-mix(in srgb, var(--bg-page) 99%, transparent));
 }
 
 .sidebar-marca {
   border-bottom: 1px solid transparent;
-  border-image: linear-gradient(90deg, rgba(232, 137, 106, 0.55), transparent) 1;
+  border-image: linear-gradient(90deg, color-mix(in srgb, var(--color-primary-hover) 55%, transparent), transparent) 1;
 }
 
 .sidebar-logo {
-  background: linear-gradient(145deg, #f7c6c7, #f4a98c);
+  background: linear-gradient(145deg, var(--color-primary-soft), color-mix(in srgb, var(--color-primary-soft) 55%, var(--bg-surface)));
   box-shadow:
-    0 0 0 3px rgba(244, 169, 140, 0.20),
-    0 4px 14px rgba(232, 137, 106, 0.35);
+    0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent),
+    0 4px 14px color-mix(in srgb, var(--color-primary-hover) 35%, transparent);
 }
 
 .sidebar-nombre {
@@ -1087,37 +1089,61 @@ html {
 }
 
 .side-icono {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 9px;
-  background: rgba(74, 52, 40, 0.06);
-  transition: background-color 0.18s ease, color 0.18s ease;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-dark) 6%, transparent);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.side-icono img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tema-cocina .side-item:hover .side-icono img {
+  animation: side-icono-rebote 420ms ease-out;
+}
+
+.tema-cocina .side-item.activo .side-icono img {
+  transform: scale(1.1);
+}
+
+@keyframes side-icono-rebote {
+  0%, 100% { transform: translateY(0); }
+  38% { transform: translateY(-4px) scale(1.06); }
+  68% { transform: translateY(1px) scale(0.98); }
 }
 
 .tema-cocina .side-item:hover {
   transform: translateX(3px);
-  background-color: rgba(244, 169, 140, 0.20);
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
 .tema-cocina .side-item:hover .side-icono {
-  background: rgba(244, 169, 140, 0.45);
+  background: color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
 .tema-cocina .side-item.activo {
-  background: linear-gradient(90deg, rgba(244, 169, 140, 0.50), rgba(244, 169, 140, 0.10));
+  background: var(--color-primary-soft);
 }
 
 .tema-cocina .side-item.activo .side-icono {
-  background: var(--color-primary);
-  color: var(--text-primary);
-  box-shadow: 0 3px 10px rgba(232, 137, 106, 0.45);
+  background: var(--color-primary-soft);
+  color: var(--color-text-accent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--color-accent) 25%, transparent);
 }
 
 .usuario-avatar {
-  background: linear-gradient(145deg, #f7c6c7, #f4a98c);
-  box-shadow: 0 0 0 3px rgba(244, 169, 140, 0.30);
+  background: linear-gradient(145deg, var(--color-secondary), var(--color-primary));
+  color: var(--text-on-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 /* ---------- Barra superior ---------- */
@@ -1133,7 +1159,7 @@ html {
   right: 0;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(232, 137, 106, 0.60), var(--border-color) 45%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-primary-hover) 60%, transparent), var(--border-color) 45%, transparent);
 }
 
 .topbar-titulo {
@@ -1153,7 +1179,7 @@ html {
 }
 
 .tema-cocina .card {
-  background-image: linear-gradient(180deg, rgba(255, 248, 236, 0.45), transparent 45%);
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 45%, transparent), transparent 45%);
   border: 1px solid var(--border-color);
 }
 
@@ -1168,6 +1194,10 @@ html {
 
   .tema-cocina .side-item:hover {
     transform: none;
+  }
+
+  .tema-cocina .side-item:hover .side-icono img {
+    animation: none;
   }
 }
 
