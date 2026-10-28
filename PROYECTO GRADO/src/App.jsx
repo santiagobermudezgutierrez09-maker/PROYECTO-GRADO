@@ -1,12 +1,10 @@
-import { lazy, Suspense, useState, useEffect, useRef } from "react";
+import { lazy, memo, Suspense, useState, useEffect, useRef } from "react";
 import "./App.css";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "./firebaseAuth";
 import { useCierreSesionInactividad } from "./useCierreSesionInactividad";
 import MascotaCarga from "./MascotaCarga";
 import logoDona from "./assets/logo-dona.png";
 
-import Login from "./Login";
+const Login = lazy(() => import("./Login"));
 const Mascota = lazy(() => import("./Mascota"));
 const Register = lazy(() => import("./Register"));
 const Home = lazy(() => import("./Home"));
@@ -51,7 +49,7 @@ const GRUPOS_MENU = [
 
 const TODOS_LOS_ITEMS = GRUPOS_MENU.flatMap((g) => g.items);
 
-function ImagenIconoMenu({ nombre, alt }) {
+const ImagenIconoMenu = memo(function ImagenIconoMenu({ nombre, alt }) {
   const icono64 = `/assets/icons/3d/${nombre}-64.png`;
   const icono128 = `/assets/icons/3d/${nombre}-128.png`;
 
@@ -66,7 +64,7 @@ function ImagenIconoMenu({ nombre, alt }) {
       decoding="async"
     />
   );
-}
+});
 
 // 🍩 Pantallas donde aparece la dona asistente
 const VISTAS_CON_DONA = ["home", "generador", "cocina", "api", "fechas"];
@@ -98,7 +96,7 @@ function App() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
   const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
-  const [cargarMascotaLogin, setCargarMascotaLogin] = useState(false);
+  const [conservarHome, setConservarHome] = useState(false);
   const [avisoSesion, setAvisoSesion] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false); // solo se usa en celular
   const [busquedaRecetas, setBusquedaRecetas] = useState("");
@@ -112,45 +110,58 @@ function App() {
 
   // Escucha en tiempo real si hay un usuario logueado o no
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (usuarioActual) => {
-      if (
-        usuarioActual &&
-        (registroEnCurso.current || usuarioActual.uid === usuarioRegistroIgnorado.current)
-      ) {
-        return;
-      }
-      setUsuario(usuarioActual);
-      setCargandoSesion(false);
-
-      if (usuarioActual) {
-        setInvitado(false); // si inicia sesión de verdad, ya no es invitado
-        setVista("home");
-
-        // Busca el nombre guardado en Firestore (colección "usuarios")
-        try {
-          const [{ doc, getDoc }, { db }] = await Promise.all([
-            import("firebase/firestore"),
-            import("./firebase"),
-          ]);
-          const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
-          if (snap.exists() && snap.data().nombre) {
-            const nombre = snap.data().nombre;
-            setNombreUsuario(nombre);
-            setAvisoSesion(`Sesión iniciada como ${nombre}.`);
-          } else {
-            setNombreUsuario(""); // si no encuentra nombre, usamos el correo como respaldo
-            setAvisoSesion(`Sesión iniciada como ${usuarioActual.email}.`);
+    let activo = true;
+    let unsubscribe;
+    Promise.all([import("firebase/auth"), import("./firebaseAuth")])
+      .then(([{ onAuthStateChanged }, { auth }]) => {
+        if (!activo) return;
+        unsubscribe = onAuthStateChanged(auth, async (usuarioActual) => {
+          if (
+            usuarioActual &&
+            (registroEnCurso.current ||
+              usuarioActual.uid === usuarioRegistroIgnorado.current)
+          ) {
+            return;
           }
-        } catch (error) {
-          console.warn("No se pudo cargar el nombre del usuario desde Firestore.", error);
-          setNombreUsuario("");
-          setAvisoSesion(`Sesión iniciada como ${usuarioActual.email}.`);
-        }
-      } else {
-        setNombreUsuario("");
-      }
-    });
-    return () => unsubscribe();
+          setUsuario(usuarioActual);
+          setCargandoSesion(false);
+
+          if (usuarioActual) {
+            setInvitado(false);
+            setVista("home");
+
+            try {
+              const [{ doc, getDoc }, { db }] = await Promise.all([
+                import("firebase/firestore"),
+                import("./firebase"),
+              ]);
+              const snap = await getDoc(doc(db, "usuarios", usuarioActual.uid));
+              if (snap.exists() && snap.data().nombre) {
+                const nombre = snap.data().nombre;
+                setNombreUsuario(nombre);
+                setAvisoSesion(`Sesión iniciada como ${nombre}.`);
+              } else {
+                setNombreUsuario("");
+                setAvisoSesion(`Sesión iniciada como ${usuarioActual.email}.`);
+              }
+            } catch (error) {
+              console.warn("No se pudo cargar el nombre del usuario desde Firestore.", error);
+              setNombreUsuario("");
+              setAvisoSesion(`Sesión iniciada como ${usuarioActual.email}.`);
+            }
+          } else {
+            setNombreUsuario("");
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("No se pudo inicializar la sesión de Firebase.", error);
+        setCargandoSesion(false);
+      });
+    return () => {
+      activo = false;
+      unsubscribe?.();
+    };
   }, []);
 
   useEffect(() => {
@@ -158,13 +169,6 @@ function App() {
     const timeoutId = window.setTimeout(() => setAvisoSesion(""), 4_000);
     return () => window.clearTimeout(timeoutId);
   }, [avisoSesion]);
-
-  useEffect(() => {
-    if (cargandoSesion || usuario || invitado || cargarMascotaLogin) return undefined;
-
-    const timeoutId = window.setTimeout(() => setCargarMascotaLogin(true), 1800);
-    return () => window.clearTimeout(timeoutId);
-  }, [cargandoSesion, usuario, invitado, cargarMascotaLogin]);
 
   // Activa la textura de grano (solo dentro de la app, no en login/registro)
   useEffect(() => {
@@ -181,6 +185,7 @@ function App() {
   // "extra" cambia según la pantalla: en "recetas" es una búsqueda,
   // en "cocina" es el id de la receta que se quiere cocinar
   const irA = (nuevaVista, extra = "") => {
+    if (vista === "home" && nuevaVista !== "home") setConservarHome(true);
     setVista(nuevaVista);
     setBusquedaRecetas(nuevaVista === "recetas" ? extra : "");
     setRecetaParaCocinar(nuevaVista === "cocina" ? extra : "");
@@ -189,6 +194,10 @@ function App() {
   };
 
   const cerrarSesion = async () => {
+    const [{ signOut }, { auth }] = await Promise.all([
+      import("firebase/auth"),
+      import("./firebaseAuth"),
+    ]);
     await signOut(auth);
     setInvitado(false);
     setMenuAbierto(false);
@@ -252,26 +261,19 @@ function App() {
             </div>
 
             <div className="zona-formulario auth-mascota">
-              {cargarMascotaLogin ? (
-                <Suspense
-                  fallback={
-                    <MascotaCarga
-                      variante="en-formulario"
-                      mensaje={mensajeMascotaLogin}
-                    />
-                  }
-                >
-                  <Mascota
+              <Suspense
+                fallback={
+                  <MascotaCarga
                     variante="en-formulario"
                     mensaje={mensajeMascotaLogin}
                   />
-                </Suspense>
-              ) : (
-                <MascotaCarga
+                }
+              >
+                <Mascota
                   variante="en-formulario"
                   mensaje={mensajeMascotaLogin}
                 />
-              )}
+              </Suspense>
             </div>
           </section>
 
@@ -294,17 +296,19 @@ function App() {
                 Registrarme
               </button>
             </nav>
-            {vista === "login" && <Login onLoginStart={iniciarSesion} />}
-            {vista === "register" && (
-              <Register
-                onRegistrationStart={comenzarRegistro}
-                onRegistrationEnd={terminarRegistro}
-                onRegistrationCreated={(uid) => {
-                  usuarioRegistroIgnorado.current = uid;
-                }}
-                onGoToLogin={() => setVista("login")}
-              />
-            )}
+            <Suspense fallback={<p role="status">Cargando formulario…</p>}>
+              {vista === "login" && <Login onLoginStart={iniciarSesion} />}
+              {vista === "register" && (
+                <Register
+                  onRegistrationStart={comenzarRegistro}
+                  onRegistrationEnd={terminarRegistro}
+                  onRegistrationCreated={(uid) => {
+                    usuarioRegistroIgnorado.current = uid;
+                  }}
+                  onGoToLogin={() => setVista("login")}
+                />
+              )}
+            </Suspense>
 
             <div className="auth-divider"><span>o</span></div>
             <button className="auth-guest" type="button" onClick={entrarComoInvitado}>
@@ -422,7 +426,15 @@ function App() {
 
           <main className="vista">
             <Suspense fallback={<p style={{ textAlign: "center" }}>Cargando...</p>}>
-              {vista === "home" && <Home irA={irA} correoUsuario={nombreParaMostrar} />}
+              {(vista === "home" || conservarHome) && (
+                <div hidden={vista !== "home"}>
+                  <Home
+                    irA={irA}
+                    correoUsuario={nombreParaMostrar}
+                    activa={vista === "home"}
+                  />
+                </div>
+              )}
               {vista === "recetas" && <Recetas busquedaInicial={busquedaRecetas} irA={irA} />}
               {vista === "favoritos" && <Favoritos irA={irA} />}
               {vista === "generador" && <GeneradorIngredientes irA={irA} />}

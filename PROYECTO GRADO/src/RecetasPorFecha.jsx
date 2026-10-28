@@ -6,6 +6,7 @@ import {
   addDoc,
   query,
   where,
+  limit,
   onSnapshot,
   deleteDoc,
   doc,
@@ -188,7 +189,11 @@ function RecetasPorFecha({ irA }) {
 
   useEffect(() => {
     if (!usuario) return;
-    const q = query(collection(db, "eventos"), where("usuarioId", "==", usuario.uid));
+    const q = query(
+      collection(db, "eventos"),
+      where("usuarioId", "==", usuario.uid),
+      limit(200)
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const lista = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       lista.sort((a, b) => (a.fecha || "").localeCompare(b.fecha || ""));

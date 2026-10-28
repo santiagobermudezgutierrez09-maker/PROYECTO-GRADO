@@ -416,3 +416,94 @@
     height: 54px;
   }
 }
+
+@media (max-width: 768px) {
+  .cb {
+    width: 100%;
+    max-width: none;
+    gap: 14px;
+  }
+
+  .cb-muneco {
+    width: min(42vw, 190px);
+  }
+
+  .cb-historial {
+    max-height: min(38dvh, 360px);
+    gap: 10px;
+    padding: 6px;
+    scroll-padding-bottom: 16px;
+  }
+
+  .cb-msg,
+  .cbc-msg {
+    max-width: 94%;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .cb-controles {
+    position: sticky;
+    bottom: 0;
+    gap: 8px;
+    padding: 10px 0 max(12px, env(safe-area-inset-bottom));
+  }
+
+  .tema-cocina .cb-form input,
+  .tema-cocina .cbc-form input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .tema-cocina .cb-form button,
+  .tema-cocina .cbc-form button {
+    min-height: 44px;
+  }
+
+  .tema-cocina .cb-mic,
+  .tema-cocina .cb-voz {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cb-muneco {
+    width: min(38vw, 150px);
+  }
+
+  .cb-historial {
+    max-height: min(34dvh, 300px);
+  }
+
+  .cb-controles {
+    flex-wrap: wrap;
+  }
+
+  .cb-form {
+    order: 0;
+    flex-basis: 100%;
+    gap: 8px;
+  }
+
+  .tema-cocina .cb-form button {
+    padding-inline: 14px;
+  }
+
+  .cbc {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+
+  .cbc-form {
+    flex-wrap: wrap;
+  }
+
+  .cbc-form input {
+    flex-basis: 100%;
+  }
+}

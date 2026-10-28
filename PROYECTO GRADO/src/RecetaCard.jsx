@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useState, useEffect } from "react";
 import {
   doc,
   setDoc,
@@ -8,6 +8,7 @@ import {
   addDoc,
   query,
   where,
+  limit,
   onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
@@ -72,7 +73,11 @@ function RecetaCard({ receta, alQuitarFavorito }) {
 
   // Escucha los comentarios de esta receta en tiempo real (los ve cualquier persona)
   useEffect(() => {
-    const q = query(collection(db, "comentarios"), where("recetaId", "==", receta.id));
+    const q = query(
+      collection(db, "comentarios"),
+      where("recetaId", "==", receta.id),
+      limit(100)
+    );
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -470,4 +475,4 @@ Mira la receta y más postres aquí: ${ENLACE_APP}`;
   );
 }
 
-export default RecetaCard;
+export default memo(RecetaCard);

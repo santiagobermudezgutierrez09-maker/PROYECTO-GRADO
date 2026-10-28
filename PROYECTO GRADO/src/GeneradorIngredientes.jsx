@@ -181,7 +181,7 @@ function GeneradorIngredientes({ irA }) {
       <article key={r.id} className="gi-receta">
         <div className="gi-receta-visual" aria-hidden="true">
           {imagen ? (
-            <img src={imagen} alt="" loading="lazy" />
+            <img src={imagen} alt="" loading="lazy" decoding="async" width="160" height="120" />
           ) : (
             <span>{r.emoji || "🍰"}</span>
           )}

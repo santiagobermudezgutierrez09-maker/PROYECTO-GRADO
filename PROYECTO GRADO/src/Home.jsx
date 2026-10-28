@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import MascotaCarga from "./MascotaCarga";
 import "./Home.css";
 
 const ICONOS = {
@@ -76,7 +77,7 @@ function Tarjeta({ item, irA }) {
   );
 }
 
-function Home({ irA, correoUsuario }) {
+function Home({ irA, correoUsuario, activa = true }) {
   const [postres, setPostres] = useState([]);
   const [cargandoPostres, setCargandoPostres] = useState(true);
   const [errorPostres, setErrorPostres] = useState("");
@@ -85,28 +86,16 @@ function Home({ irA, correoUsuario }) {
 
   useEffect(() => {
     let activo = true;
-    const cargarMascota = () => {
-      import("./Mascota")
-        .then(({ default: ComponenteMascota }) => {
-          if (activo) setMascotaHome(() => ComponenteMascota);
-        })
-        .catch((error) => {
-          console.warn("No se pudo cargar la mascota 3D del inicio.", error);
-        });
-    };
+    import("./Mascota")
+      .then(({ default: ComponenteMascota }) => {
+        if (activo) setMascotaHome(() => ComponenteMascota);
+      })
+      .catch((error) => {
+        console.warn("No se pudo cargar la mascota 3D del inicio.", error);
+      });
 
-    if (window.requestIdleCallback) {
-      const idleId = window.requestIdleCallback(cargarMascota, { timeout: 1500 });
-      return () => {
-        activo = false;
-        window.cancelIdleCallback(idleId);
-      };
-    }
-
-    const timeoutId = window.setTimeout(cargarMascota, 350);
     return () => {
       activo = false;
-      window.clearTimeout(timeoutId);
     };
   }, []);
 
@@ -193,7 +182,7 @@ function Home({ irA, correoUsuario }) {
           </span>
           <h1>Un antojo.<br />Una idea deliciosa.</h1>
           <p>Encuentra tu próximo postre favorito y prepáralo a tu manera.</p>
-          <button type="button" className="home-cta" onClick={() => irA("generador")}>
+          <button type="button" className="home-cta" onClick={() => irA("api")}>
             Descubrir qué puedo cocinar <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -202,13 +191,15 @@ function Home({ irA, correoUsuario }) {
           <span className="home-confeti home-confeti--uno" />
           <span className="home-confeti home-confeti--dos" />
           <span className="home-confeti home-confeti--tres" />
-          {MascotaHome && (
+          {activa && MascotaHome ? (
             <MascotaHome
               variante="en-home-hero"
               mensaje=""
               alClic={() => irA("chatbot")}
             />
-          )}
+          ) : activa ? (
+            <MascotaCarga variante="en-home-hero" />
+          ) : null}
         </div>
       </section>
 
@@ -259,7 +250,14 @@ function Home({ irA, correoUsuario }) {
                   key={postre.idMeal}
                   onClick={() => irA("api")}
                 >
-                  <img src={postre.strMealThumb} alt="" loading="lazy" />
+                  <img
+                    src={postre.strMealThumb}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="320"
+                    height="240"
+                  />
                   <span className="home-postre-info">
                     <strong>{postre.strMeal}</strong>
                     <span className="home-postre-meta">

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { useState, useEffect, useCallback } from "react";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 import { auth } from "./firebaseAuth";
 import recetas from "./recetasData";
@@ -19,10 +19,16 @@ function Favoritos({ irA }) {
 
     const cargar = async () => {
       try {
-        const lecturas = await Promise.all(
-          recetas.map((r) => getDoc(doc(db, "favoritos", `${usuario.uid}_${r.id}`)))
+        const consulta = query(
+          collection(db, "favoritos"),
+          where("usuarioId", "==", usuario.uid),
+          limit(200)
         );
-        const lista = lecturas.filter((s) => s.exists()).map((s) => s.data().recetaId);
+        const snapshot = await getDocs(consulta);
+        const recetasDelCatalogo = new Set(recetas.map((receta) => receta.id));
+        const lista = snapshot.docs
+          .map((documento) => documento.data().recetaId)
+          .filter((recetaId) => recetasDelCatalogo.has(recetaId));
         if (activo) setIds(lista);
       } catch {
         if (activo) setError("No se pudieron cargar tus favoritos. Revisa tu conexión e inténtalo de nuevo.");
@@ -38,7 +44,10 @@ function Favoritos({ irA }) {
   }, [usuario]);
 
   // Cuando el usuario quita el corazón desde esta pantalla, la tarjeta desaparece de la lista
-  const quitarDeLaLista = (recetaId) => setIds((prev) => prev.filter((id) => id !== recetaId));
+  const quitarDeLaLista = useCallback(
+    (recetaId) => setIds((prev) => prev.filter((id) => id !== recetaId)),
+    []
+  );
 
   if (!usuario) {
     return (

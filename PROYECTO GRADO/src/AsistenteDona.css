@@ -191,3 +191,69 @@
   font-size: 13px;
   line-height: 1.4;
 }
+
+@media (max-width: 768px) {
+  .asistente-panel {
+    top: auto;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    max-width: none;
+    max-height: min(72dvh, 620px);
+  }
+
+  .asistente-mensajes {
+    min-height: 0;
+    overscroll-behavior: contain;
+  }
+
+  .asist-msg {
+    max-width: 94%;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .asistente-entrada {
+    gap: 8px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+  }
+
+  .asistente-entrada input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .asistente-entrada .asistente-icono,
+  .asistente-entrada button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .asistente-panel {
+    right: 8px;
+    left: 8px;
+    max-height: min(76dvh, 620px);
+    border-radius: 14px;
+  }
+
+  .asistente-cabecera {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+
+  .asistente-cabecera button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .asistente-chips {
+    gap: 8px;
+  }
+
+  .asistente-chips button {
+    min-height: 44px;
+    font-size: 14px;
+  }
+}

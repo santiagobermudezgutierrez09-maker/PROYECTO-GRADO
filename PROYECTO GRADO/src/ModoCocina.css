@@ -683,3 +683,69 @@ body.mc-sin-distracciones .vista {
   color: var(--text-primary);
   font-weight: 700;
 }
+
+@media (max-width: 768px) {
+  .mc,
+  .mc-selector {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .mc {
+    padding: 20px;
+    --mc-texto-paso: clamp(22px, 5vw, 32px);
+  }
+
+  .mc-paso {
+    overflow-wrap: anywhere;
+  }
+
+  .mc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .mc-selector .mc-buscar,
+  .tema-cocina .cbc-form input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .tema-cocina .mc button,
+  .tema-cocina .mc-selector button,
+  .tema-cocina .mc-continuar button {
+    min-height: 44px;
+  }
+
+  .mc:fullscreen,
+  .mc--pantalla-fallback,
+  .mc--sin-distracciones {
+    min-height: 100dvh;
+  }
+}
+
+@media (max-width: 480px) {
+  .mc {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .mc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mc-continuar {
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .mc-continuar button {
+    width: 100%;
+  }
+
+  .mc--sin-distracciones {
+    padding: 64px 14px 16px;
+  }
+}

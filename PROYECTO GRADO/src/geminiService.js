@@ -1,25 +1,51 @@
-const KEY = import.meta.env.VITE_GEMINI_KEY;
 const MODEL = "gemini-3.5-flash-lite";
 const TIMEOUT_MS = 20_000;
-const CHAT_TIMEOUT_MS = 6_000;
+const CHAT_TIMEOUT_MS = 25_000;
+const CHAT_RETRY_DELAY_MS = 1_000;
+const CHAT_MAX_ATTEMPTS = 3;
+const MODEL_LIST_TIMEOUT_MS = 5_000;
 const TRADUCCION_CACHE_PREFIX = "charinCook:traduccion:v1:";
 const TRADUCCION_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const traduccionesCache = new Map();
 const traduccionesPendientes = new Map();
+let modelosFlashDisponiblesPromise;
 
 class ErrorGemini extends Error {
-  constructor(status, responseBody, message) {
+  constructor(status, responseBody, message, code = "") {
     super(message);
     this.name = "ErrorGemini";
     this.status = status;
     this.responseBody = responseBody;
+    this.code = code;
   }
 }
 
-function registrarErrorGemini(error) {
+function registrarErrorGemini(error, modelo = null) {
+  const mensaje = error?.message || "Error desconocido.";
+  const mensajeGemini = error?.responseBody || error?.message || "Sin mensaje de Gemini.";
   console.error("Fallo en la solicitud a Gemini.", {
+    modelo,
     status: error?.status ?? null,
-    responseBody: error?.responseBody || error?.message || "Sin cuerpo de respuesta HTTP.",
+    message: mensaje,
+    geminiMessage: mensajeGemini.slice(0, 2_000),
+  });
+}
+
+function solicitudProxy(url, body, signal) {
+  const ruta = new URL(url).pathname;
+  const coincidencia = ruta.match(
+    /\/v1beta\/models\/(gemini-[A-Za-z0-9._-]+):(generateContent|streamGenerateContent)$/
+  );
+  if (!coincidencia) throw new Error("La solicitud a Gemini tiene una ruta no válida.");
+  return fetch("/api/gemini", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: coincidencia[1],
+      action: coincidencia[2],
+      request: body,
+    }),
+    signal,
   });
 }
 
@@ -29,7 +55,12 @@ function extraerTexto(data) {
     .join("") || "";
 }
 
-async function solicitarGemini(url, body, timeoutMs, { streaming = false, onChunk } = {}) {
+async function solicitarGemini(
+  url,
+  body,
+  timeoutMs,
+  { streaming = false, onChunk, modelo = null } = {}
+) {
   const controller = new AbortController();
   let agotado = false;
   const timeoutId = globalThis.setTimeout(() => {
@@ -38,18 +69,23 @@ async function solicitarGemini(url, body, timeoutMs, { streaming = false, onChun
   }, timeoutMs);
 
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": KEY },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
+    const res = await solicitudProxy(url, body, controller.signal);
     if (!res.ok) {
       const responseBody = await res.text();
+      let mensaje = responseBody || res.statusText;
+      let code = res.status === 504 ? "TIMEOUT" : "";
+      try {
+        const detalle = JSON.parse(responseBody);
+        mensaje = detalle.error || mensaje;
+        code = detalle.code || code;
+      } catch {
+        // El proxy o Gemini pueden responder texto sin formato JSON.
+      }
       throw new ErrorGemini(
         res.status,
         responseBody,
-        `Gemini HTTP ${res.status}: ${responseBody || res.statusText}`
+        `Gemini HTTP ${res.status}: ${mensaje}`,
+        code
       );
     }
 
@@ -104,11 +140,16 @@ async function solicitarGemini(url, body, timeoutMs, { streaming = false, onChun
     return respuesta;
   } catch (error) {
     const fallo = agotado
-      ? new ErrorGemini(null, "", `Gemini no respondió dentro de ${timeoutMs / 1000} segundos.`)
+      ? new ErrorGemini(
+          null,
+          "",
+          `Gemini no respondió dentro de ${timeoutMs / 1000} segundos.`,
+          "TIMEOUT"
+        )
       : error instanceof ErrorGemini
         ? error
         : new ErrorGemini(null, "", error?.message || "Error de red al conectar con Gemini.");
-    registrarErrorGemini(fallo);
+    registrarErrorGemini(fallo, modelo);
     throw fallo;
   } finally {
     globalThis.clearTimeout(timeoutId);
@@ -232,23 +273,165 @@ async function conReintentoMinimo({
   streaming = false,
   onChunk,
 }) {
-  const deadline = Date.now() + timeoutMs;
   try {
-    return await solicitarGemini(url, body, Math.max(1, deadline - Date.now()), {
+    return await solicitarGemini(url, body, timeoutMs, {
       streaming,
       onChunk,
     });
   } catch (error) {
     if (error.status !== 400 && error.status !== 404) throw error;
 
-    const restantes = deadline - Date.now();
-    if (restantes <= 0) throw error;
-
     const contenidoMinimo = minimoContents(contents, systemText);
     const urlMinima = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
-    const data = await solicitarGemini(urlMinima, { contents: contenidoMinimo }, restantes);
+    const data = await solicitarGemini(
+      urlMinima,
+      { contents: contenidoMinimo },
+      timeoutMs
+    );
     const texto = extraerTexto(data);
     if (!texto) throw new ErrorGemini(null, "", "Gemini respondió sin texto tras reintentar.");
+    onChunk?.(texto);
+    return texto;
+  }
+}
+
+const modeloEsFlash = (modelo) =>
+  modelo.toLowerCase().includes("flash") &&
+  !modelo.toLowerCase().includes("embedding");
+
+async function consultarModelosFlashDisponibles() {
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(
+    () => controller.abort(),
+    MODEL_LIST_TIMEOUT_MS
+  );
+
+  try {
+    const res = await fetch(
+      "/api/gemini",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "listModels" }),
+        signal: controller.signal,
+      }
+    );
+    if (!res.ok) {
+      const body = await res.text();
+      throw new ErrorGemini(
+        res.status,
+        body,
+        `Gemini HTTP ${res.status}: ${body || res.statusText}`
+      );
+    }
+
+    const data = await res.json();
+    return (data.models || [])
+      .filter(
+        (model) =>
+          typeof model.name === "string" &&
+          modeloEsFlash(model.name) &&
+          model.supportedGenerationMethods?.includes("generateContent")
+      )
+      .map((model) => model.name.split("/").pop())
+      .filter((modelo) => modelo !== MODEL)
+      .sort((a, b) => {
+        const esLiteA = a.toLowerCase().includes("flash-lite");
+        const esLiteB = b.toLowerCase().includes("flash-lite");
+        if (esLiteA !== esLiteB) return esLiteA ? -1 : 1;
+        return b.localeCompare(a, undefined, { numeric: true });
+      });
+  } catch (error) {
+    const fallo =
+      error instanceof ErrorGemini
+        ? error
+        : new ErrorGemini(
+            null,
+            "",
+            error?.name === "AbortError"
+              ? "La consulta de modelos de Gemini superó el límite de tiempo."
+              : error?.message || "No se pudo consultar la lista de modelos de Gemini."
+          );
+    registrarErrorGemini(fallo, "models.list");
+    throw fallo;
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+  }
+}
+
+function obtenerModelosFlashDisponibles() {
+  if (!modelosFlashDisponiblesPromise) {
+    modelosFlashDisponiblesPromise = consultarModelosFlashDisponibles().catch(
+      (error) => {
+        modelosFlashDisponiblesPromise = null;
+        throw error;
+      }
+    );
+  }
+  return modelosFlashDisponiblesPromise;
+}
+
+function reintentarChat(error) {
+  if (error?.code === "MISSING_API_KEY") return false;
+  return (
+    error?.code === "TIMEOUT" ||
+    error?.status === 429 ||
+    error?.status === 503 ||
+    error?.status === 504
+  );
+}
+
+async function solicitarChatConReintento(modelo, opciones) {
+  let ultimoError;
+  for (let intento = 0; intento < CHAT_MAX_ATTEMPTS; intento++) {
+    try {
+      return await solicitarChatEnModelo(modelo, opciones);
+    } catch (error) {
+      ultimoError = error;
+      if (intento === CHAT_MAX_ATTEMPTS - 1 || !reintentarChat(error)) throw error;
+      opciones.onChunk?.("");
+      await new Promise((resolve) =>
+        globalThis.setTimeout(resolve, CHAT_RETRY_DELAY_MS * 2 ** intento)
+      );
+    }
+  }
+  throw ultimoError;
+}
+
+async function solicitarChatEnModelo(
+  modelo,
+  { body, contents, systemText, onChunk }
+) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:streamGenerateContent?alt=sse`;
+  try {
+    const respuesta = await solicitarGemini(url, body, CHAT_TIMEOUT_MS, {
+      streaming: true,
+      onChunk,
+      modelo,
+    });
+    return respuesta;
+  } catch (error) {
+    if (error.status !== 400) {
+      throw error;
+    }
+    const urlMinima = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`;
+    const data = await solicitarGemini(
+      urlMinima,
+      { contents: minimoContents(contents, systemText) },
+      CHAT_TIMEOUT_MS,
+      { modelo }
+    );
+    const texto = extraerTexto(data);
+    if (!texto) {
+      const fallo = new ErrorGemini(
+        null,
+        "",
+        "Gemini respondió sin texto tras reintentar.",
+        "EMPTY_RESPONSE"
+      );
+      registrarErrorGemini(fallo, modelo);
+      throw fallo;
+    }
     onChunk?.(texto);
     return texto;
   }
@@ -301,16 +484,6 @@ export async function preguntarChef(
   nombreUsuario = "",
   onChunk
 ) {
-  if (!KEY) {
-    const error = new ErrorGemini(
-      null,
-      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local.",
-      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local."
-    );
-    registrarErrorGemini(error);
-    throw error;
-  }
-
   const reciente = historial
     .filter((item) => item && typeof item.texto === "string" && item.texto.trim())
     .slice(-6);
@@ -324,9 +497,7 @@ export async function preguntarChef(
   const systemText = `${BASE}\n\nCONTEXTO ACTUAL: ${CONTEXTO[vista] || CONTEXTO.home}\nEs de ${momentoDelDia()} en Colombia.${datosUsuario}${
     contextoExtra ? `\n\n${contextoExtra}` : ""
   }`;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse`;
-  return conReintentoMinimo({
-    url,
+  const opciones = {
     body: {
       systemInstruction: { parts: [{ text: systemText }] },
       contents,
@@ -334,28 +505,87 @@ export async function preguntarChef(
     },
     contents,
     systemText,
-    timeoutMs: CHAT_TIMEOUT_MS,
-    streaming: true,
     onChunk,
-  });
+  };
+
+  try {
+    return await solicitarChatConReintento(MODEL, opciones);
+  } catch (error) {
+    if (
+      error.code === "MISSING_API_KEY" ||
+      (error.status !== 404 &&
+        error.status !== 503 &&
+        error.code !== "TIMEOUT")
+    ) {
+      throw error;
+    }
+    onChunk?.("");
+
+    let modelosDisponibles;
+    try {
+      modelosDisponibles = await obtenerModelosFlashDisponibles();
+    } catch {
+      throw error;
+    }
+
+    const modeloRespaldo = modelosDisponibles[0];
+    if (!modeloRespaldo) throw error;
+    console.warn("Gemini usará un modelo Flash de respaldo disponible.", {
+      modeloPrincipal: MODEL,
+      modeloRespaldo,
+    });
+    return solicitarChatConReintento(modeloRespaldo, opciones);
+  }
+}
+
+function extraerMensajeGemini(error) {
+  const cuerpo = error?.responseBody;
+  if (typeof cuerpo === "string" && cuerpo) {
+    try {
+      const proxy = JSON.parse(cuerpo);
+      const detalle =
+        typeof proxy.error === "string" ? JSON.parse(proxy.error) : proxy.error;
+      const mensaje = detalle?.error?.message || detalle?.message;
+      if (typeof mensaje === "string" && mensaje.trim()) return mensaje.trim();
+    } catch {
+      if (cuerpo.length < 500) return cuerpo;
+    }
+  }
+
+  const mensaje = error?.message || "";
+  const coincidencia = mensaje.match(/Gemini HTTP \d+:\s*(.+)$/s);
+  return coincidencia?.[1]?.slice(0, 500) || "sin detalle proporcionado";
 }
 
 export function explicarErrorGemini(error) {
   const mensaje = error instanceof Error ? error.message : "";
-  if (mensaje.includes("Falta configurar")) {
-    return "La traducción no está disponible ahora; puedes consultar la receta original.";
+  if (error?.code === "MISSING_API_KEY") {
+    return "El asistente no está configurado. Añade GEMINI_API_KEY en las variables de entorno de Vercel.";
   }
-  if (mensaje.includes("superó el límite") || mensaje.includes("6 segundos")) {
+  if (error?.status === 403) {
+    return "Google rechazó la clave de Gemini (HTTP 403). Puede estar restringida o revocada. Revisa su estado y las restricciones del proyecto en Google AI Studio → API keys.";
+  }
+  if (error?.status === 429 || error?.status === 503) {
+    return "Hay mucha gente usando el asistente. Inténtalo de nuevo en unos segundos.";
+  }
+  if (
+    error?.code === "TIMEOUT" ||
+    mensaje.includes("superó el límite") ||
+    mensaje.includes("25 segundos")
+  ) {
     return "Gemini está tardando más de lo normal.";
-  }
-  if (mensaje.includes("Error 429")) {
-    return "Gemini está ocupado. Espera un momento e inténtalo de nuevo.";
   }
   if (mensaje.includes("Error 401") || mensaje.includes("Error 403")) {
     return "Gemini rechazó la solicitud. Revisa la configuración de la API.";
   }
-  if (mensaje.includes("Error 400") || mensaje.includes("Error 404")) {
-    return "Gemini rechazó la solicitud. Revisa el modelo y la configuración de la API.";
+  if (
+    error?.status === 400 ||
+    error?.status === 404 ||
+    mensaje.includes("Error 400") ||
+    mensaje.includes("Error 404")
+  ) {
+    const status = error?.status || Number(mensaje.match(/Error (\d{3})/)?.[1]);
+    return `Gemini rechazó la solicitud (HTTP ${status}): ${extraerMensajeGemini(error)}`;
   }
   if (/Error 5\d\d/.test(mensaje)) {
     return "Gemini no está disponible temporalmente. Inténtalo de nuevo en un momento.";
@@ -371,16 +601,6 @@ export async function traducirReceta({ id, nombre, ingredientes, instrucciones }
   const cacheada = leerTraduccionCache(id);
   if (cacheada) return cacheada;
   if (id && traduccionesPendientes.has(id)) return traduccionesPendientes.get(id);
-
-  if (!KEY) {
-    const error = new ErrorGemini(
-      null,
-      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local.",
-      "Falta configurar VITE_GEMINI_KEY en el archivo .env.local."
-    );
-    registrarErrorGemini(error);
-    throw error;
-  }
 
   const solicitud = traducirRecetaSinCache({ id, nombre, ingredientes, instrucciones });
   if (id) traduccionesPendientes.set(id, solicitud);

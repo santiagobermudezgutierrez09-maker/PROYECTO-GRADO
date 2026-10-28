@@ -1,23 +1,22 @@
-# React + Vite
+# CharinCook
 
-## Asistente de la dona (Gemini)
+## Gemini y despliegue en Vercel
 
-El chat de Charin usa la API de Gemini. Para activarlo, crea `PROYECTO GRADO/.env.local` con esta variable:
+El chat usa Gemini a través de la función serverless `api/gemini.js`. Configura esta variable en el entorno de Vercel:
 
 ```env
-VITE_GEMINI_KEY=tu_clave_de_Gemini
+GEMINI_API_KEY=
 ```
 
-Obtén la clave en Google AI Studio y reinicia el servidor de desarrollo después de crear o cambiar el archivo. No subas `.env.local` al repositorio. Las variables `VITE_*` se incluyen en el código del navegador; restringe la clave desde Google Cloud y usa un backend para protegerla en una aplicación publicada.
+La clave solo se lee en el servidor; no uses el prefijo `VITE_`, que publicaría la variable en el bundle. Si antes configuraste `VITE_GEMINI_KEY`, elimínala de Vercel y rota esa clave en Google AI Studio.
 
-### Configuración en hosting
+En Vercel, abre **Settings → Environment Variables**, agrega `GEMINI_API_KEY` para Production, Preview y Development y vuelve a desplegar. La función limita cada IP a 30 solicitudes por minuto y reenvía respuestas en streaming.
 
-Vite incorpora `VITE_GEMINI_KEY` al generar el bundle. Configúrala en el servicio de hosting antes de compilar y vuelve a desplegar cada vez que la cambies:
+Para desarrollo local, copia `.env.example` a `.env.local`, agrega tu clave a `GEMINI_API_KEY` y ejecuta `npm run dev`. Vite atiende `/api/gemini` en el servidor de desarrollo y usa la misma función que Vercel, también para streaming. Por compatibilidad, el servidor local también lee una clave existente en `VITE_GEMINI_KEY` dentro de `.env.local`; nunca se expone al cliente. Migra esa clave a `GEMINI_API_KEY` cuando puedas. `.env.local` está excluido de Git. En Vercel, configura `GEMINI_API_KEY` como variable de entorno server-side, sin el prefijo `VITE_`. El límite por IP es en memoria por instancia; usa Vercel KV/Redis para cuotas globales precisas entre instancias.
 
-- **Vercel:** abre el proyecto en el dashboard, ve a **Settings → Environment Variables**, agrega `VITE_GEMINI_KEY` con la clave y selecciona los entornos necesarios (Production, Preview y/o Development). Guarda y ejecuta un nuevo despliegue.
-- **Netlify:** abre el sitio, ve a **Site configuration → Environment variables** (o **Build & deploy → Environment variables**, según la interfaz), agrega `VITE_GEMINI_KEY` con la clave y aplica el cambio. Luego inicia un nuevo despliegue.
+Durante el desarrollo en Codespaces, Vite omite el enlace al manifiesto web para evitar que la redirección de autenticación del túnel genere un error CORS; el manifiesto se mantiene en los builds de producción.
 
-Para probar desde un celular en la misma red con `npm run dev -- --host`, crea o edita `.env.local` y reinicia el servidor de desarrollo para que Vite vuelva a cargar la variable.
+Los assets con hash de `/assets/*` se cachean un año. Las pantallas se cargan de forma diferida, y la dona 3D descarga Three.js al solicitarse. Las traducciones se guardan en la caché local del navegador. Las imágenes locales actuales pesan aproximadamente 100 KB en total; las miniaturas fuera de pantalla usan carga diferida y decodificación asíncrona.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

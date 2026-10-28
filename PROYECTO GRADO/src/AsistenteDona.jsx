@@ -8,10 +8,12 @@ import {
 } from "./chatbotEngine";
 import { buscarPostresPorIngrediente } from "./mealDbService";
 import {
+  explicarErrorGemini,
   limpiarRespuestaChef,
   preguntarChef,
   saludoPorHora,
 } from "./geminiService";
+import { permitirMensajeChat } from "./chatRequestGuard";
 import {
   Reconocimiento,
   validarMicrofono,
@@ -67,6 +69,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
   const vozRef = useRef(true);
   const vistaRef = useRef("home");
   const enviarRef = useRef(null);
+  const ultimoEnvioRef = useRef(0);
 
   const vistaSegura = SALUDOS[vista] ? vista : "home";
   const hayConversacion = mensajes.some((m) => m.rol === "user");
@@ -74,23 +77,19 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
   useEffect(() => {
     if (!visible || Mascota3D) return undefined;
 
-    const cargarMascota = () => {
-      import("./Mascota")
-        .then(({ default: ComponenteMascota }) => {
-          setMascota3D(() => ComponenteMascota);
-        })
-        .catch((error) => {
-          console.warn("No se pudo cargar la mascota 3D.", error);
-        });
+    let activo = true;
+
+    import("./Mascota")
+      .then(({ default: ComponenteMascota }) => {
+        if (activo) setMascota3D(() => ComponenteMascota);
+      })
+      .catch((error) => {
+        console.warn("No se pudo cargar la mascota 3D.", error);
+      });
+
+    return () => {
+      activo = false;
     };
-
-    if (window.requestIdleCallback) {
-      const idleId = window.requestIdleCallback(cargarMascota, { timeout: 1200 });
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    const timeoutId = window.setTimeout(cargarMascota, 300);
-    return () => window.clearTimeout(timeoutId);
   }, [visible, Mascota3D]);
 
   mensajesRef.current = mensajes;
@@ -126,6 +125,10 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
   async function enviar(textoDirecto) {
     const pregunta = (textoDirecto ?? texto).trim();
     if (!pregunta || cargandoRef.current) return;
+    if (!permitirMensajeChat(ultimoEnvioRef)) {
+      setError("Espera un segundo antes de enviar otro mensaje.");
+      return;
+    }
 
     window.speechSynthesis?.cancel();
     setHablando(false);
@@ -172,7 +175,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
         );
       } catch (errorGemini) {
         console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
-        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
+        setError(explicarErrorGemini(errorGemini));
         respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
       }
     }

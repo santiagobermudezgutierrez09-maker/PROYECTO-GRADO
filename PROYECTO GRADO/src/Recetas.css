@@ -736,3 +736,63 @@
     transition: none;
   }
 }
+
+@media (max-width: 768px) {
+  .recetas {
+    min-width: 0;
+  }
+
+  .recetas-barra {
+    gap: 10px;
+  }
+
+  .tema-cocina .recetas-busqueda input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .tema-cocina .recetas-btn-filtros,
+  .tema-cocina .recetas-chip {
+    min-height: 44px;
+  }
+
+  .recetas-categorias {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    scrollbar-width: none;
+  }
+
+  .recetas-categorias::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recetas-chip {
+    flex: 0 0 auto;
+  }
+
+  .recetas-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .recetas-grid > * {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .recetas-barra {
+    margin-bottom: 14px;
+  }
+
+  .recetas-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .recetas-filtros.card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+}

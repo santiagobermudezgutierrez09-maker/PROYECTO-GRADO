@@ -240,13 +240,15 @@ export default function Mascota({
     ro.observe(el);
 
     // ---------- Animación ----------
-    const reloj = new THREE.Clock();
+    const reloj = new THREE.Timer();
+    reloj.connect(document);
     let frame;
     let parpadeo = 1;
     const angulos = { "-1": 0.35, "1": 0.35 };
 
     const animar = () => {
-      const t = reloj.getElapsedTime();
+      reloj.update();
+      const t = reloj.getElapsed();
 
       // Flotar + respirar (aplastarse y estirarse)
       let y = Math.sin(t * 2) * 0.1;
@@ -309,6 +311,7 @@ export default function Mascota({
 
     return () => {
       cancelAnimationFrame(frame);
+      reloj.dispose();
       window.removeEventListener("pointermove", alMover);
       ro.disconnect();
       scene.traverse((obj) => {

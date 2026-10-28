@@ -392,3 +392,75 @@
     white-space: normal;
   }
 }
+
+@media (max-width: 768px) {
+  .ra-contenedor {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .ra-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .ra-card {
+    min-width: 0;
+    padding: 9px;
+  }
+
+  .ra-campo {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .ra-hero {
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .ra-hero-img {
+    max-height: 360px;
+  }
+
+  .ra-columnas {
+    gap: 14px;
+  }
+
+  .ra-pasos li,
+  .ra-ingredientes li {
+    font-size: 16px;
+  }
+
+  .ra-volver,
+  .ra-btn-principal,
+  .ra-btn-charin,
+  .ra-segmentado button {
+    min-height: 44px;
+  }
+
+  .ra-video,
+  .ra-video iframe,
+  .ra-hero-img {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .ra-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-hero {
+    padding: 12px;
+  }
+
+  .ra-detalle-titulo {
+    font-size: clamp(1.4rem, 7vw, 1.75rem);
+  }
+
+  .ra-bloque {
+    padding: 16px;
+  }
+}

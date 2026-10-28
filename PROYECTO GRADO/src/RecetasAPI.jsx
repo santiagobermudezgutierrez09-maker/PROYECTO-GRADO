@@ -207,7 +207,7 @@ function RecetasAPI({ postreInicialId = "" }) {
       console.error("No se pudo traducir la receta.", e);
       setErrorTraduccion(
         e?.message?.includes("Falta configurar")
-          ? "La traducción no está configurada en este sitio. Añade VITE_GEMINI_KEY en Vercel → Settings → Environment Variables y vuelve a desplegar."
+          ? "La traducción no está configurada en este sitio. Añade GEMINI_API_KEY en Vercel → Settings → Environment Variables y vuelve a desplegar."
           : "Ahora mismo no puedo traducirla, pero puedes consultar la receta original e intentarlo de nuevo."
       );
     } finally {
@@ -239,7 +239,14 @@ function RecetasAPI({ postreInicialId = "" }) {
 
         <article className="ra-detalle">
           <div className="ra-hero">
-            <img className="ra-hero-img" src={receta.strMealThumb} alt={receta.strMeal} />
+            <img
+              className="ra-hero-img"
+              src={receta.strMealThumb}
+              alt={receta.strMeal}
+              width="320"
+              height="240"
+              decoding="async"
+            />
             <div className="ra-hero-info">
               <h2 className="ra-detalle-titulo">{titulo}</h2>
 
@@ -302,6 +309,7 @@ function RecetasAPI({ postreInicialId = "" }) {
                         src={`https://www.themealdb.com/images/ingredients/${encodeURIComponent(ing.nombre)}-small.png`}
                         alt=""
                         loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
                         }}
@@ -414,7 +422,12 @@ function RecetasAPI({ postreInicialId = "" }) {
                   onClick={() => verDetalle(postre.idMeal)}
                   disabled={cargandoDetalle}
                 >
-                  <img src={postre.strMealThumb} alt={postre.strMeal} loading="lazy" />
+                  <img
+                    src={postre.strMealThumb}
+                    alt={postre.strMeal}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span className="ra-card-nombre">{postre.strMeal}</span>
                   <span className="ra-card-ver">Ver receta →</span>
                 </button>

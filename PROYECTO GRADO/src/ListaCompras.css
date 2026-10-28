@@ -201,6 +201,42 @@
   }
 }
 
+@media (max-width: 768px) {
+  .lc-panel,
+  .lc-lista {
+    min-width: 0;
+  }
+
+  .lc-panel {
+    padding: 18px;
+  }
+
+  .lc-item,
+  .lc-item-uso {
+    overflow-wrap: anywhere;
+  }
+
+  .lc-buscar,
+  .lc-agregar input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .tema-cocina .lc-panel button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lc-panel {
+    padding: 14px;
+  }
+
+  .lc-acciones {
+    gap: 10px;
+  }
+}
+
 /* Buscador, agregar propio, detalle de cada ingrediente */
 .lc-buscar,
 .lc-agregar input {

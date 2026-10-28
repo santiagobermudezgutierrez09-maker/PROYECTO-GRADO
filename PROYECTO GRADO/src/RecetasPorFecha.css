@@ -591,3 +591,49 @@
     min-height: 42px;
   }
 }
+
+@media (max-width: 768px) {
+  .rf-hero,
+  .rf-panel,
+  .rf-evento {
+    min-width: 0;
+  }
+
+  .rf-hero {
+    padding: 18px;
+  }
+
+  .rf-postres {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .rf-evento {
+    gap: 12px;
+  }
+
+  .rf-evento-lado {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tema-cocina .rf-dia,
+  .tema-cocina .rf-ver-mas,
+  .tema-cocina .rf-evento button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rf-postres {
+    grid-template-columns: 1fr;
+  }
+
+  .rf-hero {
+    padding: 14px;
+  }
+
+  .rf-hero-nombre {
+    font-size: clamp(1.15rem, 6vw, 1.4rem);
+  }
+}

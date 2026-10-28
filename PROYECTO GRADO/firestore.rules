@@ -21,7 +21,9 @@ service cloud.firestore {
     }
 
     match /favoritos/{documentId} {
-      allow read, write: if idPerteneceAlUsuario(documentId);
+      allow read: if idPerteneceAlUsuario(documentId)
+        || (autenticado() && resource.data.usuarioId == request.auth.uid);
+      allow write: if idPerteneceAlUsuario(documentId);
     }
 
     match /calificaciones/{documentId} {

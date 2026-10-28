@@ -8,10 +8,12 @@ import {
 } from "./chatbotEngine";
 import { buscarPostresPorIngrediente } from "./mealDbService";
 import {
+  explicarErrorGemini,
   limpiarRespuestaChef,
   preguntarChef,
   saludoPorHora,
 } from "./geminiService";
+import { permitirMensajeChat } from "./chatRequestGuard";
 import {
   Reconocimiento,
   validarMicrofono,
@@ -56,6 +58,7 @@ function ChatDona({ nombreUsuario }) {
   const vozRef = useRef(true);
   const recRef = useRef(null);
   const finRef = useRef(null);
+  const ultimoEnvioRef = useRef(0);
 
   mensajesRef.current = mensajes;
   vozRef.current = vozActiva;
@@ -93,6 +96,10 @@ function ChatDona({ nombreUsuario }) {
   const enviar = async (textoDirecto) => {
     const pregunta = (textoDirecto ?? entrada).trim();
     if (!pregunta || estadoRef.current === "pensando") return;
+    if (!permitirMensajeChat(ultimoEnvioRef)) {
+      setError("Espera un segundo antes de enviar otro mensaje.");
+      return;
+    }
 
     window.speechSynthesis?.cancel();
     setError("");
@@ -137,7 +144,7 @@ function ChatDona({ nombreUsuario }) {
         );
       } catch (errorGemini) {
         console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
-        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
+        setError(explicarErrorGemini(errorGemini));
         respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
       }
     }
@@ -349,6 +356,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
   const recetaRef = useRef(recetaActiva);
   const pasoRef = useRef(pasoActualIndex);
   const enviarRef = useRef(null);
+  const ultimoEnvioRef = useRef(0);
 
   mensajesRef.current = mensajes;
   vozRef.current = vozActiva;
@@ -375,6 +383,10 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
   const enviar = async (texto) => {
     const pregunta = texto.trim();
     if (!pregunta || pensandoRef.current) return;
+    if (!permitirMensajeChat(ultimoEnvioRef)) {
+      setError("Espera un segundo antes de enviar otro mensaje.");
+      return;
+    }
 
     window.speechSynthesis?.cancel();
     setHablando(false);
@@ -434,7 +446,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
         );
       } catch (errorGemini) {
         console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
-        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
+        setError(explicarErrorGemini(errorGemini));
         respuesta = generarRespuesta(pregunta, receta, paso, recetasExternas);
       }
     }

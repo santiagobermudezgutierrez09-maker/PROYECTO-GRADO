@@ -3,8 +3,6 @@
 
 
 import { useEffect, useRef } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "./firebaseAuth";
 
 const MINUTOS_INACTIVIDAD = 10;
 
@@ -16,9 +14,17 @@ export function useCierreSesionInactividad() {
       if (temporizadorRef.current) clearTimeout(temporizadorRef.current);
 
       temporizadorRef.current = setTimeout(async () => {
-        if (auth.currentUser) {
-          await signOut(auth);
-          alert("Tu sesión se cerró automáticamente por inactividad.");
+        try {
+          const [{ signOut }, { auth }] = await Promise.all([
+            import("firebase/auth"),
+            import("./firebaseAuth"),
+          ]);
+          if (auth.currentUser) {
+            await signOut(auth);
+            alert("Tu sesión se cerró automáticamente por inactividad.");
+          }
+        } catch (error) {
+          console.error("No se pudo cerrar la sesión por inactividad.", error);
         }
       }, MINUTOS_INACTIVIDAD * 60 * 1000);
     };

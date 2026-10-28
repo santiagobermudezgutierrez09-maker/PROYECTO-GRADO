@@ -567,3 +567,68 @@
   width: auto;
   margin: 0;
 }
+
+@media (max-width: 768px) {
+  .rc {
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .rc-title {
+    font-size: clamp(1.2rem, 4vw, 1.4rem);
+    overflow-wrap: anywhere;
+  }
+
+  .rc-ingredientes li,
+  .rc-pasos li,
+  .rc-texto-comentario {
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+
+  .rc-actions,
+  .rc-buttons {
+    gap: 10px;
+  }
+
+  .rc-btn,
+  .rc-eliminar,
+  .rc-form .rc-btn {
+    min-height: 44px;
+  }
+
+  .rc img,
+  .rc video,
+  .rc iframe {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .rc {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .rc-header {
+    gap: 10px;
+  }
+
+  .rc-stats > div {
+    padding: 10px;
+  }
+
+  .rc-buttons .rc-btn {
+    flex: 1 1 140px;
+  }
+
+  .rc-form {
+    flex-wrap: wrap;
+  }
+
+  .rc-form input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+}
