@@ -3,7 +3,7 @@ import "./Mascota.css";
 export default function MascotaCarga({
   variante = "",
   alClic,
-  mensaje = "¡Tócame y pregúntame de cocina! 🍩",
+  mensaje = "Pregúntame lo que quieras",
 }) {
   const activar = (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -17,7 +17,7 @@ export default function MascotaCarga({
       className={`mascota-wrap mascota-cargando ${variante}`}
       role={alClic ? "button" : undefined}
       tabIndex={alClic ? 0 : undefined}
-      aria-label={alClic ? "Charin está cargando" : undefined}
+      aria-label={alClic ? "El asistente está cargando" : undefined}
       onClick={alClic}
       onKeyDown={alClic ? activar : undefined}
     >

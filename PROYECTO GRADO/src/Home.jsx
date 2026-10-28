@@ -174,8 +174,8 @@ function Home({ irA, correoUsuario }) {
     },
     {
       vista: "chatbot",
-      titulo: "Pregunta a Charin",
-      texto: "Resuelve dudas de ingredientes, tiempos, pasos y sustituciones.",
+      titulo: "Pregúntale al asistente",
+      texto: "Consulta sobre cocina, recetas o cualquier otro tema.",
     },
     {
       vista: "fechas",

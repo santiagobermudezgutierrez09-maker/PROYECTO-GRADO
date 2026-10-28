@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import MascotaCarga from "./MascotaCarga";
 import {
+  esConsultaBreveAbierta,
   extraerConsultaIngrediente,
   generarRespuesta,
   responderConReglasPrioritarias,
@@ -22,11 +23,11 @@ import "./AsistenteDona.css";
 
 // Lo que dice Charin después del saludo (el saludo cambia según la hora y el nombre)
 const SALUDOS = {
-  home: "Soy Charin. Cuéntame qué se te antoja y te ayudo a prepararlo.",
-  generador: "Dime qué ingredientes tienes y te digo qué postre puedes hacer y qué te falta. 🥕",
-  cocina: "Estoy contigo mientras cocinas 🔥 Pregúntame lo que necesites, sin soltar la cuchara.",
-  api: "Pregúntame por cualquier postre del mundo 🍰 Te cuento cómo se prepara.",
-  fechas: "¿Tienes un evento? 🎉 Dime la ocasión y te sugiero qué postre preparar.",
+  home: "¿En qué te puedo ayudar? Puedes preguntarme sobre cocina o cualquier otro tema.",
+  generador: "Dime qué ingredientes tienes y te sugiero qué preparar y qué podrías sustituir.",
+  cocina: "¿Qué necesitas saber sobre la receta o el paso que estás preparando?",
+  api: "Pregúntame por una receta, un ingrediente o cualquier otro tema.",
+  fechas: "Cuéntame la ocasión y te sugiero recetas que encajen.",
 };
 
 const SUGERENCIAS = {
@@ -147,7 +148,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
       recetasExternas
     );
     const consultaIngrediente = extraerConsultaIngrediente(pregunta);
-    if (respuestaLocal === null && consultaIngrediente) {
+    if (respuestaLocal === null && consultaIngrediente && !esConsultaBreveAbierta(pregunta)) {
       try {
         recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
         respuestaLocal = responderConReglasPrioritarias(
@@ -157,7 +158,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
           recetasExternas
         );
       } catch {
-        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
+        setError("No pude consultar las recetas internacionales ahora.");
       }
     }
 
@@ -170,8 +171,8 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
           await preguntarChef(historial, pregunta, vistaRef.current, "", nombreUsuario, setRespuestaParcial)
         );
       } catch (errorGemini) {
-        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
-        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
+        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
         respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
       }
     }
@@ -259,21 +260,21 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
         <Mascota3D
           variante={vista === "home" ? "en-inicio" : ""}
           hablando={cargando || hablando}
-          mensaje={abierto ? undefined : "¡Tócame y pregúntame de cocina! 🍩"}
+          mensaje={abierto ? undefined : "Pregúntame lo que quieras"}
           alClic={() => setAbierto((a) => !a)}
         />
       ) : (
         <MascotaCarga
           variante={vista === "home" ? "en-inicio" : ""}
           alClic={() => setAbierto((a) => !a)}
-          mensaje="¡Tócame y pregúntame de cocina! 🍩"
+          mensaje="Pregúntame lo que quieras"
         />
       )}
 
       {abierto && (
         <div className="asistente-panel" role="dialog" aria-label="Chat con Charin">
           <div className="asistente-cabecera">
-            <span>🍩 Charin · tu chef IA</span>
+            <span>Asistente de CharinCook</span>
             <button onClick={() => setAbierto(false)} aria-label="Cerrar chat">
               ✕
             </button>
@@ -287,7 +288,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
                   : m.texto}
               </div>
             ))}
-            {cargando && <div className="asist-msg bot pensando">{respuestaParcial || "Charin está escribiendo…"}</div>}
+            {cargando && <div className="asist-msg bot pensando">{respuestaParcial || "El asistente está respondiendo…"}</div>}
             <div ref={finRef} />
           </div>
 
@@ -326,8 +327,8 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
                 className={`asistente-icono ${escuchando ? "asistente-icono--on" : ""}`}
                 onClick={alternarMicrofono}
                 aria-pressed={escuchando}
-                aria-label={escuchando ? "Dejar de escuchar" : "Hablar con Charin"}
-                title={escuchando ? "Dejar de escuchar" : "Hablar con Charin"}
+                aria-label={escuchando ? "Dejar de escuchar" : "Hablar con el asistente"}
+                title={escuchando ? "Dejar de escuchar" : "Hablar con el asistente"}
               >
                 🎤
               </button>
@@ -336,7 +337,7 @@ export default function AsistenteDona({ vista, visible, nombreUsuario = "" }) {
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && enviarEscrito()}
-              placeholder="Escribe o háblale a Charin…"
+              placeholder="Escribe tu pregunta aquí…"
               maxLength={300}
             />
             <button onClick={enviarEscrito} disabled={cargando || !texto.trim()}>

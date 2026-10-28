@@ -6,7 +6,7 @@
 const preguntasFrecuentes = [
   {
     palabrasClave: ["hola", "buenas", "hey"],
-    respuesta: "¡Hola! Soy el asistente de Charin Cook. Puedes preguntarme cosas como: cuánto tiempo toma la receta, qué sustituto usar, o cómo va un paso.",
+    respuesta: "¡Hola! Puedes preguntarme sobre recetas, ingredientes, sustituciones, técnicas de cocina o cualquier otro tema.",
   },
   {
     palabrasClave: ["tiempo", "cuanto", "demora", "dura"],

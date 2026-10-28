@@ -90,6 +90,7 @@ export function extraerConsultaIngrediente(mensajeOriginal) {
 const intenciones = [
   { nombre: "saludo", palabras: ["hola", "buenas", "hey", "buenos dias", "buenas tardes", "buenas noches", "que tal"] },
   { nombre: "ayuda", palabras: ["ayuda", "que puedes hacer", "opciones", "menu", "que sabes hacer", "como funciona"] },
+  { nombre: "receta_completa", palabras: ["dame la receta", "receta completa", "como preparar", "como se prepara"] },
   { nombre: "tiempo", palabras: ["tiempo", "cuanto tarda", "cuanto demora", "cuanto dura", "minutos", "rapido", "lento"] },
   { nombre: "porciones", palabras: ["porciones", "personas", "rinde", "para cuantos", "cuantas porciones"] },
   { nombre: "ingredientes", palabras: ["ingredientes", "que necesito", "que lleva", "que le echo", "que compro", "lista de compras"] },
@@ -119,6 +120,15 @@ function detectarIntencion(mensajeNormalizado) {
   });
 
   return mejorIntencion;
+}
+
+export function esConsultaBreveAbierta(mensajeOriginal) {
+  const mensaje = normalizar(mensajeOriginal);
+  return (
+    mensaje.split(/\s+/).filter(Boolean).length <= 2 &&
+    !detectarIntencion(mensaje) &&
+    !recetas.some((receta) => normalizar(receta.nombre) === mensaje)
+  );
 }
 
 function buscarSustitutoEnMensaje(mensajeNormalizado, recetaContexto) {
@@ -183,11 +193,16 @@ export function generarRespuesta(
     switch (intencion) {
       case "saludo":
         return receta
-          ? `¡Hola! Estoy contigo con la receta "${receta.nombre}". Pregúntame por tiempo, ingredientes, pasos, sustitutos, dificultad o calorías.`
-          : "¡Hola! Soy el asistente de Charin Cook. Menciona el nombre (o parte del nombre) de una receta, o escribe 'ayuda'.";
+          ? `¡Hola! ¿En qué te ayudo con "${receta.nombre}"?`
+          : "¡Hola! ¿En qué te puedo ayudar?";
 
       case "ayuda":
-        return "Puedo ayudarte con: tiempo, porciones, ingredientes, sustitutos, pasos (incluso uno específico, ej: 'paso 2'), dificultad, calorías, dieta, y sugerirte algo si no sabes qué cocinar. También puedes escribir solo el nombre (o parte del nombre) de una receta, o un ingrediente, y te digo qué encuentro.";
+        return "Puedes preguntarme sobre cualquier tema. En cocina, te ayudo con recetas, ingredientes, sustituciones y técnicas; también puedes escribir un ingrediente o contarme qué quieres preparar.";
+
+      case "receta_completa":
+        return receta
+          ? `Para preparar "${receta.nombre}" necesitas: ${receta.ingredientes.join(", ")}.\n\nPreparación:\n${receta.pasos.map((paso, i) => `${i + 1}. ${paso}`).join("\n")}`
+          : "Dime qué receta quieres preparar y te comparto los ingredientes y los pasos.";
 
       case "tiempo":
         return receta ? `"${receta.nombre}" toma aproximadamente ${receta.tiempo} minutos en total.` : "Dime el nombre de la receta y te digo cuánto tiempo toma.";
@@ -245,10 +260,10 @@ export function generarRespuesta(
       }
 
       case "agradecimiento":
-        return "¡De nada! Aquí estoy si necesitas algo más mientras cocinas. 😊";
+        return "¡De nada! Me alegra que te haya servido.";
 
       case "despedida":
-        return "¡Hasta luego! Que disfrutes tu receta. 👋";
+        return "¡Hasta luego!";
 
       default:
         break;
@@ -271,6 +286,10 @@ export function generarRespuesta(
   }
 
   if (recetasPorNombre.length === 1) {
+    if (mensaje.includes("receta")) {
+      const encontrada = recetasPorNombre[0];
+      return `Para preparar "${encontrada.nombre}" necesitas: ${encontrada.ingredientes.join(", ")}.\n\nPreparación:\n${encontrada.pasos.map((paso, i) => `${i + 1}. ${paso}`).join("\n")}`;
+    }
     return resumenReceta(recetasPorNombre[0]);
   }
 
@@ -290,7 +309,7 @@ export function generarRespuesta(
 
   return receta
     ? `No entendí bien esa pregunta sobre "${receta.nombre}". Puedes preguntarme por tiempo, ingredientes, pasos, sustitutos, dificultad, calorías o dieta.`
-    : "No encontré ninguna receta ni ingrediente relacionado con eso. Intenta con otro nombre, o escribe 'ayuda' para ver qué puedo hacer.";
+    : "Ahora no puedo conectar con el asistente para responder sobre ese tema. Si quieres, puedo ayudarte con recetas, ingredientes, sustituciones o técnicas de cocina.";
 }
 
 const INTENCIONES_PRIORITARIAS = new Set([
@@ -310,7 +329,11 @@ export function responderConReglasPrioritarias(
   recetasExternas = []
 ) {
   const normalizado = normalizar(mensaje);
-  if (INTENCIONES_PRIORITARIAS.has(detectarIntencion(normalizado)) || extraerConsultaIngrediente(normalizado)) {
+  if (
+    !esConsultaBreveAbierta(normalizado) &&
+    (INTENCIONES_PRIORITARIAS.has(detectarIntencion(normalizado)) ||
+      extraerConsultaIngrediente(normalizado))
+  ) {
     return generarRespuesta(mensaje, recetaActiva, pasoActualIndex, recetasExternas);
   }
   return null;

@@ -448,7 +448,7 @@ function App() {
           VISTAS_CON_DONA.includes(vista) && vista !== "home" ? (
             <MascotaCarga
               variante={vista === "home" ? "en-inicio" : ""}
-              mensaje="¡Tócame y pregúntame de cocina! 🍩"
+              mensaje="Pregúntame lo que quieras"
             />
           ) : null
         }

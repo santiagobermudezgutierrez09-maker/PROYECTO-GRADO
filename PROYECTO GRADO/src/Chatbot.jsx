@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Mascota from "./Mascota";
 import {
+  esConsultaBreveAbierta,
   extraerConsultaIngrediente,
   generarRespuesta,
   responderConReglasPrioritarias,
@@ -21,7 +22,7 @@ import {
 import "./Chatbot.css";
 
 const construirSaludo = (nombre) =>
-  `${saludoPorHora(nombre)} Soy Charin. Cuéntame qué se te antoja hoy: puedo sugerirte un postre rápido, algo saludable o una receta para una ocasión especial. Háblame con el micrófono o escríbeme.`;
+  `${saludoPorHora(nombre)} ¿En qué te puedo ayudar? Puedes preguntarme sobre recetas, cocina o cualquier otro tema.`;
 
 const SUGERENCIAS = [
   "¿Qué postre fácil hago hoy?",
@@ -30,10 +31,10 @@ const SUGERENCIAS = [
 ];
 
 const ETIQUETAS = {
-  reposo: "Toca a Charin o el micrófono para hablar, o escribe abajo",
+  reposo: "Toca la dona o el micrófono para hablar, o escribe abajo",
   escuchando: "Te escucho… habla ahora",
-  pensando: "Charin está escribiendo…",
-  hablando: "Charin está hablando…",
+  pensando: "El asistente está respondiendo…",
+  hablando: "El asistente está hablando…",
 };
 
 /* ------------------------------------------------------------
@@ -112,7 +113,7 @@ function ChatDona({ nombreUsuario }) {
       recetasExternas
     );
     const consultaIngrediente = extraerConsultaIngrediente(pregunta);
-    if (respuestaLocal === null && consultaIngrediente) {
+    if (respuestaLocal === null && consultaIngrediente && !esConsultaBreveAbierta(pregunta)) {
       try {
         recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
         respuestaLocal = responderConReglasPrioritarias(
@@ -122,7 +123,7 @@ function ChatDona({ nombreUsuario }) {
           recetasExternas
         );
       } catch {
-        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
+        setError("No pude consultar las recetas internacionales ahora.");
       }
     }
 
@@ -135,8 +136,8 @@ function ChatDona({ nombreUsuario }) {
           await preguntarChef(historial, pregunta, "home", "", nombreUsuario, setRespuestaParcial)
         );
       } catch (errorGemini) {
-        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
-        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
+        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
         respuesta = generarRespuesta(pregunta, null, null, recetasExternas);
       }
     }
@@ -232,7 +233,7 @@ function ChatDona({ nombreUsuario }) {
           </p>
         ))}
         {estado === "pensando" && (
-          <p className="cb-msg cb-msg--bot">{respuestaParcial || "Charin está escribiendo…"}</p>
+          <p className="cb-msg cb-msg--bot">{respuestaParcial || "El asistente está respondiendo…"}</p>
         )}
         <div ref={finRef} />
       </div>
@@ -266,8 +267,8 @@ function ChatDona({ nombreUsuario }) {
           className={`cb-mic ${estado === "escuchando" ? "cb-mic--on" : ""}`}
           onClick={alternarMicrofono}
           aria-pressed={estado === "escuchando"}
-          aria-label={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con Charin"}
-          title={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con Charin"}
+          aria-label={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con el asistente"}
+          title={estado === "escuchando" ? "Dejar de escuchar" : "Hablar con el asistente"}
         >
           🎤
         </button>
@@ -275,7 +276,7 @@ function ChatDona({ nombreUsuario }) {
         <form className="cb-form" onSubmit={enviarEscrito}>
           <input
             type="text"
-            placeholder="O escribe tu pregunta aquí…"
+            placeholder="Escribe tu pregunta aquí…"
             value={entrada}
             onChange={(e) => setEntrada(e.target.value)}
             disabled={estado === "pensando"}
@@ -300,7 +301,7 @@ function ChatDona({ nombreUsuario }) {
 
       {!Reconocimiento && (
         <p className="cb-nota">
-          Tu navegador no permite hablarle a Charin. Para usar el micrófono, abre la página en Chrome o Edge.
+          Tu navegador no permite usar el micrófono. Abre la página en Chrome o Edge, o escribe tu pregunta.
         </p>
       )}
     </div>
@@ -327,7 +328,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
   const [mensajes, setMensajes] = useState(() => [
     {
       autor: "bot",
-      texto: `${saludoPorHora(nombreUsuario)} Estoy contigo mientras preparas "${recetaActiva.nombre}". Pregúntame lo que necesites o háblame con el micrófono 🎤`,
+      texto: `${saludoPorHora(nombreUsuario)} ¿En qué te ayudo con "${recetaActiva.nombre}"? También puedes preguntarme sobre cualquier otro tema.`,
     },
   ]);
   const [entrada, setEntrada] = useState("");
@@ -402,7 +403,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
       recetasExternas
     );
     const consultaIngrediente = extraerConsultaIngrediente(pregunta);
-    if (respuestaLocal === null && consultaIngrediente) {
+    if (respuestaLocal === null && consultaIngrediente && !esConsultaBreveAbierta(pregunta)) {
       try {
         recetasExternas = await buscarPostresPorIngrediente(consultaIngrediente);
         respuestaLocal = responderConReglasPrioritarias(
@@ -412,7 +413,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
           recetasExternas
         );
       } catch {
-        setError("No pude consultar las recetas internacionales ahora. Te muestro las coincidencias del recetario.");
+        setError("No pude consultar las recetas internacionales ahora.");
       }
     }
 
@@ -432,8 +433,8 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
           )
         );
       } catch (errorGemini) {
-        console.warn("Charin responderá con sus reglas locales porque Gemini no está disponible.", errorGemini);
-        setError("Ahora mismo no puedo pensar tan rápido, pero te ayudo con lo que sé.");
+        console.warn("El asistente usará sus respuestas locales porque Gemini no está disponible.", errorGemini);
+        setError("No pude conectar con el asistente. Intentaré ayudarte con la información disponible.");
         respuesta = generarRespuesta(pregunta, receta, paso, recetasExternas);
       }
     }
@@ -511,7 +512,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
 
   return (
     <div className="cbc">
-      <h3 className="cbc-titulo">💬 Asistente de cocina</h3>
+      <h3 className="cbc-titulo">Asistente de cocina</h3>
       <div className="cbc-mascota">
         <Mascota variante="en-chat-compacto" hablando={pensando || hablando} mensaje="" />
       </div>
@@ -522,7 +523,7 @@ function ChatCompacto({ recetaActiva, pasoActualIndex, nombreUsuario }) {
             {m.texto}
           </div>
         ))}
-        {pensando && <div className="cbc-msg cbc-msg--bot">{respuestaParcial || "Charin está escribiendo…"}</div>}
+        {pensando && <div className="cbc-msg cbc-msg--bot">{respuestaParcial || "El asistente está respondiendo…"}</div>}
         <div ref={finRef} />
       </div>
 

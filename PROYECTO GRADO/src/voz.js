@@ -32,7 +32,7 @@ export async function validarMicrofono() {
     return "Esta página está abierta dentro de otra app (Instagram, Facebook, WhatsApp...). Ábrela en Chrome para usar la voz, o escribe tu pregunta.";
   }
   if (!Reconocimiento) {
-    return "Tu navegador no permite hablarle a Charin. Abre la página en Chrome o Edge, o escribe tu pregunta.";
+    return "Tu navegador no permite usar el micrófono. Abre la página en Chrome o Edge, o escribe tu pregunta.";
   }
   if (typeof window !== "undefined" && window.isSecureContext === false) {
     return "El micrófono solo funciona en una página segura (https).";

@@ -3,11 +3,11 @@ import * as THREE from "three";
 import "./Mascota.css";
 
 const FRASES = [
-  "¡Hola! Soy Charin 🍩 ¿Qué cocinamos hoy?",
-  "¡Vamos a hornear algo delicioso! 🧁",
-  "¡Los postres son mi especialidad! 🍰",
-  "¿Tienes hambre? ¡Yo siempre! 😋",
-  "¡Cocinar con calma es lo mejor! ✨",
+  "¿En qué te puedo ayudar?",
+  "¿Qué te gustaría cocinar?",
+  "Pregúntame sobre recetas o ingredientes.",
+  "También puedo ayudarte con sustituciones.",
+  "Puedes preguntarme sobre cualquier tema.",
 ];
 
 const MODO_CAPTURA = import.meta.env.DEV &&

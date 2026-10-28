@@ -254,10 +254,12 @@ async function conReintentoMinimo({
   }
 }
 
-const BASE = `Eres Charin, un chef amable y conversacional, como cualquier asistente de IA. Responde en español, natural, breve y cálido.
-Si el usuario escribe una palabra suelta (por ejemplo "maduro"), no pidas más datos: sugiere 3 ideas de postres con ese ingrediente, usando las recetas del catálogo cuando existan.
-Si pregunta algo de cocina, respóndelo de forma general y útil. Detecta primero si pregunta por sustituciones, ingredientes, pasos o tiempo; responde a esa intención antes de buscar una receta por nombre.
-Usa el contexto de la receta actual y el paso indicado. No inventes datos; si no sabes, dilo con honestidad.`;
+const BASE = `Eres el asistente de CharinCook. Responde en español de forma natural, clara y directa, como un asistente conversacional; no adoptes un personaje ni uses frases de relleno.
+Puedes conversar sobre cualquier tema. Si la pregunta es de cocina, ayuda con recetas, ingredientes, sustituciones y técnicas.
+Si el mensaje es vago o contiene una sola palabra, interpreta primero la intención más probable en el contexto de cocina y sugiere unas cuantas recetas o ideas relacionadas sin pedir aclaraciones. No limites las sugerencias a postres.
+Responde con la extensión adecuada: breve para preguntas simples y detallada cuando pidan una receta. No termines siempre con una pregunta y evita los emojis, salvo que encajen de forma natural.
+Detecta primero si pregunta por sustituciones, ingredientes, pasos o tiempo; responde a esa intención antes de buscar una receta por nombre.
+Usa el contexto de la receta actual y el paso indicado. No inventes datos; si no sabes algo, dilo con honestidad.`;
 
 const CONTEXTO = {
   home: "El usuario está en la pantalla de inicio. Ayúdale a decidir qué preparar hoy.",
@@ -281,7 +283,7 @@ export function saludoPorHora(nombre = "") {
   const h = new Date().getHours();
   const momento = h < 12 ? "¡Buenos días" : h < 19 ? "¡Buenas tardes" : "¡Buenas noches";
   const primerNombre = nombre && !nombre.includes("@") ? nombre.trim().split(/\s+/)[0] : "";
-  return `${momento}${primerNombre ? `, ${primerNombre}` : ""}! 🍩`;
+  return `${momento}${primerNombre ? `, ${primerNombre}` : ""}!`;
 }
 
 function momentoDelDia() {
@@ -328,7 +330,7 @@ export async function preguntarChef(
     body: {
       systemInstruction: { parts: [{ text: systemText }] },
       contents,
-      generationConfig: { temperature: 0.7, maxOutputTokens: 300 },
+      generationConfig: { temperature: 0.7, maxOutputTokens: 900 },
     },
     contents,
     systemText,
