@@ -178,6 +178,10 @@
   background: linear-gradient(180deg, rgba(10, 9, 7, 0), rgba(10, 9, 7, 0.94) 35%);
 }
 
+.tema-cocina .cb-controles {
+  background: linear-gradient(180deg, rgba(255, 248, 236, 0), rgba(255, 248, 236, 0.96) 35%);
+}
+
 .cb-form {
   flex: 1;
   min-width: 0;
@@ -193,6 +197,8 @@
   padding: 12px 14px;
   font-size: 15px;
   border-radius: 12px;
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
 .tema-cocina .cb-form button {

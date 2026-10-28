@@ -80,6 +80,7 @@ function App() {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
   const [invitado, setInvitado] = useState(false); // true = entró sin cuenta
+  const [cargarMascotaLogin, setCargarMascotaLogin] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false); // solo se usa en celular
   const [busquedaRecetas, setBusquedaRecetas] = useState("");
   const [recetaParaCocinar, setRecetaParaCocinar] = useState("");
@@ -118,6 +119,13 @@ function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (cargandoSesion || usuario || invitado || cargarMascotaLogin) return undefined;
+
+    const timeoutId = window.setTimeout(() => setCargarMascotaLogin(true), 1800);
+    return () => window.clearTimeout(timeoutId);
+  }, [cargandoSesion, usuario, invitado, cargarMascotaLogin]);
 
   // Activa la textura de grano (solo dentro de la app, no en login/registro)
   useEffect(() => {
@@ -173,6 +181,11 @@ function App() {
      (se mantiene el fondo animado y el diseño centrado)
      ============================================================ */
   if (!tieneAcceso) {
+    const mensajeMascotaLogin =
+      vista === "register"
+        ? "¡Qué bueno que te unas a Charin Cook! 🎉"
+        : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar.";
+
     return (
       <>
         <div className="fondo-login" aria-hidden="true" />
@@ -187,16 +200,26 @@ function App() {
             </div>
 
             <div className="zona-formulario auth-mascota">
-              <Suspense fallback={null}>
-                <Mascota
-                  variante="en-formulario"
-                  mensaje={
-                    vista === "register"
-                      ? "¡Qué bueno que te unas a Charin Cook! 🎉"
-                      : "¡Bienvenido a Charin Cook! 🍩 Inicia sesión para empezar a cocinar."
+              {cargarMascotaLogin ? (
+                <Suspense
+                  fallback={
+                    <MascotaCarga
+                      variante="en-formulario"
+                      mensaje={mensajeMascotaLogin}
+                    />
                   }
+                >
+                  <Mascota
+                    variante="en-formulario"
+                    mensaje={mensajeMascotaLogin}
+                  />
+                </Suspense>
+              ) : (
+                <MascotaCarga
+                  variante="en-formulario"
+                  mensaje={mensajeMascotaLogin}
                 />
-              </Suspense>
+              )}
             </div>
           </section>
 
