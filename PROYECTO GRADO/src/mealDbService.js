@@ -59,6 +59,16 @@ export function obtenerPostres() {
   return conCache("desserts", `${API}/filter.php?c=Dessert`, (data) => data.meals || []);
 }
 
+export function buscarPostresPorNombre(nombre) {
+  const termino = nombre.trim();
+  if (!termino) return Promise.resolve([]);
+  return conCache(
+    `name:${normalizar(termino)}`,
+    `${API}/search.php?s=${encodeURIComponent(termino)}`,
+    (data) => data.meals || []
+  );
+}
+
 export function obtenerDetallePostre(id) {
   return conCache(`detail:${id}`, `${API}/lookup.php?i=${encodeURIComponent(id)}`, (data) => {
     const receta = data.meals?.[0];

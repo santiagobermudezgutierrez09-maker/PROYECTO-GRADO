@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import recetas from "./recetasData";
 import RecetaCard from "./RecetaCard";
 import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import { coincideNombreTraducido, traducirNombres } from "./traductorNombres";
 import "./Recetas.css";
 
 const FILTROS = [
@@ -60,6 +61,7 @@ function Recetas({ busquedaInicial = "", irA }) {
   const [filtroActivo, setFiltroActivo] = useState("");
   const [recetaAbiertaId, setRecetaAbiertaId] = useState(coincidenciaInicial?.id ?? null);
   const [postresMundo, setPostresMundo] = useState([]);
+  const [nombresTraducidos, setNombresTraducidos] = useState({});
   const [cargandoMundo, setCargandoMundo] = useState(true);
   const [errorMundo, setErrorMundo] = useState("");
   const [intento, setIntento] = useState(0);
@@ -84,6 +86,10 @@ function Recetas({ busquedaInicial = "", irA }) {
           .filter((r) => r.status === "fulfilled")
           .map((r) => r.value);
         setPostresMundo(cargados);
+        traducirNombres(cargados.map((postre) => postre.strMeal))
+          .then((nombres) => {
+            if (activo) setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+          });
         if (!cargados.length) setErrorMundo("No pudimos cargar los postres del mundo ahora mismo.");
         else if (cargados.length < respuestas.length) setErrorMundo("Algunos postres no están disponibles por ahora.");
       } catch {
@@ -102,9 +108,12 @@ function Recetas({ busquedaInicial = "", irA }) {
     () => postresMundo.filter((p) => {
       if (!termino) return true;
       const ingredientes = Array.from({ length: 20 }, (_, i) => p[`strIngredient${i + 1}`] || "").join(" ");
-      return normalizar(`${p.strMeal} ${ingredientes}`).includes(termino);
+      return (
+        coincideNombreTraducido(nombresTraducidos[p.strMeal] || p.strMeal, p.strMeal, busqueda) ||
+        normalizar(ingredientes).includes(termino)
+      );
     }),
-    [postresMundo, termino]
+    [postresMundo, nombresTraducidos, termino, busqueda]
   );
 
   const recetasVisibles = useMemo(() => recetas.filter((receta) => {
@@ -202,7 +211,9 @@ function Recetas({ busquedaInicial = "", irA }) {
               >
                 <img src={postre.strMealThumb} alt="" loading="lazy" />
                 <span className="rec-mundo-card-info">
-                  <strong>{postre.strMeal}</strong>
+                  <strong title={postre.strMeal}>
+                    {nombresTraducidos[postre.strMeal] || postre.strMeal}
+                  </strong>
                   <span>{`≈ ${tiempoPostre(postre)} min · Dificultad ${dificultadPostre(postre).toLowerCase()}`}</span>
                 </span>
               </button>

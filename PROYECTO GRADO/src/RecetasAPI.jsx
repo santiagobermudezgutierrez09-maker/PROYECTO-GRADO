@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { traducirReceta } from "./geminiService";
-import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import { buscarPostresPorNombre, obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import {
+  coincideNombreTraducido,
+  traducirBusquedaAlIngles,
+  traducirNombres,
+} from "./traductorNombres";
 import "./RecetasAPI.css";
 
 // Nombres de países en español (si falta alguno, se muestra el original)
@@ -95,6 +100,8 @@ function RecetasAPI({ postreInicialId = "" }) {
   const [error, setError] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
+  const [resultadoBusquedaApi, setResultadoBusquedaApi] = useState({ termino: "", postres: [] });
+  const [nombresTraducidos, setNombresTraducidos] = useState({});
 
   const [receta, setReceta] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
@@ -113,7 +120,12 @@ function RecetasAPI({ postreInicialId = "" }) {
     setCargandoLista(true);
     setError("");
     try {
-      setLista(await obtenerPostres());
+      const postres = await obtenerPostres();
+      setLista(postres);
+      traducirNombres(postres.map((postre) => postre.strMeal))
+        .then((nombres) => {
+          setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+        });
     } catch (errorCarga) {
       setError(
         errorCarga.message.includes("8 segundos")
@@ -134,11 +146,55 @@ function RecetasAPI({ postreInicialId = "" }) {
     if (receta) topRef.current?.scrollIntoView({ block: "start" });
   }, [receta]);
 
-  /* ---------- Buscador ---------- */
+  /* ---------- Búsqueda en inglés y filtrado por nombres traducidos ---------- */
+  useEffect(() => {
+    let activo = true;
+    const consulta = busqueda.trim();
+    if (!consulta) return () => { activo = false; };
+
+    const timeoutId = globalThis.setTimeout(async () => {
+      const terminoIngles = await traducirBusquedaAlIngles(consulta);
+      if (!activo) return;
+      try {
+        const encontrados = await buscarPostresPorNombre(terminoIngles);
+        if (!activo) return;
+        const idsDessert = new Set(lista.map((postre) => postre.idMeal));
+        setResultadoBusquedaApi({
+          termino: consulta.toLocaleLowerCase("es"),
+          postres: encontrados.filter((postre) => idsDessert.has(postre.idMeal)),
+        });
+      } catch {
+        if (activo) {
+          setResultadoBusquedaApi({ termino: consulta.toLocaleLowerCase("es"), postres: [] });
+        }
+      }
+    }, 300);
+
+    return () => {
+      activo = false;
+      globalThis.clearTimeout(timeoutId);
+    };
+  }, [busqueda, lista]);
+
   const visibles = useMemo(() => {
-    const q = busqueda.trim().toLowerCase();
-    return lista.filter((p) => !q || p.strMeal.toLowerCase().includes(q));
-  }, [lista, busqueda]);
+    const consulta = busqueda.trim();
+    const resultadosBusqueda = resultadoBusquedaApi.termino === consulta.toLocaleLowerCase("es")
+      ? resultadoBusquedaApi.postres
+      : [];
+    const idsEncontradosPorApi = new Set(resultadosBusqueda.map((postre) => postre.idMeal));
+    const candidatos = new Map(
+      [...lista, ...resultadosBusqueda].map((postre) => [postre.idMeal, postre])
+    );
+    return [...candidatos.values()].filter((postre) =>
+      !consulta ||
+      idsEncontradosPorApi.has(postre.idMeal) ||
+      coincideNombreTraducido(
+        nombresTraducidos[postre.strMeal] || postre.strMeal,
+        postre.strMeal,
+        consulta
+      )
+    );
+  }, [lista, resultadoBusquedaApi, nombresTraducidos, busqueda]);
 
   /* ---------- Detalle ---------- */
   const verDetalle = async (id) => {
@@ -147,7 +203,11 @@ function RecetasAPI({ postreInicialId = "" }) {
     setErrorDetalle("");
     setIdDetalleFallido(null);
     try {
-      setReceta(await obtenerDetallePostre(id));
+      const detalle = await obtenerDetallePostre(id);
+      setReceta(detalle);
+      traducirNombres([detalle.strMeal]).then((nombres) => {
+        setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+      });
       setIdioma(traducciones[id] ? "es" : "original");
       setErrorTraduccion("");
     } catch (errorCarga) {
@@ -169,7 +229,10 @@ function RecetasAPI({ postreInicialId = "" }) {
       .then((detalle) => {
         if (!activo) return;
         setReceta(detalle);
-        setIdioma(traduccionesCache.has(postreInicialId) ? "es" : "original");
+        setIdioma("original");
+        traducirNombres([detalle.strMeal]).then((nombres) => {
+          if (activo) setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+        });
         setErrorTraduccion("");
       })
       .catch((errorCarga) => {
@@ -221,7 +284,9 @@ function RecetasAPI({ postreInicialId = "" }) {
     const t = traducciones[receta.idMeal];
     const mostrarES = idioma === "es" && !!t;
     const pasos = mostrarES ? t.pasos : dividirPasos(receta.strInstructions);
-    const titulo = mostrarES && t.nombre ? t.nombre : receta.strMeal;
+    const titulo = mostrarES && t.nombre
+      ? t.nombre
+      : nombresTraducidos[receta.strMeal] || receta.strMeal;
     const idVideo = idYoutube(receta.strYoutube);
     const tiempoEstimado = Math.max(20, pasos.length * 4);
     const dificultadEstimada =
@@ -248,7 +313,7 @@ function RecetasAPI({ postreInicialId = "" }) {
               decoding="async"
             />
             <div className="ra-hero-info">
-              <h2 className="ra-detalle-titulo">{titulo}</h2>
+              <h2 className="ra-detalle-titulo" title={receta.strMeal}>{titulo}</h2>
 
               <div className="ra-badges">
                 {receta.strCategory && <span className="ra-badge">🍰 {receta.strCategory}</span>}
@@ -377,7 +442,7 @@ function RecetasAPI({ postreInicialId = "" }) {
             <input
               className="ra-campo"
               type="search"
-              placeholder="Buscar postre (en inglés: cake, pie…)"
+              placeholder="Buscar postre en español o inglés…"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               aria-label="Buscar postre"
@@ -424,11 +489,13 @@ function RecetasAPI({ postreInicialId = "" }) {
                 >
                   <img
                     src={postre.strMealThumb}
-                    alt={postre.strMeal}
+                    alt={nombresTraducidos[postre.strMeal] || postre.strMeal}
                     loading="lazy"
                     decoding="async"
                   />
-                  <span className="ra-card-nombre">{postre.strMeal}</span>
+                  <span className="ra-card-nombre" title={postre.strMeal}>
+                    {nombresTraducidos[postre.strMeal] || postre.strMeal}
+                  </span>
                   <span className="ra-card-ver">Ver receta →</span>
                 </button>
               ))}

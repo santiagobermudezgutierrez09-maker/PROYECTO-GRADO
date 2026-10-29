@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import { traducirNombres } from "./traductorNombres";
 import MascotaCarga from "./MascotaCarga";
 import "./Home.css";
 
@@ -124,6 +125,7 @@ function Tarjeta({ item, irA }) {
 
 function Home({ irA, correoUsuario, activa = true }) {
   const [postres, setPostres] = useState([]);
+  const [nombresTraducidos, setNombresTraducidos] = useState({});
   const [cargandoPostres, setCargandoPostres] = useState(true);
   const [errorPostres, setErrorPostres] = useState("");
   const [intentoPostres, setIntentoPostres] = useState(0);
@@ -161,6 +163,10 @@ function Home({ irA, correoUsuario, activa = true }) {
           .filter((respuesta) => respuesta.status === "fulfilled")
           .map((respuesta) => respuesta.value);
         setPostres(cargados);
+        traducirNombres(cargados.map((postre) => postre.strMeal))
+          .then((nombres) => {
+            if (activo) setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+          });
         if (cargados.length === 0) {
           setErrorPostres("No pudimos cargar los postres del mundo ahora mismo.");
         } else if (cargados.length < respuestas.length) {
@@ -304,7 +310,9 @@ function Home({ irA, correoUsuario, activa = true }) {
                     height="240"
                   />
                   <span className="home-postre-info">
-                    <strong>{postre.strMeal}</strong>
+                    <strong title={postre.strMeal}>
+                      {nombresTraducidos[postre.strMeal] || postre.strMeal}
+                    </strong>
                     <span className="home-postre-meta">
                       <span>≈ {minutos} min</span>
                       <span>Nivel {dificultad.toLowerCase()}</span>

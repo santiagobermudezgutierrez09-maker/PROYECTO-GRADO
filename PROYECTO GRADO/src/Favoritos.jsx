@@ -12,6 +12,7 @@ function Favoritos({ irA }) {
   const [ids, setIds] = useState([]);
   const [cargando, setCargando] = useState(!!usuario);
   const [error, setError] = useState("");
+  const [intento, setIntento] = useState(0);
 
   useEffect(() => {
     if (!usuario) return;
@@ -30,8 +31,18 @@ function Favoritos({ irA }) {
           .map((documento) => documento.data().recetaId)
           .filter((recetaId) => recetasDelCatalogo.has(recetaId));
         if (activo) setIds(lista);
-      } catch {
-        if (activo) setError("No se pudieron cargar tus favoritos. Revisa tu conexión e inténtalo de nuevo.");
+      } catch (errorCarga) {
+        if (activo) {
+          if (errorCarga.code === "permission-denied") {
+            setError("Firebase no permite leer tus favoritos. Revisa las reglas de Firestore para la colección favoritos.");
+          } else if (errorCarga.code === "unauthenticated") {
+            setError("Tu sesión expiró. Cierra sesión e inicia sesión de nuevo para ver tus favoritos.");
+          } else if (["unavailable", "deadline-exceeded", "network-request-failed"].includes(errorCarga.code)) {
+            setError("No se pudo conectar con Firebase. Comprueba tu conexión e inténtalo de nuevo.");
+          } else {
+            setError(`No se pudieron cargar tus favoritos (${errorCarga.code || "error desconocido"}).`);
+          }
+        }
       } finally {
         if (activo) setCargando(false);
       }
@@ -41,7 +52,7 @@ function Favoritos({ irA }) {
     return () => {
       activo = false;
     };
-  }, [usuario]);
+  }, [usuario, intento]);
 
   // Cuando el usuario quita el corazón desde esta pantalla, la tarjeta desaparece de la lista
   const quitarDeLaLista = useCallback(
@@ -75,6 +86,15 @@ function Favoritos({ irA }) {
       <div className="recetas">
         <div className="card recetas-vacio">
           <p>{error}</p>
+          <button
+            onClick={() => {
+              setError("");
+              setCargando(true);
+              setIntento((actual) => actual + 1);
+            }}
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );

@@ -42,7 +42,7 @@ const GRUPOS_MENU = [
     nombre: "Descubrir",
     items: [
       { vista: "fechas", icono: "calendar-dessert", texto: "Fechas y eventos", titulo: "Fechas y eventos", descripcion: "Recetas para cada ocasión" },
-      { vista: "api", icono: "world-dessert", texto: "Postres del mundo", titulo: "Postres del mundo", descripcion: "Ideas dulces de todo el mundo" },
+      { vista: "api", icono: "world-dessert", texto: "Postres del mundo", etiqueta: "Top", titulo: "Postres del mundo", descripcion: "Ideas dulces de todo el mundo" },
     ],
   },
 ];
@@ -89,6 +89,16 @@ const DonaO = ({ sidebar = false }) => (
     </g>
   </svg>
 );
+
+function PantallaCarga({ mensaje = "Preparando tu cocina..." }) {
+  return (
+    <div className="pantalla-carga" role="status" aria-live="polite">
+      <img className="pantalla-carga-dona" src={logoDona} alt="" />
+      <p className="pantalla-carga-texto">{mensaje}</p>
+      <div className="pantalla-carga-barra" aria-hidden="true"><span /></div>
+    </div>
+  );
+}
 
 function App() {
   const [vista, setVista] = useState("login");
@@ -222,7 +232,7 @@ function App() {
   };
 
   if (cargandoSesion) {
-    return <p style={{ textAlign: "center", marginTop: "40px" }}>Cargando...</p>;
+    return <PantallaCarga />;
   }
 
   // true si el usuario puede ver las pantallas de la app (logueado o invitado)
@@ -235,6 +245,9 @@ function App() {
   // Nombre para que Charin salude (vacío si es invitado o solo hay correo)
   const nombreParaChat = usuario && nombreUsuario ? nombreUsuario : "";
 
+  const hora = new Date().getHours();
+  const saludo = hora < 12 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches";
+  const primerNombre = nombreParaMostrar.split(/[\s@]/)[0];
   const itemActual = TODOS_LOS_ITEMS.find((i) => i.vista === vista) || TODOS_LOS_ITEMS[0];
 
   /* ============================================================
@@ -361,6 +374,7 @@ function App() {
                       <ImagenIconoMenu nombre={item.icono} alt="" />
                     </span>
                     <span className="side-texto">{item.texto}</span>
+                    {item.etiqueta && <span className="side-etiqueta">{item.etiqueta}</span>}
                   </button>
                 ))}
               </div>
@@ -387,6 +401,7 @@ function App() {
           ) : (
             <>
               <p className="side-aviso">
+                <span className="side-aviso-icono" aria-hidden="true">🔒</span>
                 Como invitado no puedes comentar, calificar ni guardar favoritos.
               </p>
               <button
@@ -407,6 +422,7 @@ function App() {
         <div className="contenido-principal">
           {avisoSesion && (
             <div className="sesion-aviso" role="status">
+              <span className="sesion-aviso-check" aria-hidden="true">✓</span>
               {avisoSesion}
             </div>
           )}
@@ -416,16 +432,18 @@ function App() {
               onClick={() => setMenuAbierto(true)}
               aria-label="Abrir menú"
             >
-              ☰
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h10" />
+              </svg>
             </button>
             <div className="topbar-textos">
               <h2 className="topbar-titulo">{itemActual.titulo}</h2>
-              <p className="topbar-desc">{itemActual.descripcion}</p>
+              <p className="topbar-desc">{vista === "home" ? `${saludo}, ${primerNombre}` : itemActual.descripcion}</p>
             </div>
           </header>
 
           <main className="vista">
-            <Suspense fallback={<p style={{ textAlign: "center" }}>Cargando...</p>}>
+            <Suspense fallback={<PantallaCarga mensaje="Cargando..." />}>
               {(vista === "home" || conservarHome) && (
                 <div hidden={vista !== "home"}>
                   <Home

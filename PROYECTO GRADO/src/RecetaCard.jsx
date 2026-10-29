@@ -112,8 +112,16 @@ function RecetaCard({ receta, alQuitarFavorito }) {
         setEsFavorita(true);
         setMensaje("Guardada en tus favoritos ❤️ Búscala en el menú, en \"Mis favoritos\".");
       }
-    } catch {
-      setMensaje("No se pudo actualizar tus favoritos. Revisa tu conexión e inténtalo de nuevo.");
+    } catch (errorFavorito) {
+      if (errorFavorito.code === "permission-denied") {
+        setMensaje("Firebase no permite guardar favoritos. Revisa las reglas de Firestore para la colección favoritos.");
+      } else if (errorFavorito.code === "unauthenticated") {
+        setMensaje("Tu sesión expiró. Inicia sesión de nuevo para guardar favoritos.");
+      } else if (["unavailable", "deadline-exceeded", "network-request-failed"].includes(errorFavorito.code)) {
+        setMensaje("No se pudo conectar con Firebase. Comprueba tu conexión e inténtalo de nuevo.");
+      } else {
+        setMensaje(`No se pudo actualizar tus favoritos (${errorFavorito.code || "error desconocido"}).`);
+      }
     }
   };
 
