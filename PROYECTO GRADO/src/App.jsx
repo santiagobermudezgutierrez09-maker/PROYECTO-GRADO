@@ -110,6 +110,7 @@ function App() {
   const [avisoSesion, setAvisoSesion] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false); // solo se usa en celular
   const [busquedaRecetas, setBusquedaRecetas] = useState("");
+  const [filtrosRecetasIniciales, setFiltrosRecetasIniciales] = useState([]);
   const [recetaParaCocinar, setRecetaParaCocinar] = useState("");
   const [postreAPIInicial, setPostreAPIInicial] = useState("");
   const registroEnCurso = useRef(false);
@@ -197,7 +198,11 @@ function App() {
   const irA = (nuevaVista, extra = "") => {
     if (vista === "home" && nuevaVista !== "home") setConservarHome(true);
     setVista(nuevaVista);
-    setBusquedaRecetas(nuevaVista === "recetas" ? extra : "");
+    const opcionesReceta = typeof extra === "object" && extra !== null ? extra : null;
+    setBusquedaRecetas(
+      nuevaVista === "recetas" ? opcionesReceta ? opcionesReceta.busqueda || "" : extra : ""
+    );
+    setFiltrosRecetasIniciales(nuevaVista === "recetas" ? opcionesReceta?.filtros || [] : []);
     setRecetaParaCocinar(nuevaVista === "cocina" ? extra : "");
     setPostreAPIInicial(nuevaVista === "api" ? extra : "");
     setMenuAbierto(false); // en celular, al elegir una opción se cierra el menú
@@ -453,7 +458,13 @@ function App() {
                   />
                 </div>
               )}
-              {vista === "recetas" && <Recetas busquedaInicial={busquedaRecetas} irA={irA} />}
+              {vista === "recetas" && (
+                <Recetas
+                  busquedaInicial={busquedaRecetas}
+                  filtrosIniciales={filtrosRecetasIniciales}
+                  irA={irA}
+                />
+              )}
               {vista === "favoritos" && <Favoritos irA={irA} />}
               {vista === "generador" && <GeneradorIngredientes irA={irA} />}
               {vista === "cocina" && (

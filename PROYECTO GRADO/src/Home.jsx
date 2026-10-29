@@ -124,6 +124,9 @@ function Tarjeta({ item, irA }) {
 }
 
 function Home({ irA, correoUsuario, activa = true }) {
+  const [busqueda, setBusqueda] = useState("");
+  const [tiempoMaximo, setTiempoMaximo] = useState("");
+  const [tipoPostre, setTipoPostre] = useState("");
   const [postres, setPostres] = useState([]);
   const [nombresTraducidos, setNombresTraducidos] = useState({});
   const [cargandoPostres, setCargandoPostres] = useState(true);
@@ -191,6 +194,14 @@ function Home({ irA, correoUsuario, activa = true }) {
         correoUsuario.slice(1).toLocaleLowerCase("es")
       : "";
 
+  const buscarRecetas = (evento) => {
+    evento.preventDefault();
+    irA("recetas", {
+      busqueda: busqueda.trim(),
+      filtros: [tiempoMaximo, tipoPostre].filter(Boolean),
+    });
+  };
+
   const accesos = [
     {
       vista: "generador",
@@ -254,6 +265,50 @@ function Home({ irA, correoUsuario, activa = true }) {
         </div>
       </section>
 
+      <section className="home-buscador" aria-labelledby="home-buscador-titulo">
+        <div className="home-buscador-copy">
+          <span className="home-etiqueta">Encuentra tu próxima receta</span>
+          <h2 id="home-buscador-titulo">¿Qué se te antoja preparar?</h2>
+          <p>Busca por nombre o ingrediente y combina la búsqueda con tus filtros.</p>
+        </div>
+        <form className="home-buscador-form" onSubmit={buscarRecetas}>
+          <label className="home-buscador-campo home-buscador-texto">
+            <span>Receta o ingrediente</span>
+            <input
+              type="search"
+              value={busqueda}
+              onChange={(evento) => setBusqueda(evento.target.value)}
+              placeholder="Ej. chocolate, coco, arroz..."
+            />
+          </label>
+          <label className="home-buscador-campo">
+            <span>Tiempo</span>
+            <select
+              value={tiempoMaximo}
+              onChange={(evento) => setTiempoMaximo(evento.target.value)}
+            >
+              <option value="">Cualquier duración</option>
+              <option value="menos30">Menos de 30 minutos</option>
+            </select>
+          </label>
+          <label className="home-buscador-campo">
+            <span>Tipo de postre</span>
+            <select
+              value={tipoPostre}
+              onChange={(evento) => setTipoPostre(evento.target.value)}
+            >
+              <option value="">Todos los tipos</option>
+              <option value="tradicional">Tradicional</option>
+              <option value="fitness">Fitness</option>
+              <option value="especial">Para ocasiones</option>
+            </select>
+          </label>
+          <button type="submit" className="home-buscador-submit">
+            Buscar recetas <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      </section>
+
       <section className="home-seccion home-seccion-mundo">
         <div className="home-seccion-heading">
           <div>
@@ -282,24 +337,13 @@ function Home({ irA, correoUsuario, activa = true }) {
         ) : postres.length > 0 ? (
           <div className="home-postres-grid">
             {postres.map((postre) => {
-              const ingredientes = Array.from({ length: 20 }, (_, i) => postre[`strIngredient${i + 1}`])
-                .filter((ingrediente) => ingrediente?.trim());
-              const pasos = (postre.strInstructions || "")
-                .split(/\r?\n/)
-                .flatMap((parrafo) => parrafo.split(/[.!?]\s+/))
-                .filter(Boolean);
-              const minutos = Math.max(20, Math.ceil(pasos.length * 4));
-              const dificultad = ingredientes.length > 10 || pasos.length > 9
-                ? "Avanzada"
-                : ingredientes.length > 6 || pasos.length > 5
-                  ? "Intermedia"
-                  : "Sencilla";
               return (
                 <button
                   type="button"
                   className="home-postre-card"
                   key={postre.idMeal}
-                  onClick={() => irA("api")}
+                  onClick={() => irA("api", postre.idMeal)}
+                  aria-label={`Ver receta de ${nombresTraducidos[postre.strMeal] || postre.strMeal}`}
                 >
                   <img
                     src={postre.strMealThumb}
@@ -313,10 +357,7 @@ function Home({ irA, correoUsuario, activa = true }) {
                     <strong title={postre.strMeal}>
                       {nombresTraducidos[postre.strMeal] || postre.strMeal}
                     </strong>
-                    <span className="home-postre-meta">
-                      <span>≈ {minutos} min</span>
-                      <span>Nivel {dificultad.toLowerCase()}</span>
-                    </span>
+                    <span className="home-postre-meta">Receta internacional · Ver receta →</span>
                   </span>
                 </button>
               );

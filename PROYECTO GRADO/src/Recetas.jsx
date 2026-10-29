@@ -1,14 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import recetas from "./recetasData";
 import RecetaCard from "./RecetaCard";
-import { obtenerDetallePostre, obtenerPostres } from "./mealDbService";
-import { coincideNombreTraducido, traducirNombres } from "./traductorNombres";
+import { buscarPostresPorNombre, obtenerDetallePostre, obtenerPostres } from "./mealDbService";
+import {
+  coincideNombreTraducido,
+  traducirBusquedaAlIngles,
+  traducirNombres,
+} from "./traductorNombres";
 import "./Recetas.css";
 
 const FILTROS = [
   { id: "menos30", texto: "Menos de 30 min" },
   { id: "sinHorno", texto: "Sin horno" },
   { id: "fitness", texto: "Fitness" },
+  { id: "tradicional", texto: "Tradicionales" },
+  { id: "especial", texto: "Para ocasiones" },
   { id: "faciles", texto: "Fáciles" },
   { id: "chocolate", texto: "Con chocolate" },
 ];
@@ -26,18 +32,6 @@ const normalizar = (texto = "") =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
-function tiempoPostre(postre) {
-  const pasos = (postre.strInstructions || "").split(/[.!?\n]+/).filter(Boolean);
-  return Math.max(15, Math.ceil(pasos.length * 3));
-}
-
-function dificultadPostre(postre) {
-  const ingredientes = Array.from({ length: 20 }, (_, i) => postre[`strIngredient${i + 1}`])
-    .filter((nombre) => nombre?.trim()).length;
-  const pasos = (postre.strInstructions || "").split(/[.!?\n]+/).filter(Boolean).length;
-  return ingredientes > 10 || pasos > 9 ? "Avanzada" : ingredientes > 6 || pasos > 5 ? "Intermedia" : "Fácil";
-}
-
 function TarjetaCatalogo({ receta, alAbrir }) {
   return (
     <button type="button" className="rec-card" onClick={() => alAbrir(receta.id)}>
@@ -53,14 +47,16 @@ function TarjetaCatalogo({ receta, alAbrir }) {
   );
 }
 
-function Recetas({ busquedaInicial = "", irA }) {
+function Recetas({ busquedaInicial = "", filtrosIniciales = [], irA }) {
   const coincidenciaInicial = busquedaInicial
     ? recetas.find((r) => normalizar(r.nombre) === normalizar(busquedaInicial))
     : null;
   const [busqueda, setBusqueda] = useState(busquedaInicial);
-  const [filtroActivo, setFiltroActivo] = useState("");
+  const [filtrosActivos, setFiltrosActivos] = useState(filtrosIniciales);
   const [recetaAbiertaId, setRecetaAbiertaId] = useState(coincidenciaInicial?.id ?? null);
   const [postresMundo, setPostresMundo] = useState([]);
+  const [resultadosBusquedaApi, setResultadosBusquedaApi] = useState({ termino: "", postres: [] });
+  const [errorBusquedaAPI, setErrorBusquedaAPI] = useState({ termino: "", mensaje: "" });
   const [nombresTraducidos, setNombresTraducidos] = useState({});
   const [cargandoMundo, setCargandoMundo] = useState(true);
   const [errorMundo, setErrorMundo] = useState("");
@@ -102,32 +98,83 @@ function Recetas({ busquedaInicial = "", irA }) {
     return () => { activo = false; };
   }, [intento]);
 
+  useEffect(() => {
+    let activo = true;
+    const consulta = busqueda.trim();
+    const terminoNormalizado = normalizar(consulta);
+
+    if (consulta.length < 2) {
+      return () => { activo = false; };
+    }
+
+    const timeoutId = globalThis.setTimeout(async () => {
+      try {
+        const terminoIngles = await traducirBusquedaAlIngles(consulta);
+        const encontrados = await buscarPostresPorNombre(terminoIngles);
+        if (!activo) return;
+        setResultadosBusquedaApi({ termino: terminoNormalizado, postres: encontrados });
+        traducirNombres(encontrados.map((postre) => postre.strMeal))
+          .then((nombres) => {
+            if (activo) setNombresTraducidos((actuales) => ({ ...actuales, ...nombres }));
+          });
+      } catch {
+        if (activo) {
+          setResultadosBusquedaApi({ termino: terminoNormalizado, postres: [] });
+          setErrorBusquedaAPI({
+            termino: terminoNormalizado,
+            mensaje: "No pudimos buscar en los postres del mundo. Inténtalo otra vez.",
+          });
+        }
+      }
+    }, 350);
+
+    return () => {
+      activo = false;
+      globalThis.clearTimeout(timeoutId);
+    };
+  }, [busqueda]);
+
   const recetaAbierta = recetas.find((r) => r.id === recetaAbiertaId);
   const termino = normalizar(busqueda);
-  const postresVisibles = useMemo(
-    () => postresMundo.filter((p) => {
+  const buscandoAPI = termino.length >= 2 &&
+    resultadosBusquedaApi.termino !== termino &&
+    errorBusquedaAPI.termino !== termino;
+  const errorBusquedaActual = errorBusquedaAPI.termino === termino
+    ? errorBusquedaAPI.mensaje
+    : "";
+  const postresVisibles = useMemo(() => {
+    const resultadosBusqueda = resultadosBusquedaApi.termino === termino
+      ? resultadosBusquedaApi.postres
+      : [];
+    const idsResultadoApi = new Set(resultadosBusqueda.map((postre) => postre.idMeal));
+    const candidatos = new Map(
+      [...postresMundo, ...resultadosBusqueda].map((postre) => [postre.idMeal, postre])
+    );
+    return [...candidatos.values()].filter((p) => {
       if (!termino) return true;
+      if (idsResultadoApi.has(p.idMeal)) return true;
       const ingredientes = Array.from({ length: 20 }, (_, i) => p[`strIngredient${i + 1}`] || "").join(" ");
       return (
         coincideNombreTraducido(nombresTraducidos[p.strMeal] || p.strMeal, p.strMeal, busqueda) ||
         normalizar(ingredientes).includes(termino)
       );
-    }),
-    [postresMundo, nombresTraducidos, termino, busqueda]
-  );
+    });
+  }, [postresMundo, resultadosBusquedaApi, nombresTraducidos, termino, busqueda]);
 
   const recetasVisibles = useMemo(() => recetas.filter((receta) => {
     const coincideBusqueda = !termino ||
       normalizar(receta.nombre).includes(termino) ||
       receta.ingredientes.some((ing) => normalizar(ing).includes(termino));
     if (!coincideBusqueda) return false;
-    if (filtroActivo === "menos30") return receta.tiempo < 30;
-    if (filtroActivo === "sinHorno") return !receta.pasos.some((paso) => /horno|hornea|hornear/i.test(paso));
-    if (filtroActivo === "fitness") return receta.categoria === "fitness";
-    if (filtroActivo === "faciles") return receta.dificultad === "fácil";
-    if (filtroActivo === "chocolate") return /chocolate|cacao/i.test(`${receta.nombre} ${receta.ingredientes.join(" ")}`);
+    if (filtrosActivos.includes("menos30") && receta.tiempo >= 30) return false;
+    if (filtrosActivos.includes("sinHorno") && receta.pasos.some((paso) => /horno|hornea|hornear/i.test(paso))) return false;
+    if (filtrosActivos.includes("fitness") && receta.categoria !== "fitness") return false;
+    if (filtrosActivos.includes("tradicional") && receta.categoria !== "tradicional") return false;
+    if (filtrosActivos.includes("especial") && receta.categoria !== "especial") return false;
+    if (filtrosActivos.includes("faciles") && receta.dificultad !== "fácil") return false;
+    if (filtrosActivos.includes("chocolate") && !/chocolate|cacao/i.test(`${receta.nombre} ${receta.ingredientes.join(" ")}`)) return false;
     return true;
-  }), [termino, filtroActivo]);
+  }), [termino, filtrosActivos]);
 
   if (recetaAbierta) {
     return (
@@ -169,9 +216,13 @@ function Recetas({ busquedaInicial = "", irA }) {
             <button
               type="button"
               key={filtro.id}
-              className={`recetas-chip ${filtroActivo === filtro.id ? "activo" : ""}`}
-              aria-pressed={filtroActivo === filtro.id}
-              onClick={() => setFiltroActivo((actual) => actual === filtro.id ? "" : filtro.id)}
+              className={`recetas-chip ${filtrosActivos.includes(filtro.id) ? "activo" : ""}`}
+              aria-pressed={filtrosActivos.includes(filtro.id)}
+              onClick={() => setFiltrosActivos((actuales) =>
+                actuales.includes(filtro.id)
+                  ? actuales.filter((id) => id !== filtro.id)
+                  : [...actuales, filtro.id]
+              )}
             >
               {filtro.texto}
             </button>
@@ -184,7 +235,11 @@ function Recetas({ busquedaInicial = "", irA }) {
           <div>
             <span className="rec-etiqueta">Selección internacional · TheMealDB</span>
             <h2 id="rec-mundo-titulo">Postres del mundo</h2>
-            <p>Ideas con fotos, sabores y recetas de distintos rincones del mundo.</p>
+            <p>
+              {termino
+                ? `${postresVisibles.length} resultado${postresVisibles.length === 1 ? "" : "s"}${buscandoAPI ? " · buscando en toda la colección…" : ""}`
+                : "Ideas con fotos, sabores y recetas de distintos rincones del mundo."}
+            </p>
           </div>
           <button type="button" className="rec-mundo-enlace" onClick={() => irA?.("api")}>
             Explorar colección completa <span aria-hidden="true">→</span>
@@ -196,6 +251,8 @@ function Recetas({ busquedaInicial = "", irA }) {
             {!postresMundo.length && <button type="button" onClick={() => setIntento((n) => n + 1)}>Reintentar</button>}
           </p>
         )}
+        {errorBusquedaActual && <p className="rec-mundo-error" role="status">{errorBusquedaActual}</p>}
+        {buscandoAPI && <p className="rec-buscando-api" role="status">Buscando más recetas en TheMealDB…</p>}
         {cargandoMundo ? (
           <div className="rec-mundo-grid" aria-label="Cargando postres del mundo">
             {Array.from({ length: 4 }, (_, i) => <div className="rec-mundo-skeleton" key={i} />)}
@@ -214,12 +271,12 @@ function Recetas({ busquedaInicial = "", irA }) {
                   <strong title={postre.strMeal}>
                     {nombresTraducidos[postre.strMeal] || postre.strMeal}
                   </strong>
-                  <span>{`≈ ${tiempoPostre(postre)} min · Dificultad ${dificultadPostre(postre).toLowerCase()}`}</span>
+                  <span>Receta internacional · Ver receta →</span>
                 </span>
               </button>
             ))}
           </div>
-        ) : !errorMundo ? (
+        ) : !errorMundo && !buscandoAPI && !errorBusquedaActual ? (
           <p className="rec-mundo-error">No encontramos postres del mundo con esa búsqueda.</p>
         ) : null}
       </section>
@@ -236,7 +293,7 @@ function Recetas({ busquedaInicial = "", irA }) {
           <div className="card recetas-vacio">
             <span aria-hidden="true">🍮</span>
             <p>No encontramos recetas con ese filtro.</p>
-            <button type="button" onClick={() => { setBusqueda(""); setFiltroActivo(""); }}>Ver todos los postres</button>
+            <button type="button" onClick={() => { setBusqueda(""); setFiltrosActivos([]); }}>Ver todos los postres</button>
           </div>
         ) : (
           CATEGORIAS.map(([categoria, nombre]) => {

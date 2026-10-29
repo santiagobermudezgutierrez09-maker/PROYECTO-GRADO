@@ -158,10 +158,9 @@ function RecetasAPI({ postreInicialId = "" }) {
       try {
         const encontrados = await buscarPostresPorNombre(terminoIngles);
         if (!activo) return;
-        const idsDessert = new Set(lista.map((postre) => postre.idMeal));
         setResultadoBusquedaApi({
           termino: consulta.toLocaleLowerCase("es"),
-          postres: encontrados.filter((postre) => idsDessert.has(postre.idMeal)),
+          postres: encontrados,
         });
       } catch {
         if (activo) {
@@ -288,13 +287,6 @@ function RecetasAPI({ postreInicialId = "" }) {
       ? t.nombre
       : nombresTraducidos[receta.strMeal] || receta.strMeal;
     const idVideo = idYoutube(receta.strYoutube);
-    const tiempoEstimado = Math.max(20, pasos.length * 4);
-    const dificultadEstimada =
-      ingredientes.length > 10 || pasos.length > 9
-        ? "Avanzada"
-        : ingredientes.length > 6 || pasos.length > 5
-          ? "Intermedia"
-          : "Sencilla";
 
     return (
       <div className="ra-contenedor" ref={topRef}>
@@ -318,8 +310,8 @@ function RecetasAPI({ postreInicialId = "" }) {
               <div className="ra-badges">
                 {receta.strCategory && <span className="ra-badge">🍰 {receta.strCategory}</span>}
                 {receta.strArea && <span className="ra-badge">🌎 {nombrePais(receta.strArea)}</span>}
-                <span className="ra-badge">≈ {tiempoEstimado} min</span>
-                <span className="ra-badge">Dificultad {dificultadEstimada}</span>
+                <span className="ra-badge">{ingredientes.length} ingredientes</span>
+                <span className="ra-badge">{pasos.length} pasos</span>
                 {idVideo && <span className="ra-badge">🎥 Con video</span>}
               </div>
 

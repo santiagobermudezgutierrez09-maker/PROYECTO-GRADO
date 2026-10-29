@@ -602,6 +602,12 @@
   color: var(--text-secondary);
 }
 
+.rec-buscando-api {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
 .rec-mundo-error button {
   width: auto;
   margin: 0 0 0 10px;
