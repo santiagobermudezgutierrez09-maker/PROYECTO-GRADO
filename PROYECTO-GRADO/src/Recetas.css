@@ -222,22 +222,23 @@
     padding: 12px 20px;
   }
 
-  /* Las categorías van en una fila deslizable, sin ocupar todo el ancho */
   .recetas-categorias {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    scrollbar-width: none;
-  }
-
-  .recetas-categorias::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 2px;
   }
 
   .tema-cocina .recetas-chip {
-    width: auto;
-    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
     margin: 0;
+    padding: 9px 8px;
+    font-size: 0.84rem;
+    line-height: 1.25;
+    white-space: normal;
   }
 
   .recetas-grid {
@@ -753,7 +754,8 @@
   }
 
   .tema-cocina .recetas-busqueda input {
-    min-height: 48px;
+    min-height: 54px;
+    padding-right: 14px;
     font-size: 16px;
   }
 
@@ -763,18 +765,15 @@
   }
 
   .recetas-categorias {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 2px 2px 8px;
-    scrollbar-width: none;
-  }
-
-  .recetas-categorias::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 2px;
   }
 
   .recetas-chip {
-    flex: 0 0 auto;
+    min-width: 0;
   }
 
   .recetas-grid {

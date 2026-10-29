@@ -508,12 +508,38 @@
 }
 
 @media (max-width: 480px) {
+  .home {
+    gap: 24px;
+  }
+
+  .home-buscador {
+    gap: 16px;
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .home-buscador-form {
+    gap: 12px;
+  }
+
+  .home-buscador-campo {
+    gap: 8px;
+    font-size: 0.84rem;
+  }
+
+  .home-buscador-campo input,
+  .home-buscador-campo select {
+    min-height: 52px;
+    font-size: 16px;
+  }
+
   .home-buscador-form {
     grid-template-columns: 1fr;
   }
 
   .tema-cocina .home-buscador-submit {
     grid-column: auto;
+    min-height: 50px;
   }
 
   .home-hero {
