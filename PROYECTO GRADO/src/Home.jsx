@@ -233,7 +233,7 @@ function Home({ irA, correoUsuario, activa = true }) {
           </span>
           <h1>Un antojo.<br />Una idea deliciosa.</h1>
           <p>Encuentra tu próximo postre favorito y prepáralo a tu manera.</p>
-          <button type="button" className="home-cta" onClick={() => irA("api")}>
+          <button type="button" className="home-cta" onClick={() => irA("generador")}>
             Descubrir qué puedo cocinar <span aria-hidden="true">→</span>
           </button>
         </div>

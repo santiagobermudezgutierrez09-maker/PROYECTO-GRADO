@@ -31,15 +31,32 @@ const buscarSustituto = (ingrediente) => {
   return encontrado ? encontrado.sustituto : null;
 };
 
-// Lo que casi siempre hay en casa
-const BASICOS = ["Huevos", "Harina", "Azúcar", "Leche", "Mantequilla"];
-
 // Grupos para que sea fácil encontrar cada ingrediente
 const GRUPOS = [
   { id: "lacteos", icono: "🥛", titulo: "Lácteos y huevos", patron: /leche|huevo|queso|crema|mantequilla|yogur|yogurt|arequipe|nata/ },
-  { id: "harinas", icono: "🌾", titulo: "Harinas y secos", patron: /harina|avena|maicena|polvo|levadura|galleta|arroz|almendra|nuez|nueces|mani|semilla|pan|pasas|bicarbonato|sal/ },
   { id: "dulces", icono: "🍫", titulo: "Dulces y sabores", patron: /azucar|panela|miel|chocolate|cacao|esencia|vainilla|canela|bocadillo|jarabe|stevia|gelatina|caramelo|cafe/ },
+  { id: "harinas", icono: "🌾", titulo: "Harinas y secos", patron: /harina|avena|maicena|polvo|levadura|galleta|arroz|almendra|nuez|nueces|\bmani\b|semilla|\bpan\b|pasas|bicarbonato|\bsal\b/ },
   { id: "frutas", icono: "🍓", titulo: "Frutas", patron: /limon|fresa|banano|mora|mango|manzana|coco|pina|maracuya|durazno|naranja|uva|guayaba|pera|fruta|zanahoria|calabaza/ },
+];
+
+// Ícono propio para cada ingrediente (si no hay, se usa el de su categoría)
+const EMOJIS_INGREDIENTE = [
+  [/huevo/, "🥚"], [/leche condensada|arequipe/, "🍮"], [/crema de leche|nata/, "🥛"], [/leche/, "🥛"],
+  [/mantequilla/, "🧈"], [/queso/, "🧀"], [/yogur/, "🥣"], [/harina|maicena/, "🌾"], [/avena/, "🌾"],
+  [/azucar|panela/, "🍚"], [/chocolate|cacao/, "🍫"], [/canela/, "🌿"], [/miel/, "🍯"], [/vainilla|esencia/, "🌸"],
+  [/fresa/, "🍓"], [/banano|platano/, "🍌"], [/limon/, "🍋"], [/manzana/, "🍎"], [/coco/, "🥥"],
+  [/maracuya/, "🥭"], [/mango/, "🥭"], [/naranja/, "🍊"], [/mora/, "🫐"], [/uva|pasas/, "🍇"], [/pera/, "🍐"],
+  [/guayaba|bocadillo/, "🍬"], [/durazno/, "🍑"], [/pina/, "🍍"], [/zanahoria/, "🥕"], [/calabaza/, "🎃"],
+  [/almendra|nuez|nueces|mani/, "🥜"], [/galleta/, "🍪"], [/polvo de hornear|levadura|bicarbonato/, "🧂"],
+  [/arroz/, "🍚"], [/cafe/, "☕"], [/gelatina/, "🍮"], [/caramelo/, "🍬"],
+];
+
+// Combinaciones listas para probar con un toque
+const KITS = [
+  { id: "pastel", icono: "🎂", titulo: "Pastel básico", texto: "Harina, huevos, azúcar, leche y mantequilla", ingredientes: ["Harina", "Huevos", "Azúcar", "Leche", "Mantequilla"] },
+  { id: "sinhorno", icono: "🧁", titulo: "Sin horno", texto: "Galletas, leche condensada y crema de leche", ingredientes: ["Galletas", "Leche condensada", "Crema de leche"] },
+  { id: "chocolate", icono: "🍫", titulo: "Con chocolate", texto: "Chocolate, leche, mantequilla y azúcar", ingredientes: ["Chocolate", "Leche", "Mantequilla", "Azúcar"] },
+  { id: "frutas", icono: "🍓", titulo: "Con frutas", texto: "Fresas, banano, limón y azúcar", ingredientes: ["Fresas", "Banano", "Limón", "Azúcar"] },
 ];
 
 function clasificar(nombre) {
@@ -54,7 +71,7 @@ function GeneradorIngredientes({ irA }) {
   const [verResto, setVerResto] = useState(false);
   const [filtroActivo, setFiltroActivo] = useState("todas");
   const [categoriaIngrediente, setCategoriaIngrediente] = useState("todas");
-  const [resultadosAbiertos, setResultadosAbiertos] = useState(false);
+  const [despensaAbierta, setDespensaAbierta] = useState(false);
 
   // Los ingredientes más usados en tus recetas, ordenados por frecuencia
   const populares = useMemo(() => {
@@ -303,7 +320,7 @@ function GeneradorIngredientes({ irA }) {
         <h3 className={`gi-grupo-titulo ${clase}`}>
           {titulo} <span>{lista.length}</span>
         </h3>
-        {lista.map(renderReceta)}
+        <div className="gi2-grid">{lista.map(renderReceta)}</div>
       </section>
     );
 
@@ -315,8 +332,17 @@ function GeneradorIngredientes({ irA }) {
     { id: "todas", label: "Todos", icono: "🧺" },
   ];
 
-  const iconoIngrediente = (nombre) =>
-    GRUPOS.find((grupo) => grupo.id === clasificar(nombre))?.icono || "🧺";
+  const iconoIngrediente = (nombre) => {
+    const n = limpiar(nombre);
+    const propio = EMOJIS_INGREDIENTE.find(([patron]) => patron.test(n));
+    return propio ? propio[1] : GRUPOS.find((grupo) => grupo.id === clasificar(nombre))?.icono || "🧺";
+  };
+
+  const aplicarKit = (kit) => {
+    setSeleccion(kit.ingredientes.map(nombreIngrediente));
+    setFiltroActivo("todas");
+    setVerResto(false);
+  };
 
   const renderIngrediente = (nombre) => {
     const seleccionado = estaSeleccionado(nombre);
@@ -335,42 +361,79 @@ function GeneradorIngredientes({ irA }) {
     );
   };
 
-  return (
-    <div className="gi">
-      <header className="gi-header">
-        <div>
-          <span className="gi-etiqueta">Cocina con lo que tienes</span>
-          <h1>¿Qué puedo cocinar?</h1>
-          <p>Elige lo que tienes a mano y encuentra tu próximo postre.</p>
-        </div>
-        <div className="gi-contador">
-          <span><strong>{seleccion.length}</strong> {seleccion.length === 1 ? "ingrediente elegido" : "ingredientes elegidos"}</span>
-          <button
-            type="button"
-            className="gi-limpiar"
-            disabled={!seleccion.length}
-            onClick={() => {
-              setSeleccion([]);
-              setFiltroActivo("todas");
-              setVerResto(false);
-              setResultadosAbiertos(false);
-            }}
-          >
-            Limpiar
-          </button>
-        </div>
-      </header>
+  const quitarTodo = () => {
+    setSeleccion([]);
+    setFiltroActivo("todas");
+    setVerResto(false);
+  };
 
-      <div className="gi-columnas">
-        <section className="gi-panel gi-despensa-panel">
-          <div className="gi-panel-heading">
-            <div><span className="gi-paso">01</span><h2>Tu despensa</h2></div>
-            <p>Marca los ingredientes que tienes.</p>
+  return (
+    <div className="gi gi2">
+      {/* ---------- Portada con explicación y botón que despliega la despensa ---------- */}
+      <section className="gi2-hero">
+        <div className="gi2-hero-cabecera">
+          <div className="gi2-hero-copy">
+            <span className="gi-etiqueta">Cocina con lo que tienes</span>
+            <h1>¿Qué hay en tu cocina hoy?</h1>
+            <p>
+              Elige lo que tienes y descubre qué postres puedes preparar, incluso con sustitutos.
+            </p>
           </div>
+          <div className="gi2-hero-acciones">
+            <button
+              type="button"
+              className="gi2-cta"
+              aria-expanded={despensaAbierta}
+              aria-controls="gi2-despensa"
+              onClick={() => setDespensaAbierta((v) => !v)}
+            >
+              {despensaAbierta ? "Ocultar mi despensa" : "Elegir mis ingredientes"}
+              <span className={`gi2-chevron ${despensaAbierta ? "abierto" : ""}`} aria-hidden="true">▾</span>
+            </button>
+            {seleccion.length > 0 && (
+              <span className="gi2-resumen">
+                <strong>{seleccion.length}</strong> {seleccion.length === 1 ? "ingrediente" : "ingredientes"} → <strong>{resultados.length}</strong> {resultados.length === 1 ? "postre posible" : "postres posibles"}
+              </span>
+            )}
+          </div>
+        </div>
+        <ol className="gi2-pasos">
+          <li><strong>1</strong> Elige ingredientes</li>
+          <li><strong>2</strong> Mira tus postres</li>
+          <li><strong>3</strong> Cocina paso a paso</li>
+        </ol>
+        <div className="gi2-kits" role="group" aria-label="Combinaciones rápidas">
+          <span className="gi2-kits-titulo">O prueba una combinación:</span>
+          {KITS.map((kit) => (
+            <button type="button" key={kit.id} onClick={() => aplicarKit(kit)} title={kit.texto}>
+              <span aria-hidden="true">{kit.icono}</span> {kit.titulo}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- Ingredientes elegidos (siempre visibles) ---------- */}
+      {seleccion.length > 0 && (
+        <section className="gi2-elegidos" aria-label="Ingredientes elegidos">
+          <span className="gi-seleccionados-label">En tu despensa</span>
+          <div className="gi2-elegidos-chips">
+            {seleccion.map((nombre) => (
+              <button type="button" key={nombre} onClick={() => alternar(nombre)} aria-label={`Quitar ${nombre}`}>
+                <span aria-hidden="true">{iconoIngrediente(nombre)}</span> {nombre} <span aria-hidden="true">×</span>
+              </button>
+            ))}
+          </div>
+          <button type="button" className="gi2-limpiar" onClick={quitarTodo}>Limpiar todo</button>
+        </section>
+      )}
+
+      {/* ---------- Despensa desplegable ---------- */}
+      {despensaAbierta && (
+        <section className="gi-panel gi2-despensa" id="gi2-despensa">
           <form className="gi-form" onSubmit={agregarEscritos}>
             <input
               type="search"
-              placeholder="Busca un ingrediente..."
+              placeholder="Busca un ingrediente o escribe varios separados por coma..."
               aria-label="Buscar ingredientes"
               value={texto}
               onChange={(e) => setTexto(e.target.value)}
@@ -398,7 +461,7 @@ function GeneradorIngredientes({ irA }) {
             ))}
           </div>
 
-          <div className="gi-selector" role="tabpanel">
+          <div className="gi-selector gi2-selector" role="tabpanel">
             {visibles.map(renderIngrediente)}
             {visibles.length === 0 && (
               <p className="gi-busqueda-vacia">
@@ -415,114 +478,85 @@ function GeneradorIngredientes({ irA }) {
               {verMasIngredientes ? "Ver menos" : "Ver más ingredientes"}
             </button>
           )}
-          <div className="gi-basicos">
-            <span>Atajos</span>
-            {BASICOS.map((nombre) => (
-              <button
-                type="button"
-                key={nombre}
-                className={estaSeleccionado(nombre) ? "activo" : ""}
-                onClick={() => alternar(nombre)}
-              >
-                {estaSeleccionado(nombre) ? "✓ " : "+ "}{nombre}
-              </button>
-            ))}
-          </div>
         </section>
+      )}
 
-        <section
-          className={`gi-panel gi-resultados-panel ${resultadosAbiertos ? "gi-resultados-abiertos" : ""}`}
-          aria-label="Postres para ti"
-        >
-          <div className="gi-panel-heading gi-resultados-heading">
-            <div><span className="gi-paso">02</span><h2>Postres para ti</h2></div>
-            <button
-              type="button"
-              className="gi-cerrar-resultados"
-              aria-label="Cerrar resultados"
-              onClick={() => setResultadosAbiertos(false)}
-            >
-              ✕
-            </button>
+      {/* ---------- Resultados ---------- */}
+      <section className="gi-panel gi2-resultados" aria-label="Postres para ti">
+        <div className="gi-panel-heading">
+          <div><h2>Postres para ti</h2></div>
+          {seleccion.length > 0 && resultados.length > 0 && (
+            <div className="gi-dona-aviso gi2-aviso" role="status">
+              <img src={logoDona} alt="" />
+              <p>¡Con eso puedo hacerte {resultados.length} {resultados.length === 1 ? "postre" : "postres"}!</p>
+            </div>
+          )}
+        </div>
+
+        {seleccion.length === 0 ? (
+          <div className="gi-vacio gi2-vacio">
+            <h3>Aún no has elegido ingredientes</h3>
+            <p>Abre tu despensa o prueba una combinación lista. Mientras tanto, algunas ideas:</p>
+            {irA && recetas.length > 0 && (
+              <div className="gi-populares">
+                {recetas.slice(0, 3).map((r) => (
+                  <button type="button" key={r.id} onClick={() => irA("recetas", r.nombre)}>
+                    {r.emoji || "🍰"} {r.nombre}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          {seleccion.length > 0 && (
-            <div className="gi-seleccionados">
-              <span className="gi-seleccionados-label">En tu despensa</span>
-              <div>
-                {seleccion.map((nombre) => (
-                  <button type="button" key={nombre} onClick={() => alternar(nombre)} aria-label={`Quitar ${nombre}`}>
-                    {nombre} <span aria-hidden="true">×</span>
+        ) : resultados.length === 0 ? (
+          <div className="gi-vacio">
+            <span aria-hidden="true">🍮</span>
+            <h3>Probemos con otra combinación</h3>
+            <p>No encontramos postres con esta selección. Añade o cambia algún ingrediente.</p>
+          </div>
+        ) : (
+          <>
+            <div className="gi-resultados-cabecera">
+              <p className="gi-resumen">
+                {resultadosFiltrados.length} {resultadosFiltrados.length === 1 ? "postre" : "postres"} posibles
+              </p>
+              <div className="gi-filtros" role="group" aria-label="Filtrar postres">
+                {[
+                  ["todas", "Todos"],
+                  ["listas", "Listos"],
+                  ["casi", "Casi listos"],
+                  ["sustitutos", "Con sustitutos"],
+                ].map(([valor, etiqueta]) => (
+                  <button
+                    type="button"
+                    className={filtroActivo === valor ? "gi-filtro gi-filtro--activo" : "gi-filtro"}
+                    aria-pressed={filtroActivo === valor}
+                    key={valor}
+                    onClick={() => {
+                      setFiltroActivo(valor);
+                      setVerResto(false);
+                    }}
+                  >
+                    {etiqueta}
                   </button>
                 ))}
               </div>
             </div>
-          )}
-          {seleccion.length === 0 ? (
-            <div className="gi-vacio">
-              <img src={logoDona} alt="" />
-              <h3>Elige tus ingredientes y te mostramos qué cocinar</h3>
-              <p>Tu próxima idea dulce está más cerca de lo que piensas.</p>
-            </div>
-          ) : resultados.length === 0 ? (
-            <div className="gi-vacio">
-              <span aria-hidden="true">🍮</span>
-              <h3>Probemos con otra combinación</h3>
-              <p>No encontramos postres con esta selección. Añade o cambia algún ingrediente.</p>
-            </div>
-          ) : (
-            <>
-              <div className="gi-resultados-cabecera">
-                <p className="gi-resumen">
-                  {resultadosFiltrados.length} {resultadosFiltrados.length === 1 ? "postre" : "postres"} posibles
-                </p>
-                <div className="gi-filtros" role="group" aria-label="Filtrar postres">
-                  {[
-                    ["todas", "Todos"],
-                    ["listas", "Listos"],
-                    ["casi", "Casi listos"],
-                    ["sustitutos", "Con sustitutos"],
-                  ].map(([valor, etiqueta]) => (
-                    <button
-                      type="button"
-                      className={filtroActivo === valor ? "gi-filtro gi-filtro--activo" : "gi-filtro"}
-                      aria-pressed={filtroActivo === valor}
-                      key={valor}
-                      onClick={() => {
-                        setFiltroActivo(valor);
-                        setVerResto(false);
-                      }}
-                    >
-                      {etiqueta}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {resultadosFiltrados.length === 0 && (
-                <div className="gi-vacio gi-vacio-filtro"><p>No hay postres en este filtro. Prueba otra opción.</p></div>
-              )}
-              {renderGrupo("Listos para cocinar", listas, "gi-grupo--lista")}
-              {renderGrupo("Casi listo (te falta 1 o 2)", casi, "gi-grupo--casi")}
-              {resto.length > 0 && (
-                <section className="gi-grupo">
-                  <button type="button" className="gi-ver-mas" onClick={() => setVerResto((v) => !v)}>
-                    {verResto ? "Ocultar otras ideas ▲" : `Ver ${resto.length} ideas más ▾`}
-                  </button>
-                  {verResto && resto.map(renderReceta)}
-                </section>
-              )}
-            </>
-          )}
-        </section>
-      </div>
-      {resultadosAbiertos && <button type="button" className="gi-overlay" aria-label="Cerrar resultados" onClick={() => setResultadosAbiertos(false)} />}
-      <button
-        type="button"
-        className="gi-movil-cta"
-        onClick={() => setResultadosAbiertos((abierto) => !abierto)}
-      >
-        {resultadosAbiertos ? "Cerrar resultados" : `Ver ${resultados.length} postres`}
-        {!resultadosAbiertos && <span aria-hidden="true">↑</span>}
-      </button>
+            {resultadosFiltrados.length === 0 && (
+              <div className="gi-vacio gi-vacio-filtro"><p>No hay postres en este filtro. Prueba otra opción.</p></div>
+            )}
+            {renderGrupo("Listos para cocinar", listas, "gi-grupo--lista")}
+            {renderGrupo("Casi listo (te falta 1 o 2)", casi, "gi-grupo--casi")}
+            {resto.length > 0 && (
+              <section className="gi-grupo">
+                <button type="button" className="gi-ver-mas" onClick={() => setVerResto((v) => !v)}>
+                  {verResto ? "Ocultar otras ideas ▲" : `Ver ${resto.length} ideas más ▾`}
+                </button>
+                {verResto && <div className="gi2-grid">{resto.map(renderReceta)}</div>}
+              </section>
+            )}
+          </>
+        )}
+      </section>
     </div>
   );
 }
