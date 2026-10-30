@@ -5,6 +5,7 @@ import MascotaCarga from "./MascotaCarga";
 import logoDona from "./assets/logo-dona.png";
 
 const Login = lazy(() => import("./Login"));
+const LandingInfo = lazy(() => import("./LandingInfo"));
 const Mascota = lazy(() => import("./Mascota"));
 const Register = lazy(() => import("./Register"));
 const Home = lazy(() => import("./Home"));
@@ -334,6 +335,7 @@ function App() {
             </button>
           </section>
         </div>
+        <Suspense fallback={null}><LandingInfo /></Suspense>
       </>
     );
   }
