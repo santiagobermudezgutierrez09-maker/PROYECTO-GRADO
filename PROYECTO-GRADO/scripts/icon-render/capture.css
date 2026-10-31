@@ -1,0 +1,34 @@
+html,
+body,
+#root {
+  width: 1024px;
+  height: 1024px;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#root {
+  position: relative;
+}
+
+.mascota-wrap.icon-capture {
+  position: relative !important;
+  inset: auto !important;
+  width: 1024px !important;
+  height: 1024px !important;
+  margin: 0;
+  aspect-ratio: auto !important;
+  filter: none;
+}
+
+.icon-capture .mascota-canvas {
+  width: 100%;
+  height: 100%;
+  filter: none;
+}
+
+.icon-capture .mascota-burbuja,
+.icon-capture .mascota-captura {
+  display: none !important;
+}
