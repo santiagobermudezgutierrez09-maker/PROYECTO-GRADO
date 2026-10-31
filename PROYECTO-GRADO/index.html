@@ -5,6 +5,26 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (() => {
+        // A smaller width makes the page appear larger; a larger width makes it smaller.
+        const PHONE_DESKTOP_VIEWPORT_WIDTH = 1024;
+        const hasCoarsePointer =
+          window.matchMedia("(pointer: coarse)").matches ||
+          navigator.maxTouchPoints > 0;
+        const isPhone = Math.min(screen.width, screen.height) <= 480;
+
+        if (hasCoarsePointer && isPhone) {
+          document.documentElement.classList.add("is-phone-desktop-mode");
+          document
+            .querySelector('meta[name="viewport"]')
+            .setAttribute(
+              "content",
+              `width=${PHONE_DESKTOP_VIEWPORT_WIDTH}, initial-scale=1`,
+            );
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Descubre Charin Cook, tu recetario digital de postres: encuentra recetas, explora sabores del mundo y cocina paso a paso de forma fácil, práctica y deliciosa."
