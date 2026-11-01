@@ -226,8 +226,6 @@ export default function Mascota({
       mira.x = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth / 2)));
       mira.y = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight / 2)));
     };
-    window.addEventListener("pointermove", alMover);
-
     // ---------- Responsive ----------
     const ro = new ResizeObserver(() => {
       const w = el.clientWidth;
@@ -240,15 +238,21 @@ export default function Mascota({
     ro.observe(el);
 
     // ---------- Animación ----------
-    const reloj = new THREE.Timer();
-    reloj.connect(document);
-    let frame;
+    let frame = null;
+    let isVisible = false;
+    let isAnimating = false;
+    let lastFrameTime = null;
+    let elapsed = 0;
     let parpadeo = 1;
     const angulos = { "-1": 0.35, "1": 0.35 };
 
-    const animar = () => {
-      reloj.update();
-      const t = reloj.getElapsed();
+    const animar = (timestamp) => {
+      if (!isAnimating) return;
+      if (lastFrameTime !== null) {
+        elapsed += (timestamp - lastFrameTime) / 1000;
+      }
+      lastFrameTime = timestamp;
+      const t = elapsed;
 
       // Flotar + respirar (aplastarse y estirarse)
       let y = Math.sin(t * 2) * 0.1;
@@ -307,11 +311,35 @@ export default function Mascota({
       renderer.render(scene, camera);
       frame = requestAnimationFrame(animar);
     };
-    animar();
+
+    const actualizarAnimacion = () => {
+      const shouldAnimate = isVisible && !document.hidden;
+      if (shouldAnimate === isAnimating) return;
+
+      isAnimating = shouldAnimate;
+      if (isAnimating) {
+        lastFrameTime = null;
+        window.addEventListener("pointermove", alMover);
+        frame = requestAnimationFrame(animar);
+      } else {
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+        lastFrameTime = null;
+        window.removeEventListener("pointermove", alMover);
+      }
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      actualizarAnimacion();
+    });
+    observer.observe(el);
+    document.addEventListener("visibilitychange", actualizarAnimacion);
 
     return () => {
-      cancelAnimationFrame(frame);
-      reloj.dispose();
+      if (frame !== null) cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", actualizarAnimacion);
       window.removeEventListener("pointermove", alMover);
       ro.disconnect();
       scene.traverse((obj) => {

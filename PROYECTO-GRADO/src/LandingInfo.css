@@ -718,7 +718,7 @@
   position: relative;
   width: 100%;
   max-width: 720px;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 15px;
   background: #2f2924;
@@ -732,7 +732,7 @@
   width: 100%;
   height: 100%;
   border: 0;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
 }
 
@@ -747,8 +747,7 @@
 }
 
 .cc-video-play-overlay-hidden {
-  visibility: hidden;
-  opacity: 0;
+  display: none;
 }
 
 .cc-landing .cc-video-play-button {
@@ -1180,12 +1179,55 @@
 .cc-landing.cc-video-playing .cc-scroll-arrow,
 .cc-landing.cc-video-playing .cc-video-play-icon,
 .cc-landing.cc-video-playing .cc-dessert-skeleton,
-.cc-landing.cc-video-playing .cc-typing span {
+.cc-landing.cc-video-playing .cc-typing span,
+.cc-landing.cc-video-playing .cc-donut .mascota-wrap {
   animation-play-state: paused;
 }
 
 .cc-landing.cc-video-playing .cc-scroll-invite {
+  display: none;
   backdrop-filter: none;
+}
+
+.cc-landing.cc-video-playing .cc-player {
+  overflow: visible;
+  box-shadow: none;
+}
+
+.cc-landing.cc-video-playing .cc-video-frame {
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.cc-landing.cc-video-playing .cc-video-play-overlay,
+.cc-landing.cc-video-playing .cc-video-ended-overlay {
+  display: none;
+}
+
+.cc-landing.cc-video-playing .cc-benefit {
+  transition-property: transform, border-color;
+}
+
+.cc-landing.cc-video-playing .cc-carousel-arrows button {
+  transition-property: transform, background-color, opacity;
+}
+
+.cc-landing.cc-video-playing .cc-dessert-card {
+  transition-property: transform, border-color;
+}
+
+.cc-landing.cc-video-playing .cc-dessert-image-wrap img {
+  filter: none;
+  transition-property: transform;
+}
+
+.cc-landing.cc-video-playing .cc-closing-actions button {
+  transition-property: transform, background-color;
+}
+
+.cc-landing.cc-video-playing .cc-process-line > span {
+  transition: none;
 }
 
 @media (hover: hover) and (pointer: fine) {

@@ -461,7 +461,7 @@ function LandingInfo() {
           <h2 id="cc-video-title">Conoce <em>Charin Cook</em></h2>
           <p>Mira el video y descubre cómo cocinar postres con calma.</p>
         </div>
-        <div className="cc-player" data-cc-reveal>
+        <div className="cc-player">
           <div className="cc-player-screen">
             <div className="cc-video-frame">
               <video
@@ -469,7 +469,9 @@ function LandingInfo() {
                 src={VIDEO_SRC}
                 title="Presentación de Charin Cook"
                 playsInline
-                preload="metadata"
+                preload="auto"
+                disablePictureInPicture
+                controlsList="nodownload"
                 poster={videoPoster}
                 controls={videoIniciado}
                 onPlay={() => {
